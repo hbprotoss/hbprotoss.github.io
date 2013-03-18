@@ -18,13 +18,13 @@ Python的就有不少: [What's the best available static blog/website generator 
 nikola官网：<http://nikola.ralsina.com.ar/>  
 
 详细安装和配置的教程就不赘述了，可以参考这两篇文章：  
-* [The Nikola Handbook](http://nikola.ralsina.com.ar/handbook.html)（官网教程）  
-* [用 nikola 写静态博客](http://rca.is-programmer.com/2013/2/5/using-nikola-write-static-blog.37513.html)  
++ [The Nikola Handbook](http://nikola.ralsina.com.ar/handbook.html)（官网教程）  
++ [用 nikola 写静态博客](http://rca.is-programmer.com/2013/2/5/using-nikola-write-static-blog.37513.html)  
 
 下面说一下安装和配置nikola时要注意的问题。  
-1. 官网上的[安装指导](http://nikola.ralsina.com.ar/handbook.html#installing-nikola)中，如果你是Ubuntu用户的话，[Mako](http://makotemplates.org/)一定要用pip安装或自己去下，Ubuntu官方源上的版本太旧，运行会出问题。  
-2. 喜欢用markdown的童鞋除了更改nikola生成的站点根目录下的从conf.py之外，新建博文的时候要注意加上`-f markdown`参数：`nikola new_post -f markdown`  
-3. 喜欢用markdown的童鞋还得注意一下(==!)，官方0.5.4有个bug。在`/usr/local/lib/python2.7/dist-packages/nikola/plugins/compile_markdown/__init__.py`文件中，在73~81行的字符串前加个字母u。  
+1.  官网上的[安装指导](http://nikola.ralsina.com.ar/handbook.html#installing-nikola)中，如果你是Ubuntu用户的话，[Mako](http://makotemplates.org/)一定要用pip安装或自己去下，Ubuntu官方源上的版本太旧，运行会出问题。  
+2.  喜欢用markdown的童鞋除了更改nikola生成的站点根目录下的从conf.py之外，新建博文的时候要注意加上`-f markdown`参数：`nikola new_post -f markdown`  
+3.  喜欢用markdown的童鞋还得**注意**一下(==!)，官方0.5.4有个bug。在`/usr/local/lib/python2.7/dist-packages/nikola/plugins/compile_markdown/__init__.py`文件中，在73~81行的字符串前加个字母u。  
 
         with codecs.open(path, "wb+", "utf8") as fd:
             if onefile:
@@ -53,4 +53,4 @@ nikola官网：<http://nikola.ralsina.com.ar/>
             fd.write(u"\nWrite your post here.")
 
 因为不加u就是str对象，写入的是utf-8编码的文件，当title等参数里出现非英文字母的时候会出先解码异常。（马上提交个pull request去）  
-4. 想要快速将页面发布至github，请参考[Deploying Nikola to Github Pages](http://robertfw.github.com/posts/deploying-nikola-to-github-pages.html)  
+4.  想要快速将页面发布至github，请参考[Deploying Nikola to Github Pages](http://robertfw.github.com/posts/deploying-nikola-to-github-pages.html)  
