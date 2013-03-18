@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0"><channel><title>hbprotoss的博客</title><link>http://hbprotoss.github.com</link><description>技术博客为主，辅以各种辅料。仙剑脑残粉</description><lastBuildDate>Mon, 18 Mar 2013 18:54:05 GMT</lastBuildDate><generator>nikola</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>实现简单线程池</title><link>http://hbprotoss.github.com/posts/shi-xian-jian-dan-xian-cheng-chi.html</link><description>&lt;p&gt;&amp;#21069;&amp;#27573;&amp;#26102;&amp;#38388;&amp;#22312;&amp;#20889;&amp;#20195;&amp;#30721;&amp;#30340;&amp;#26102;&amp;#20505;&amp;#65288;&amp;#29992;&amp;#20102;Qt&amp;#65289;&amp;#20986;&amp;#29616;&amp;#20102;&amp;#20284;&amp;#20046;&amp;#36319;&amp;#32447;&amp;#31243;&amp;#27744;&amp;#26377;&amp;#20851;&amp;#30340;bug&amp;#65292;&amp;#22312;&amp;#19981;&amp;#30830;&amp;#23450;&amp;#26159;&amp;#21542;&amp;#26159;Qt&amp;#32447;&amp;#31243;&amp;#27744;&amp;#24211;QThreadPool&amp;#30340;bug&amp;#30340;&amp;#24773;&amp;#20917;&amp;#19979;&amp;#65292;&amp;#33258;&amp;#24049;&amp;#23454;&amp;#29616;&amp;#20102;&amp;#19968;&amp;#20010;&amp;#31616;&amp;#21333;&amp;#30340;&amp;#32447;&amp;#31243;&amp;#27744;&amp;#20197;&amp;#30830;&amp;#23450;&amp;#21040;&amp;#24213;&amp;#26159;&amp;#25105;&amp;#30340;&amp;#38382;&amp;#39064;&amp;#36824;&amp;#26159;QThreadPool&amp;#26159;&amp;#21542;&amp;#30495;&amp;#26377;bug&amp;#12290;&amp;#65288;&amp;#21095;&amp;#36879;&amp;#19979;&amp;#65292;&amp;#26368;&amp;#21518;&amp;#35777;&amp;#26126;&amp;#19981;&amp;#26159;QThreadPool&amp;#26377;&amp;#38382;&amp;#39064;&amp;#65292;&amp;#21487;&amp;#33021;&amp;#26159;&amp;#20449;&amp;#21495;&amp;#22312;&amp;#32447;&amp;#31243;&amp;#20043;&amp;#38388;&amp;#20256;&amp;#36882;&amp;#30340;&amp;#26102;&amp;#20505;&amp;#26377;&amp;#38382;&amp;#39064;&amp;#65292;&amp;#36825;&amp;#20010;bug&amp;#33267;&amp;#20170;&amp;#26410;&amp;#20462;&amp;#22797;= =&amp;#65289;  &lt;/p&gt;
+&lt;p&gt;&amp;#19979;&amp;#38754;&amp;#35760;&amp;#24405;&amp;#19979;&amp;#25105;&amp;#36825;&amp;#20010;&amp;#32447;&amp;#31243;&amp;#27744;&amp;#30340;&amp;#23454;&amp;#29616;&amp;#24605;&amp;#36335;&amp;#12290;&lt;br&gt;
+&amp;#20027;&amp;#35201;&amp;#26377;&amp;#20004;&amp;#20010;&amp;#31867;&amp;#65292;Thread&amp;#12289;Manager&amp;#12290;ThreadPool&amp;#31867;&amp;#26159;&amp;#25972;&amp;#20307;&amp;#30340;&amp;#21253;&amp;#35013;&amp;#12290;  &lt;/p&gt;
+&lt;p&gt;Thread&amp;#65292;&amp;#32487;&amp;#25215;&amp;#33258;QThread&amp;#65292;&amp;#29992;&amp;#26469;&amp;#25191;&amp;#34892;&amp;#32447;&amp;#31243;&amp;#20195;&amp;#30721;&amp;#65292;&amp;#24182;&amp;#19988;&amp;#20316;&amp;#20026;&amp;#32447;&amp;#31243;&amp;#23545;&amp;#35937;&amp;#23384;&amp;#22312;&amp;#12290;&lt;br&gt;
+Manager&amp;#65292;&amp;#24403;&amp;#21069;&amp;#32447;&amp;#31243;&amp;#27963;&amp;#21160;&amp;#24773;&amp;#20917;&amp;#30340;&amp;#31649;&amp;#29702;&amp;#31867;&amp;#65292;&amp;#26816;&amp;#26597;&amp;#32447;&amp;#31243;&amp;#27744;&amp;#20869;&amp;#31354;&amp;#38386;&amp;#32447;&amp;#31243;&amp;#30340;&amp;#24773;&amp;#20917;&amp;#65292;&amp;#24182;&amp;#31649;&amp;#29702;&amp;#26032;&amp;#28155;&amp;#21152;&amp;#30340;&amp;#20219;&amp;#21153;&amp;#12290;  &lt;/p&gt;
+&lt;h3&gt;&lt;strong&gt;Manager&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;Manager&amp;#20869;&amp;#37096;&amp;#26377;&amp;#19968;&amp;#20010;&amp;#32500;&amp;#25252;&amp;#31354;&amp;#38386;&amp;#32447;&amp;#31243;&amp;#23545;&amp;#35937;&amp;#30340;&amp;#38598;&amp;#21512;idle_thread&amp;#65292;&amp;#32771;&amp;#34385;&amp;#21040;&amp;#38656;&amp;#35201;&amp;#22312;O(1)&amp;#30340;&amp;#26102;&amp;#38388;&amp;#20869;&amp;#28155;&amp;#21152;&amp;#25110;&amp;#21024;&amp;#38500;&amp;#25351;&amp;#23450;&amp;#20803;&amp;#32032;&amp;#65292;&amp;#29992;&amp;#20102;python&amp;#20869;&amp;#32622;&amp;#30340;set&amp;#12290;set&amp;#20869;&amp;#37096;&amp;#20351;&amp;#29992;&amp;#21704;&amp;#24076;&amp;#23454;&amp;#29616;&amp;#30340;&amp;#65292;&amp;#25152;&amp;#20197;&amp;#26102;&amp;#38388;&amp;#25928;&amp;#29575;&amp;#22522;&amp;#26412;&amp;#33021;&amp;#25511;&amp;#21046;&amp;#22312;O(1)&amp;#24038;&amp;#21491;&amp;#12290;&lt;br&gt;
+&amp;#36824;&amp;#26377;&amp;#19968;&amp;#20010;&amp;#24050;&amp;#28155;&amp;#21152;&amp;#20219;&amp;#21153;&amp;#30340;&amp;#38431;&amp;#21015;queue&amp;#12290;&amp;#26102;&amp;#38388;&amp;#25928;&amp;#29575;&amp;#19978;&amp;#65292;&amp;#20837;&amp;#38431;&amp;#21644;&amp;#20986;&amp;#38431;&amp;#37117;&amp;#35201;&amp;#27714;O(1)&amp;#30340;&amp;#26102;&amp;#38388;&amp;#65292;&amp;#20294;&amp;#26159;&amp;#26368;&amp;#20808;&amp;#24819;&amp;#21040;&amp;#30340;python&amp;#20869;&amp;#32622;&amp;#30340;list&amp;#23545;&amp;#35937;&amp;#26159;&amp;#25968;&amp;#32452;&amp;#21644;&amp;#38142;&amp;#34920;&amp;#30340;&amp;#32467;&amp;#21512;&amp;#65292;&amp;#20837;&amp;#38431;&amp;#26102;&amp;#38388;&amp;#26159;O(1)&amp;#65292;&amp;#20986;&amp;#38431;&amp;#26102;&amp;#38388;&amp;#21364;&amp;#26159;O(n)&amp;#65288;&amp;#21442;&amp;#35265;&lt;a href="http://blog.csdn.net/digimon/article/details/7875781"&gt;&amp;#36825;&amp;#20010;&amp;#38142;&amp;#25509;&lt;/a&gt;&amp;#65289;&amp;#65292;&amp;#25152;&amp;#20197;&amp;#29992;&amp;#20102;collections.deque&amp;#65292;&amp;#19968;&amp;#20010;&amp;#21452;&amp;#21521;&amp;#38142;&amp;#34920;&amp;#65292;&amp;#33021;&amp;#23454;&amp;#29616;&amp;#20837;&amp;#38431;&amp;#21644;&amp;#20986;&amp;#38431;&amp;#37117;&amp;#26159;O(1)&amp;#30340;&amp;#26102;&amp;#38388;&amp;#12290;&amp;#21478;&amp;#22806;&amp;#65292;&amp;#30001;&amp;#20110;&amp;#25105;&amp;#19981;&amp;#38656;&amp;#35201;&amp;#20248;&amp;#20808;&amp;#32423;&amp;#30340;&amp;#27010;&amp;#24565;&amp;#65292;&amp;#25152;&amp;#20197;&amp;#32447;&amp;#24615;&amp;#34920;&amp;#36275;&amp;#30691;&amp;#12290;&amp;#20197;&amp;#21518;&amp;#22914;&amp;#26524;&amp;#35201;&amp;#32771;&amp;#34385;&amp;#20248;&amp;#20808;&amp;#32423;&amp;#30340;&amp;#35805;&amp;#20250;&amp;#25913;&amp;#25104;&amp;#22534;&amp;#12290;&lt;br&gt;
+&amp;#21478;&amp;#22806;&amp;#23601;&amp;#26159;&amp;#19968;&amp;#20010;idle_thread&amp;#30340;&amp;#20114;&amp;#26021;&amp;#37327;mutex&amp;#12290;&amp;#22240;&amp;#20026;set&amp;#23545;&amp;#35937;&amp;#26159;&amp;#32447;&amp;#31243;&amp;#19981;&amp;#23433;&amp;#20840;&amp;#30340;&amp;#65292;&amp;#25152;&amp;#20197;&amp;#22312;&amp;#28155;&amp;#21152;&amp;#21644;&amp;#21024;&amp;#38500;&amp;#20803;&amp;#32032;&amp;#30340;&amp;#26102;&amp;#20505;&amp;#24517;&amp;#39035;&amp;#26377;&amp;#20114;&amp;#26021;&amp;#37327;&amp;#20445;&amp;#25252;&amp;#12290;&amp;#32780;collections.deque&amp;#25991;&amp;#26723;&amp;#19978;&amp;#35828;&amp;#26159;&amp;#32447;&amp;#31243;&amp;#23433;&amp;#20840;&amp;#30340;&amp;#65292;&amp;#25152;&amp;#20197;&amp;#23601;&amp;#19981;&amp;#38656;&amp;#35201;&amp;#20114;&amp;#26021;&amp;#37327;&amp;#20043;&amp;#31867;&amp;#30340;&amp;#26426;&amp;#21046;&amp;#20102;&amp;#12290;  &lt;/p&gt;
+&lt;p&gt;Manager&amp;#30340;&amp;#25509;&amp;#21475;&amp;#26377;&amp;#65306;&lt;br&gt;
+hasIdleThread&amp;#65292;&amp;#36820;&amp;#22238;&amp;#32447;&amp;#31243;&amp;#27744;&amp;#20869;&amp;#26159;&amp;#21542;&amp;#36824;&amp;#26377;&amp;#31354;&amp;#38386;&amp;#32447;&amp;#31243;&amp;#12290;&lt;br&gt;
+setThreadIdle&amp;#65292;&amp;#23558;&amp;#26576;&amp;#20010;&amp;#32447;&amp;#31243;&amp;#21152;&amp;#20837;&amp;#21040;&amp;#31354;&amp;#38386;&amp;#32447;&amp;#31243;&amp;#27744;&amp;#20013;&amp;#12290;&lt;br&gt;
+startTask&amp;#65292;&amp;#20808;&amp;#23558;task&amp;#20837;&amp;#38431;&amp;#65292;&amp;#28982;&amp;#21518;&amp;#30475;&amp;#26159;&amp;#21542;&amp;#26377;&amp;#31354;&amp;#38386;&amp;#32447;&amp;#31243;&amp;#65292;&amp;#22914;&amp;#26524;&amp;#26377;&amp;#21017;&amp;#22312;&amp;#36825;&amp;#20010;&amp;#31354;&amp;#38386;&amp;#32447;&amp;#31243;&amp;#19978;&amp;#25191;&amp;#34892;&amp;#65292;&amp;#27809;&amp;#26377;&amp;#30340;&amp;#35805;&amp;#23601;&amp;#30041;&amp;#22312;&amp;#38431;&amp;#21015;&amp;#37324;&amp;#31561;&amp;#24453;&amp;#19979;&amp;#27425;&amp;#35843;&amp;#24230;&amp;#12290;  &lt;/p&gt;
+&lt;h3&gt;&lt;strong&gt;Thread&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;&amp;#22312;run&amp;#26041;&amp;#27861;&amp;#20869;&amp;#65292;&amp;#36890;&amp;#36807;Manager&amp;#21462;&amp;#20986;&amp;#19968;&amp;#20010;task&amp;#25191;&amp;#34892;&amp;#65292;&amp;#24490;&amp;#29615;&amp;#30452;&amp;#21040;&amp;#20877;&amp;#27809;&amp;#26377;&amp;#26032;&amp;#30340;task&amp;#20026;&amp;#27490;&amp;#65292;&amp;#20043;&amp;#21518;&amp;#36339;&amp;#20986;&amp;#24490;&amp;#29615;&amp;#65292;&amp;#23558;&amp;#33258;&amp;#24049;&amp;#21152;&amp;#20837;&amp;#21040;&amp;#31354;&amp;#38386;&amp;#32447;&amp;#31243;&amp;#38598;&amp;#21512;&amp;#20869;&amp;#12290;&lt;br&gt;
+&amp;#20854;&amp;#23454;&amp;#36825;&amp;#26679;&amp;#24182;&amp;#19981;&amp;#33021;&amp;#20445;&amp;#35777;&amp;#32447;&amp;#31243;&amp;#19968;&amp;#30452;&amp;#23384;&amp;#27963;&amp;#65292;&amp;#36824;&amp;#26159;&amp;#20250;&amp;#26377;&amp;#38144;&amp;#27585;&amp;#21644;&amp;#37325;&amp;#24314;&amp;#32447;&amp;#31243;&amp;#30340;&amp;#21160;&amp;#20316;&amp;#65292;&amp;#32780;&amp;#19988;&amp;#26576;&amp;#20123;&amp;#26497;&amp;#31471;&amp;#24773;&amp;#20917;&amp;#19979;&amp;#36824;&amp;#20250;&amp;#24456;&amp;#39057;&amp;#32321;&amp;#12290;&amp;#20294;&amp;#26159;&amp;#25105;&amp;#24403;&amp;#26102;&amp;#30340;&amp;#24773;&amp;#20917;&amp;#26159;&amp;#35201;&amp;#25191;&amp;#34892;&amp;#30340;&amp;#20219;&amp;#21153;&amp;#20250;&amp;#19968;&amp;#27425;&amp;#24615;&amp;#20840;&amp;#37096;&amp;#21152;&amp;#20837;&amp;#21040;&amp;#38431;&amp;#21015;&amp;#37324;&amp;#65292;&amp;#32780;&amp;#19979;&amp;#19968;&amp;#27425;&amp;#21516;&amp;#26679;&amp;#30340;&amp;#28155;&amp;#21152;&amp;#21160;&amp;#20316;&amp;#20250;&amp;#30456;&amp;#38548;&amp;#27604;&amp;#36739;&amp;#38271;&amp;#30340;&amp;#26102;&amp;#38388;&amp;#65292;&amp;#25152;&amp;#20197;&amp;#38382;&amp;#39064;&amp;#19981;&amp;#22823;&amp;#12290;&amp;#26356;&amp;#37325;&amp;#35201;&amp;#30340;&amp;#26159;&amp;#65292;&amp;#24403;&amp;#26102;&amp;#21482;&amp;#26159;&amp;#20026;&amp;#20102;&amp;#30830;&amp;#23450;QThreadPool&amp;#26159;&amp;#21542;&amp;#26377;bug&amp;#65292;&amp;#36825;&amp;#26041;&amp;#38754;&amp;#27809;&amp;#26377;&amp;#32771;&amp;#34385;&amp;#22320;&amp;#22826;&amp;#22810;&amp;#12290;  &lt;/p&gt;
+&lt;p&gt;&amp;#19979;&amp;#38754;&amp;#26159;&amp;#20855;&amp;#20307;&amp;#20195;&amp;#30721;&amp;#65288;&amp;#36981;&amp;#24490;GPLv3&amp;#21327;&amp;#35758;&amp;#65289;  &lt;/p&gt;
+&lt;table class="codehilitetable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt; 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="code"&gt;&lt;pre&gt;&lt;span class="c"&gt;#!/usr/bin/env python3&lt;/span&gt;
+
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;collections&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;PyQt4.QtCore&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;app&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;logger&lt;/span&gt;
+
+&lt;span class="n"&gt;log&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;logger&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;getLogger&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;__name__&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Thread&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;QThread&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;manager&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="nb"&gt;super&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Thread&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;manager&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;manager&lt;/span&gt;
+    &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__str__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;while&lt;/span&gt; &lt;span class="k"&gt;True&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="k"&gt;try&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;log&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;debug&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;manager&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;queue&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+        &lt;span class="n"&gt;task&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;manager&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dequeueTask&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+        &lt;span class="n"&gt;task&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;task&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;autoDelete&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+            &lt;span class="k"&gt;del&lt;/span&gt; &lt;span class="n"&gt;task&lt;/span&gt;
+        &lt;span class="k"&gt;except&lt;/span&gt; &lt;span class="ne"&gt;IndexError&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="c"&gt;# There is no task&lt;/span&gt;
+        &lt;span class="n"&gt;log&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;debug&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="s"&gt;'No task, %s quiting'&lt;/span&gt; &lt;span class="o"&gt;%&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;break&lt;/span&gt;
+        &lt;span class="k"&gt;except&lt;/span&gt; &lt;span class="ne"&gt;Exception&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;manager&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;setThreadIdle&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Manager&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;max_thread_count&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;max_thread_count&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;max_thread_count&lt;/span&gt;
+
+    &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;threads&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;Thread&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;'thread_%d'&lt;/span&gt; &lt;span class="o"&gt;%&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;max_thread_count&lt;/span&gt;&lt;span class="p"&gt;)]&lt;/span&gt;
+
+    &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;idle_threads&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;set&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;threads&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;idle_threads_mutex&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;QMutex&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+    &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;queue&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;collections&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;deque&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;hasIdleThread&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;idle_threads&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;!=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;setThreadIdle&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;thread&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;idle_threads_mutex&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;lock&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;idle_threads&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;thread&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;log&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;debug&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'%s becomes idle'&lt;/span&gt; &lt;span class="o"&gt;%&lt;/span&gt; &lt;span class="n"&gt;thread&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;idle_threads_mutex&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;unlock&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;startTask&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;task&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;enqueueTask&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;task&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;log&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;debug&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'%s enqueued'&lt;/span&gt; &lt;span class="o"&gt;%&lt;/span&gt; &lt;span class="n"&gt;task&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;idle_threads_mutex&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;lock&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;try&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;thread&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;idle_threads&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;pop&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+        &lt;span class="n"&gt;thread&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;start&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+        &lt;span class="n"&gt;log&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;debug&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'%s started'&lt;/span&gt; &lt;span class="o"&gt;%&lt;/span&gt; &lt;span class="n"&gt;task&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;except&lt;/span&gt; &lt;span class="ne"&gt;KeyError&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="c"&gt;# No idle thread&lt;/span&gt;
+        &lt;span class="n"&gt;log&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;debug&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'No idle thread'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;pass&lt;/span&gt;
+    &lt;span class="k"&gt;except&lt;/span&gt; &lt;span class="ne"&gt;Exception&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;idle_threads_mutex&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;unlock&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;enqueueTask&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;task&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;queue&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;append&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;task&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;dequeueTask&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;queue&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;popleft&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;ThreadPool&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;max_thread_count&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;manager&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Manager&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;max_thread_count&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;start&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;task&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="nb"&gt;isinstance&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;task&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;QRunnable&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;raise&lt;/span&gt; &lt;span class="ne"&gt;TypeError&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'Task must be QRunnable object.'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;manager&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;startTask&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;task&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description><guid>http://hbprotoss.github.com/posts/shi-xian-jian-dan-xian-cheng-chi.html</guid><pubDate>Mon, 18 Mar 2013 18:28:37 GMT</pubDate></item></channel></rss>
