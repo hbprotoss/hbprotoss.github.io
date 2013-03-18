@@ -2,7 +2,7 @@
 .. title: python的import机制
 .. slug: pythonde-importji-zhi
 .. date: 2013/03/18 19:11:42
-.. tags: 
+.. tags: Python
 .. link: 
 .. description: 
 -->

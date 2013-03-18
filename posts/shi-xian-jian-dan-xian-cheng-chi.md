@@ -2,7 +2,7 @@
 .. title: 实现简单线程池
 .. slug: shi-xian-jian-dan-xian-cheng-chi
 .. date: 2013/03/18 18:28:37
-.. tags: 
+.. tags: Python, Qt, 线程池
 .. link: 
 .. description: 
 -->

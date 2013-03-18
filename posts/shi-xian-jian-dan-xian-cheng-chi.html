@@ -45,7 +45,16 @@
     <h1>实现简单线程池</h1>
 
     <hr><small>
-        Posted: <time class="published" datetime="2013-03-18T18:28:37">2013-03-18 18:28</time></small>
+        Posted: <time class="published" datetime="2013-03-18T18:28:37">2013-03-18 18:28</time>
+        
+
+        
+          |  More posts about
+            <a class="tag" href="../categories/python.html"><span class="badge badge-info">Python</span></a>
+            <a class="tag" href="../categories/qt.html"><span class="badge badge-info">Qt</span></a>
+            <a class="tag" href="../categories/xian-cheng-chi.html"><span class="badge badge-info">线程池</span></a>
+
+    </small>
     <hr><div><p>前段时间在写代码的时候（用了Qt）出现了似乎跟线程池有关的bug，在不确定是否是Qt线程池库QThreadPool的bug的情况下，自己实现了一个简单的线程池以确定到底是我的问题还是QThreadPool是否真有bug。（剧透下，最后证明不是QThreadPool有问题，可能是信号在线程之间传递的时候有问题，这个bug至今未修复= =）  </p>
 <p>下面记录下我这个线程池的实现思路。<br>
 主要有两个类，Thread、Manager。ThreadPool类是整体的包装。  </p>
