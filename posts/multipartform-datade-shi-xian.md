@@ -21,7 +21,10 @@
 multipart/form-data主要由三部分组成：  
 
 1. HTTP Header。需要添加头"Content-Type: multipart/form-data; boundary=%s"，这个boundary就是分隔符，见第二条。
-2. 分隔符boundary。分隔符是一串和正文内容不冲突的字符串，用以分割多个参数。一般都是N个减号+随机字符串，比如"----------当前时间"。
+2. 分隔符boundary。分隔符是一串和正文内容不冲突的字符串，用以分割多个参数。一般都是N个减号+随机字符串，比如"----------当前时间"。  
+   正文需要加header：  
+   Content-Disposition: form-data; name="%s"，%s为需要传递的变量名。  
+   Content-Type: 指定正文MIME类型，默认是纯文本text/plain，未知类型可以填application/octet-stream。  
 3. 数据。要注意的是数据的编码，文档上说"7BIT encoding"，ISO-8859-1即可。
 
 下面贴一段上传新浪微博图片的代码：  
