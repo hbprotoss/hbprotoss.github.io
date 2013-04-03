@@ -1,18 +1,18 @@
 <!DOCTYPE html><html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta charset="utf-8"><meta name="description" content="技术博客为主，辅以各种辅料。仙剑脑残粉"><meta name="author" content="hbprotoss"><title>hbprotoss的博客 | hbprotoss的博客</title><link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css" rel="stylesheet"><link href="assets/css/rst.css" rel="stylesheet" type="text/css"><link href="assets/css/code.css" rel="stylesheet" type="text/css"><link href="assets/css/colorbox.css" rel="stylesheet" type="text/css"><link href="assets/css/slides.css" rel="stylesheet" type="text/css"><link href="assets/css/theme.css" rel="stylesheet" type="text/css"><!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js" type="text/javascript"></script>
-    <![endif]--><link rel="alternate" type="application/rss+xml" title="RSS (en)" href="rss.xml"></head><body>
+    <![endif]--><link rel="alternate" type="application/rss+xml" title="RSS" href="rss.xml"></head><body>
 <!-- Menubar -->
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container">
-        
+
         <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
         <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
-        </a>        
-        
+        </a>
+
             <a class="brand" href=".">
             hbprotoss的博客
             </a>
@@ -37,10 +37,79 @@
     <div class="span8">
     
         <div class="postbox">
+        <h1><a href="posts/python-decoratorde-ying-yong.html">Python decorator的应用</a>
+        <small>  
+             Posted: <time class="published" datetime="2013-04-03T21:23:39">2013-04-03 21:23</time></small></h1>
+        <hr><p>Decorator是23种设计模式之一，提出的目的是为了在不改变现有代码的前提下，通过在头部或尾部添加代码来扩展功能。<br>
+Python语言内建支持decorator模式。由于语法不是本文重点，对语法不熟悉的童鞋可以参考以下几篇文章：  </p>
+<ol><li>Stackoverflow上的神文：<a href="http://stackoverflow.com/a/1594484/837187">Understanding Python decorators</a></li>
+<li><a href="http://blog.donews.com/limodou/archive/2004/12/19/207521.aspx">[Python学习]decorator的使用</a></li>
+<li><a href="http://www.python.org/dev/peps/pep-0318/">PEP318</a></li>
+</ol><p>下面说一下最近在写SNS客户端插件时Python decorator的应用。<br>
+插件的方法完成的任务是：  </p>
+<ul><li>根据OAuth协议，设置好参数，访问HTTP API</li>
+<li>读取服务器返回的json</li>
+<li>解析json</li>
+</ul><p>异常可能来自访问API过程中的网络问题，以及解析json发现服务器返回了错误代码（比如API访问过于频繁，access token有问题等）。在写头几个API的时候做法很自然，用try-except块包裹可能出异常的代码，将各种标准库的异常或者服务器返回的错误信息封装成自己的exception，raise一下告诉主程序有异常需要处理。<br>
+但是写了几个方法后发现，每个方法的异常处理流程几乎一模一样，特别是封装标准库的异常，唯一不同的就是解析服务器返回的错误信息。伪码如下：  </p>
+<div class="code"><pre><span class="n">def</span> <span class="n">method</span><span class="p">(</span><span class="n">xxx</span><span class="p">):</span>
+    <span class="n">try:</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
+        <span class="n">raw_data</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="nb">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">'utf-8'</span><span class="p">)</span>
+        <span class="n">rtn</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">raw_data</span><span class="p">)</span>
+    <span class="n">except</span> <span class="n">Exception1</span> <span class="n">as</span> <span class="n">e:</span>
+        <span class="nb">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="n">raise</span> <span class="n">CustomException1</span><span class="p">()</span>
+    <span class="n">except</span> <span class="n">Exception2</span> <span class="n">as</span> <span class="n">e:</span>
+        <span class="nb">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="n">raise</span> <span class="n">CustomException2</span><span class="p">()</span>
+        <span class="n">xxx</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">rtn</span>
+</pre></div>
+
+
+<p>出于懒的原因（说得好听点，出于代码复用的目的:D)，得想个办法把这些重复性的工作提取出来。<br>
+仔细观察可以发现，这些方法在except处理完异常之后都没有额外的工作需要进行。换句话说，可以认为这些代码都位于核心处理代码之后，这是自然就想到了decorator模式，将异常处理放在decorator里，再decorate一下各个方法就可以了。<br>
+Decorator如下：  </p>
+<div class="code"><pre><span class="n">def</span> <span class="n">sinaMethod</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="n">def</span> <span class="n">func_wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">try:</span>
+            <span class="n">raw_rtn</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">except</span> <span class="n">urllib</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">HTTPError</span> <span class="n">as</span> <span class="n">e:</span>
+            <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">fp:</span>
+                <span class="c1"># Sina app error</span>
+                <span class="n">error_msg</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="nb">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">'utf-8'</span><span class="p">))</span>
+                <span class="n">error_code</span> <span class="o">=</span> <span class="n">str</span><span class="p">(</span><span class="n">error_msg</span><span class="p">[</span><span class="s">'error_code'</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">error_code</span> <span class="n">in</span> <span class="n">exception_dict:</span>
+                    <span class="n">raise</span> <span class="n">exception_dict</span><span class="p">[</span><span class="n">error_code</span><span class="p">](</span><span class="n">error_msg</span><span class="p">[</span><span class="s">'error'</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">raise</span> <span class="n">weiUnknownError</span><span class="p">(</span><span class="n">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Network error</span>
+                <span class="n">raise</span> <span class="n">weiNetworkError</span><span class="p">(</span><span class="n">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">raw_rtn</span>
+    <span class="k">return</span> <span class="n">func_wrapper</span>
+</pre></div>
+
+
+<p>其作用就是，尝试调用被装饰函数，如果顺利的话直接返回结果。如果有HTTPError异常发生，则解析之，并根据相应情况封装成自定义的异常抛出。<br>
+这里使得代码比较简短的一个关键就是这个exception_dict，里面维护了新浪错误代码和需要抛出的异常类之间的映射。根据返回的error_code查找这个字典，如果有则说明这是我们需要关心的异常，那么就用错误消息构造异常对象抛出。如果没有，就不是需要关心的异常，以weiUnknownError异常抛出。<br>
+由于新浪在出错时除了返回HTTP报头，还有一段附加data，所以如果e.fp为None则说明不是应用层的异常，可能是网络层及以下出了问题，抛出weiNetworkError。  </p>
+<p>使用就很简单了，在被装饰的函数前一行加<code>@sinaMethod</code>就可以了。<br>
+就这么简单~~  </p>
+<hr><p>PS：附带说一句，编程语言对设计模式在语法上的支持会大大简化程序猿的编码量。如果是C++/Java，甚至C要用decorator模式就得协商老长一段了~~^_^</p>
+            
+    <p>
+        <a href="posts/python-decoratorde-ying-yong.html#disqus_thread" data-disqus-identifier="cache/posts/python-decoratorde-ying-yong.html">Comments</a>
+
+        </p></div>
+        <div class="postbox">
         <h1><a href="posts/multipartform-datade-shi-xian.html">multipart/form-data的实现</a>
         <small>  
              Posted: <time class="published" datetime="2013-03-29T09:19:39">2013-03-29 09:19</time></small></h1>
-        <hr><div><p>写之前先吐槽几句：Python社区太懒了，Python3都推出多少年了，那么多第三方库还不port到Python3。不能安于现状啊！  </p>
+        <hr><p>写之前先吐槽几句：Python社区太懒了，Python3都推出多少年了，那么多第三方库还不port到Python3。不能安于现状啊！  </p>
 <hr><p>下面是正题：</p>
 <p>最近写微博客户端，上传图片需要multipart/form-data编码图片和参数，由于前面说的原因，没有第三方库可用，所以就自己实现一下。</p>
 <p>先贴一下multipart/form-data的RFC文档地址：<a href="http://www.ietf.org/rfc/rfc2388.txt">点这里</a></p>
@@ -160,8 +229,8 @@
 <span class="k">except</span> <span class="n">urllib</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">HTTPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
 </pre></div>
-</td></tr></table><p><strong>其中尤其要注意的是，POST上去的data部分要encode成ISO-8859-1。一开始一直encode成UTF-8，死活报的都是格式错误。</strong></p></div>
-        
+</td></tr></table><p><strong>其中尤其要注意的是，POST上去的data部分要encode成ISO-8859-1。一开始一直encode成UTF-8，死活报的都是格式错误。</strong></p>
+            
     <p>
         <a href="posts/multipartform-datade-shi-xian.html#disqus_thread" data-disqus-identifier="cache/posts/multipartform-datade-shi-xian.html">Comments</a>
 
@@ -170,7 +239,7 @@
         <h1><a href="posts/nikolagitpageda-jian-bo-ke.html">nikola+gitpage搭建博客</a>
         <small>  
              Posted: <time class="published" datetime="2013-03-18T19:46:37">2013-03-18 19:46</time></small></h1>
-        <hr><div><p>本来博客是在CSDN上的<a href="http://blog.csdn.net/digimon">http://blog.csdn.net/digimon</a>，但最近CSDN在我这一直无法登录，已经在Evernote上积压了好几篇博客，搞烦了，决定自己搭个博客。<br>
+        <hr><p>本来博客是在CSDN上的<a href="http://blog.csdn.net/digimon">http://blog.csdn.net/digimon</a>，但最近CSDN在我这一直无法登录，已经在Evernote上积压了好几篇博客，搞烦了，决定自己搭个博客。<br>
 由于目前是没有收入来源的屌丝，没钱去买个域名、弄个VPS，只能想免费的招了。WordPress这货屏蔽GAE的UA，导致没法申请博客，最后想到了gitpage。虽然gitpage也有随时被墙的风险，但是我的博客主要记录技术内容，作为程序猿翻个伟大的防火墙还是没问题的吧;-)  </p>
 <p>gitpage只支持静态页面，网上搜了一下，生成静态页面的工具还真不少，好像专门为此设计的一样，套餐呐有木有。<br>
 Python的就有不少: <a href="http://www.quora.com/Whats-the-best-available-static-blog-website-generator-in-Python">What's the best available static blog/website generator in Python?</a><br>
@@ -214,8 +283,8 @@ nikola官网：<a href="http://nikola.ralsina.com.ar/">http://nikola.ralsina.com
 
 
 <p>因为不加u就是str对象，写入的是utf-8编码的文件，当title等参数里出现非英文字母的时候会出先解码异常。（马上提交个pull request去）<br>
-4.  想要快速将页面发布至github，请参考<a href="http://robertfw.github.com/posts/deploying-nikola-to-github-pages.html">Deploying Nikola to Github Pages</a>  </p></div>
-        
+4.  想要快速将页面发布至github，请参考<a href="http://robertfw.github.com/posts/deploying-nikola-to-github-pages.html">Deploying Nikola to Github Pages</a>  </p>
+            
     <p>
         <a href="posts/nikolagitpageda-jian-bo-ke.html#disqus_thread" data-disqus-identifier="cache/posts/nikolagitpageda-jian-bo-ke.html">Comments</a>
 
@@ -224,7 +293,7 @@ nikola官网：<a href="http://nikola.ralsina.com.ar/">http://nikola.ralsina.com
         <h1><a href="posts/pythonde-importji-zhi.html">python的import机制</a>
         <small>  
              Posted: <time class="published" datetime="2013-03-18T19:11:42">2013-03-18 19:11</time></small></h1>
-        <hr><div><p>同一个模块以相同的模块名被导入时，模块内的代码只执行一遍（模块名必须相同）。<br>
+        <hr><p>同一个模块以相同的模块名被导入时，模块内的代码只执行一遍（模块名必须相同）。<br>
 例：  </p>
 <blockquote>
 <p>import/<br>
@@ -254,8 +323,8 @@ nikola官网：<a href="http://nikola.ralsina.com.ar/">http://nikola.ralsina.com
 
 <hr><p>test.py中，第4行执行后输出1。第5行不输出，因为mo.A已经被导入当前namespace。  </p>
 <p>但是第9行，虽然都是同一个物理文件A.py，但是被导入时的名字不同（mo.A和A），所以还是会输出1。mo.A和A作为两个独立的module对象存在当前namespace中。  </p>
-<p>如果要把模块中的变量当全局变量来使用的话，一定要从项目顶部通过“.”一层一层import。  </p></div>
-        
+<p>如果要把模块中的变量当全局变量来使用的话，一定要从项目顶部通过“.”一层一层import。  </p>
+            
     <p>
         <a href="posts/pythonde-importji-zhi.html#disqus_thread" data-disqus-identifier="cache/posts/python-de-import-ji-zhi.html">Comments</a>
 
@@ -264,7 +333,7 @@ nikola官网：<a href="http://nikola.ralsina.com.ar/">http://nikola.ralsina.com
         <h1><a href="posts/shi-xian-jian-dan-xian-cheng-chi.html">实现简单线程池</a>
         <small>  
              Posted: <time class="published" datetime="2013-03-18T18:28:37">2013-03-18 18:28</time></small></h1>
-        <hr><div><p>前段时间在写代码的时候（用了Qt）出现了似乎跟线程池有关的bug，在不确定是否是Qt线程池库QThreadPool的bug的情况下，自己实现了一个简单的线程池以确定到底是我的问题还是QThreadPool是否真有bug。（剧透下，最后证明不是QThreadPool有问题，可能是信号在线程之间传递的时候有问题，这个bug至今未修复= =）  </p>
+        <hr><p>前段时间在写代码的时候（用了Qt）出现了似乎跟线程池有关的bug，在不确定是否是Qt线程池库QThreadPool的bug的情况下，自己实现了一个简单的线程池以确定到底是我的问题还是QThreadPool是否真有bug。（剧透下，最后证明不是QThreadPool有问题，可能是信号在线程之间传递的时候有问题，这个bug至今未修复= =）  </p>
 <p>下面记录下我这个线程池的实现思路。<br>
 主要有两个类，Thread、Manager。ThreadPool类是整体的包装。  </p>
 <p>Thread，继承自QThread，用来执行线程代码，并且作为线程对象存在。<br>
@@ -451,9 +520,7 @@ startTask，先将task入队，然后看是否有空闲线程，如果有则在�
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">'Task must be QRunnable object.'</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">startTask</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
-        
-    <p>
+</td></tr></table><p>
         <a href="posts/shi-xian-jian-dan-xian-cheng-chi.html#disqus_thread" data-disqus-identifier="cache/posts/shi-xian-jian-dan-xian-cheng-chi.html">Comments</a>
 
         </p></div>
@@ -463,7 +530,7 @@ startTask，先将task入队，然后看是否有空闲线程，如果有则在�
 
     
        <script type="text/javascript">var disqus_shortname="hbprotoss";(function(){var a=document.createElement("script");a.async=true;a.type="text/javascript";a.src="http://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("HEAD")[0]||document.getElementsByTagName("BODY")[0]).appendChild(a)}());</script></div>
-    </div> 
+    </div>
     <!--End of body content-->
 </div>
 <div class="footerbox">
