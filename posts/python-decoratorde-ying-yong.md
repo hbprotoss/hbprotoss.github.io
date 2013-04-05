@@ -2,7 +2,7 @@
 .. title: Python decorator的应用
 .. slug: python-decoratorde-ying-yong
 .. date: 2013/04/03 21:23:39
-.. tags: 
+.. tags: Python, Design Pattern
 .. link: 
 .. description: 
 -->
@@ -26,44 +26,44 @@ Python语言内建支持decorator模式。由于语法不是本文重点，对�
 异常可能来自访问API过程中的网络问题，以及解析json发现服务器返回了错误代码（比如API访问过于频繁，access token有问题等）。在写头几个API的时候做法很自然，用try-except块包裹可能出异常的代码，将各种标准库的异常或者服务器返回的错误信息封装成自己的exception，raise一下告诉主程序有异常需要处理。  
 但是写了几个方法后发现，每个方法的异常处理流程几乎一模一样，特别是封装标准库的异常，唯一不同的就是解析服务器返回的错误信息。伪码如下：  
 
-	def method(xxx):
-	    try:
-	        f = urllib.request.urlopen(url, data, headers)
-	        raw_data = f.read().decode('utf-8')
-	        rtn = json.loads(raw_data)
-	    except Exception1 as e:
-	        log.error(e)
-	        raise CustomException1()
-	    except Exception2 as e:
-	        log.error(e)
-	        raise CustomException2()
+    def method(xxx):
+        try:
+            f = urllib.request.urlopen(url, data, headers)
+            raw_data = f.read().decode('utf-8')
+            rtn = json.loads(raw_data)
+        except Exception1 as e:
+            log.error(e)
+            raise CustomException1()
+        except Exception2 as e:
+            log.error(e)
+            raise CustomException2()
             xxx
-	    else:
-	        return rtn
+        else:
+            return rtn
 
 出于懒的原因（说得好听点，出于代码复用的目的:D)，得想个办法把这些重复性的工作提取出来。  
 仔细观察可以发现，这些方法在except处理完异常之后都没有额外的工作需要进行。换句话说，可以认为这些代码都位于核心处理代码之后，这是自然就想到了decorator模式，将异常处理放在decorator里，再decorate一下各个方法就可以了。  
 Decorator如下：  
 
-	def sinaMethod(func):
-	    def func_wrapper(*args, **kwargs):
-	        try:
-	            raw_rtn = func(*args, **kwargs)
-	        except urllib.error.HTTPError as e:
-	            if e.fp:
-	                # Sina app error
-	                error_msg = json.loads(e.fp.read().decode('utf-8'))
-	                error_code = str(error_msg['error_code'])
-	                if error_code in exception_dict:
-	                    raise exception_dict[error_code](error_msg['error'])
-	                else:
-	                    raise weiUnknownError(str(e))
-	            else:
-	                # Network error
-	                raise weiNetworkError(str(e))
-	        else:
-	            return raw_rtn
-	    return func_wrapper
+    def sinaMethod(func):
+        def func_wrapper(*args, **kwargs):
+            try:
+                raw_rtn = func(*args, **kwargs)
+            except urllib.error.HTTPError as e:
+                if e.fp:
+                    # Sina app error
+                    error_msg = json.loads(e.fp.read().decode('utf-8'))
+                    error_code = str(error_msg['error_code'])
+                    if error_code in exception_dict:
+                        raise exception_dict[error_code](error_msg['error'])
+                    else:
+                        raise weiUnknownError(str(e))
+                else:
+                    # Network error
+                    raise weiNetworkError(str(e))
+            else:
+                return raw_rtn
+        return func_wrapper
 
 其作用就是，尝试调用被装饰函数，如果顺利的话直接返回结果。如果有HTTPError异常发生，则解析之，并根据相应情况封装成自定义的异常抛出。  
 这里使得代码比较简短的一个关键就是这个exception_dict，里面维护了新浪错误代码和需要抛出的异常类之间的映射。根据返回的error_code查找这个字典，如果有则说明这是我们需要关心的异常，那么就用错误消息构造异常对象抛出。如果没有，就不是需要关心的异常，以weiUnknownError异常抛出。  
