@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0"><channel><title>hbprotoss的博客 (Design Pattern)</title><link>http://hbprotoss.github.com</link><description>技术博客为主，辅以各种辅料。仙剑脑残粉</description><lastBuildDate>Fri, 05 Apr 2013 11:38:30 GMT</lastBuildDate><generator>nikola</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Python decorator的应用</title><link>http://hbprotoss.github.com/posts/python-decoratorde-ying-yong.html</link><description>&lt;html&gt;&lt;body&gt;&lt;p&gt;Decorator是23种设计模式之一，提出的目的是为了在不改变现有代码的前提下，通过在头部或尾部添加代码来扩展功能。&lt;br&gt;
+<rss version="2.0"><channel><title>hbprotoss的博客 (Design Pattern)</title><link>http://hbprotoss.github.io</link><description>技术博客为主，辅以各种辅料。仙剑脑残粉</description><lastBuildDate>Sun, 07 Apr 2013 14:26:15 GMT</lastBuildDate><generator>nikola</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Python decorator的应用</title><link>http://hbprotoss.github.io/posts/python-decoratorde-ying-yong.html</link><description>&lt;html&gt;&lt;body&gt;&lt;p&gt;Decorator是23种设计模式之一，提出的目的是为了在不改变现有代码的前提下，通过在头部或尾部添加代码来扩展功能。&lt;br&gt;
 Python语言内建支持decorator模式。由于语法不是本文重点，对语法不熟悉的童鞋可以参考以下几篇文章：  &lt;/p&gt;
 &lt;ol&gt;&lt;li&gt;Stackoverflow上的神文：&lt;a href="http://stackoverflow.com/a/1594484/837187"&gt;Understanding Python decorators&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="http://blog.donews.com/limodou/archive/2004/12/19/207521.aspx"&gt;[Python学习]decorator的使用&lt;/a&gt;&lt;/li&gt;
@@ -58,4 +58,4 @@ Decorator如下：  &lt;/p&gt;
 由于新浪在出错时除了返回HTTP报头，还有一段附加data，所以如果e.fp为None则说明不是应用层的异常，可能是网络层及以下出了问题，抛出weiNetworkError。  &lt;/p&gt;
 &lt;p&gt;使用就很简单了，在被装饰的函数前一行加&lt;code&gt;@sinaMethod&lt;/code&gt;就可以了。&lt;br&gt;
 就这么简单~~  &lt;/p&gt;
-&lt;hr&gt;&lt;p&gt;PS：附带说一句，编程语言对设计模式在语法上的支持会大大简化程序猿的编码量。如果是C++/Java，甚至C要用decorator模式就得协商老长一段了~~^_^&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description><guid>http://hbprotoss.github.com/posts/python-decoratorde-ying-yong.html</guid><pubDate>Wed, 03 Apr 2013 21:23:39 GMT</pubDate></item></channel></rss>
+&lt;hr&gt;&lt;p&gt;PS：附带说一句，编程语言对设计模式在语法上的支持会大大简化程序猿的编码量。如果是C++/Java，甚至C要用decorator模式就得协商老长一段了~~^_^&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description><guid>http://hbprotoss.github.io/posts/python-decoratorde-ying-yong.html</guid><pubDate>Wed, 03 Apr 2013 21:23:39 GMT</pubDate></item></channel></rss>
