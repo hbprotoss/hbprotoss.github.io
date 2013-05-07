@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0"><channel><title>hbprotoss的博客</title><link>http://hbprotoss.github.io</link><description></description><lastBuildDate>Tue, 07 May 2013 20:01:55 GMT</lastBuildDate><generator>nikola</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Python decorator的应用</title><link>http://hbprotoss.github.io/posts/python-decoratorde-ying-yong.html</link><description>&lt;p&gt;Decorator是23种设计模式之一，提出的目的是为了在不改变现有代码的前提下，通过在头部或尾部添加代码来扩展功能。&lt;br&gt;
+<rss version="2.0"><channel><title>hbprotoss的博客</title><link>http://hbprotoss.github.io</link><description></description><lastBuildDate>Tue, 07 May 2013 20:08:26 GMT</lastBuildDate><generator>nikola</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Python decorator的应用</title><link>http://hbprotoss.github.io/posts/python-decoratorde-ying-yong.html</link><description>&lt;p&gt;Decorator是23种设计模式之一，提出的目的是为了在不改变现有代码的前提下，通过在头部或尾部添加代码来扩展功能。&lt;br&gt;
 Python语言内建支持decorator模式。由于语法不是本文重点，对语法不熟悉的童鞋可以参考以下几篇文章：  &lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;Stackoverflow上的神文：&lt;a href="http://stackoverflow.com/a/1594484/837187"&gt;Understanding Python decorators&lt;/a&gt;&lt;/li&gt;
@@ -232,7 +232,13 @@ nikola官网：&lt;a href="http://nikola.ralsina.com.ar/"&gt;http://nikola.ralsi
 
 
 &lt;p&gt;因为不加u就是str对象，写入的是utf-8编码的文件，当title等参数里出现非英文字母的时候会出先解码异常。（马上提交个pull request去）&lt;br&gt;
-4.  想要快速将页面发布至github，请参考&lt;a href="http://robertfw.github.com/posts/deploying-nikola-to-github-pages.html"&gt;Deploying Nikola to Github Pages&lt;/a&gt;  &lt;/p&gt;</description><category>nikola</category><category>github</category><guid>http://hbprotoss.github.io/posts/nikolagitpageda-jian-bo-ke.html</guid><pubDate>Mon, 18 Mar 2013 11:46:37 GMT</pubDate></item><item><title>python的import机制</title><link>http://hbprotoss.github.io/posts/pythonde-importji-zhi.html</link><description>&lt;p&gt;同一个模块以相同的模块名被导入时，模块内的代码只执行一遍（模块名必须相同）。&lt;br&gt;
+4. 要快速部署到gitpage，在站点conf.py里添加：&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre&gt;&lt;span class="nt"&gt;DEPLOY_COMMANDS&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="cp"&gt;[&lt;/span&gt;
+&lt;span class="s1"&gt;'git --git-dir=output/.git --work-tree=output add -A '&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="s1"&gt;'git --git-dir=output/.git --work-tree=output commit -m "latest auto deploy build"'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="s1"&gt;'git --git-dir=output/.git --work-tree=output push origin master'&lt;/span&gt;
+&lt;span class="cp"&gt;]&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;</description><category>nikola</category><category>github</category><guid>http://hbprotoss.github.io/posts/nikolagitpageda-jian-bo-ke.html</guid><pubDate>Mon, 18 Mar 2013 11:46:37 GMT</pubDate></item><item><title>python的import机制</title><link>http://hbprotoss.github.io/posts/pythonde-importji-zhi.html</link><description>&lt;p&gt;同一个模块以相同的模块名被导入时，模块内的代码只执行一遍（模块名必须相同）。&lt;br&gt;
 例：  &lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;import/&lt;br&gt;

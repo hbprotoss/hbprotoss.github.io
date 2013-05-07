@@ -53,4 +53,11 @@ nikola官网：<http://nikola.ralsina.com.ar/>
             fd.write(u"\nWrite your post here.")
 
 因为不加u就是str对象，写入的是utf-8编码的文件，当title等参数里出现非英文字母的时候会出先解码异常。（马上提交个pull request去）  
-4.  想要快速将页面发布至github，请参考[Deploying Nikola to Github Pages](http://robertfw.github.com/posts/deploying-nikola-to-github-pages.html)  
+4. 要快速部署到gitpage，在站点conf.py里添加：
+
+    DEPLOY_COMMANDS = [
+    'git --git-dir=output/.git --work-tree=output add -A ',
+    'git --git-dir=output/.git --work-tree=output commit -m "latest auto deploy build"',
+    'git --git-dir=output/.git --work-tree=output push origin master'
+    ]
+

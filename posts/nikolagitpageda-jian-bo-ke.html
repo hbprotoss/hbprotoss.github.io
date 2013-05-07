@@ -136,7 +136,13 @@ nikola官网：<a href="http://nikola.ralsina.com.ar/">http://nikola.ralsina.com
 
 
 <p>因为不加u就是str对象，写入的是utf-8编码的文件，当title等参数里出现非英文字母的时候会出先解码异常。（马上提交个pull request去）<br>
-4.  想要快速将页面发布至github，请参考<a href="http://robertfw.github.com/posts/deploying-nikola-to-github-pages.html">Deploying Nikola to Github Pages</a>  </p>
+4. 要快速部署到gitpage，在站点conf.py里添加：</p>
+<div class="code"><pre><span class="nt">DEPLOY_COMMANDS</span> <span class="o">=</span> <span class="cp">[</span>
+<span class="s1">'git --git-dir=output/.git --work-tree=output add -A '</span><span class="p">,</span>
+<span class="s1">'git --git-dir=output/.git --work-tree=output commit -m "latest auto deploy build"'</span><span class="p">,</span>
+<span class="s1">'git --git-dir=output/.git --work-tree=output push origin master'</span>
+<span class="cp">]</span>
+</pre></div>
     
     <ul class="pager">
         <li class="previous">
