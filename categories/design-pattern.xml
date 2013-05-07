@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0"><channel><title>hbprotoss的博客 (Design Pattern)</title><link>http://hbprotoss.github.io</link><description></description><lastBuildDate>Tue, 07 May 2013 20:01:55 GMT</lastBuildDate><generator>nikola</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Python decorator的应用</title><link>http://hbprotoss.github.io/posts/python-decoratorde-ying-yong.html</link><description>&lt;p&gt;Decorator是23种设计模式之一，提出的目的是为了在不改变现有代码的前提下，通过在头部或尾部添加代码来扩展功能。&lt;br&gt;
+<rss version="2.0"><channel><title>hbprotoss的博客 (Design Pattern)</title><link>http://hbprotoss.github.io</link><description></description><lastBuildDate>Tue, 07 May 2013 21:34:19 GMT</lastBuildDate><generator>nikola</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Python decorator的应用</title><link>http://hbprotoss.github.io/posts/python-decoratorde-ying-yong.html</link><description>&lt;p&gt;Decorator是23种设计模式之一，提出的目的是为了在不改变现有代码的前提下，通过在头部或尾部添加代码来扩展功能。&lt;br&gt;
 Python语言内建支持decorator模式。由于语法不是本文重点，对语法不熟悉的童鞋可以参考以下几篇文章：  &lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;Stackoverflow上的神文：&lt;a href="http://stackoverflow.com/a/1594484/837187"&gt;Understanding Python decorators&lt;/a&gt;&lt;/li&gt;

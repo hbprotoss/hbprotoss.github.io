@@ -35,6 +35,16 @@
   <priority>0.5000</priority>
  </url>
  <url>
+  <loc>http://hbprotoss.github.io/2013/05/</loc>
+  <lastmod>2013-05-07</lastmod>
+  <priority>0.5000</priority>
+ </url>
+ <url>
+  <loc>http://hbprotoss.github.io/2013/05/index.html</loc>
+  <lastmod>2013-05-07</lastmod>
+  <priority>0.5000</priority>
+ </url>
+ <url>
   <loc>http://hbprotoss.github.io/2013/index.html</loc>
   <lastmod>2013-05-07</lastmod>
   <priority>0.5000</priority>
@@ -80,12 +90,32 @@
   <priority>0.5000</priority>
  </url>
  <url>
+  <loc>http://hbprotoss.github.io/categories/suan-fa.html</loc>
+  <lastmod>2013-05-07</lastmod>
+  <priority>0.5000</priority>
+ </url>
+ <url>
   <loc>http://hbprotoss.github.io/categories/xian-cheng-chi.html</loc>
   <lastmod>2013-05-07</lastmod>
   <priority>0.5000</priority>
  </url>
  <url>
+  <loc>http://hbprotoss.github.io/categories/zi-fu-chuan.html</loc>
+  <lastmod>2013-05-07</lastmod>
+  <priority>0.5000</priority>
+ </url>
+ <url>
   <loc>http://hbprotoss.github.io/galleries/</loc>
+  <lastmod>2013-05-07</lastmod>
+  <priority>0.5000</priority>
+ </url>
+ <url>
+  <loc>http://hbprotoss.github.io/galleries/KMP/</loc>
+  <lastmod>2013-05-07</lastmod>
+  <priority>0.5000</priority>
+ </url>
+ <url>
+  <loc>http://hbprotoss.github.io/galleries/KMP/index.html</loc>
   <lastmod>2013-05-07</lastmod>
   <priority>0.5000</priority>
  </url>
@@ -131,6 +161,11 @@
  </url>
  <url>
   <loc>http://hbprotoss.github.io/posts/shi-xian-jian-dan-xian-cheng-chi.html</loc>
+  <lastmod>2013-05-07</lastmod>
+  <priority>0.5000</priority>
+ </url>
+ <url>
+  <loc>http://hbprotoss.github.io/posts/xiang-jie-kmpsuan-fa.html</loc>
   <lastmod>2013-05-07</lastmod>
   <priority>0.5000</priority>
  </url>
