@@ -1,5 +1,149 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0"><channel><title>hbprotoss的博客 (Python)</title><link>http://hbprotoss.github.io</link><description></description><lastBuildDate>Tue, 21 May 2013 20:40:29 GMT</lastBuildDate><generator>nikola</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Trie树的Python实现</title><link>http://hbprotoss.github.io/posts/trieshu-de-pythonshi-xian.html</link><description>&lt;p&gt;又是一个由需求驱动的算法学习的例子。&lt;/p&gt;
+<rss version="2.0"><channel><title>hbprotoss的博客 (Python)</title><link>http://hbprotoss.github.io</link><description></description><lastBuildDate>Wed, 12 Jun 2013 14:06:00 GMT</lastBuildDate><generator>nikola</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Python descriptor</title><link>http://hbprotoss.github.io/posts/python-descriptor.html</link><description>&lt;p&gt;一次偶然发现，Python的对象竟然可以在运行期动态添加类定义时没有的属性，这又颠覆了我对Python OO机制的理解。Google了一把，顺着&lt;code&gt;__dict__&lt;/code&gt;属性一路找到descriptor，揭开了隐藏在Python对象之后的内幕。&lt;/p&gt;
+&lt;p&gt;本文主要记录Python的descriptor机制，以及其在Python对象的属性、方法绑定上的作用。&lt;/p&gt;
+&lt;p&gt;先从本文的始作俑者，运行期动态添加对象属性开始讲起。&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;A&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;value&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;'value'&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;f&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'function f'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;attr&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;attr&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;以上代码奇迹般的没有报错，而且还输出了1。这肯定会让写过C++/Java代码的童鞋表示吃惊，Python变量类型动态也就不稀奇了，对象属性还能动态添加的？Python到底在背后做了什么？&lt;/p&gt;
+&lt;h3&gt;神奇的__dict__&lt;/h3&gt;
+&lt;p&gt;在&lt;code&gt;a.attr = 1&lt;/code&gt;前后分别加上一行&lt;code&gt;print(a.__dict__)&lt;/code&gt;就会得到如下结果:  &lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s"&gt;'value'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s"&gt;'value'&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;  
+&lt;span class="mi"&gt;1&lt;/span&gt;  
+&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s"&gt;'value'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s"&gt;'value'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;'attr'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt; 
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;显而易见，我们在运行期定义的属性和类定义时定义的属性都被放在了&lt;code&gt;__dict__&lt;/code&gt;里。&lt;/p&gt;
+&lt;p&gt;到这里有人可能就有疑问了，Python里的一切不都是对象麽？为什么成员函数&lt;code&gt;__init__&lt;/code&gt;、&lt;code&gt;f&lt;/code&gt;不在这个字典里？&lt;/p&gt;
+&lt;p&gt;看看&lt;code&gt;A.__dict__&lt;/code&gt;里有什么就明白了：  &lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s"&gt;'__dict__'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;attribute&lt;/span&gt; &lt;span class="s"&gt;'__dict__'&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="s"&gt;'A'&lt;/span&gt; &lt;span class="n"&gt;objects&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+ &lt;span class="s"&gt;'__doc__'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="bp"&gt;None&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+ &lt;span class="s"&gt;'__init__'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;function&lt;/span&gt; &lt;span class="n"&gt;__main__&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;__init__&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+ &lt;span class="s"&gt;'__module__'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s"&gt;'__main__'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+ &lt;span class="s"&gt;'__weakref__'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;attribute&lt;/span&gt; &lt;span class="s"&gt;'__weakref__'&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="s"&gt;'A'&lt;/span&gt; &lt;span class="n"&gt;objects&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+ &lt;span class="s"&gt;'f'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;function&lt;/span&gt; &lt;span class="n"&gt;__main__&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;这时才恍然大悟，如果成员变量看做是对象的属性，那么成员函数就应该看成是类的属性，被全部对象共享嘛。&lt;/p&gt;
+&lt;p&gt;更精确地讲，以&lt;code&gt;object.attribute&lt;/code&gt;访问一个对象的属性时，属性的搜索顺序为：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;对象自身，&lt;code&gt;object.__dict__&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;对象类型，&lt;code&gt;object.__class__.__dict__&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;对象类型的基类，&lt;code&gt;object.__class__.__bases__&lt;/code&gt;中的所有&lt;code&gt;__dict__&lt;/code&gt;。注意，当多重继承的情况下有菱形继承的时候，Python会根据MRO确定的顺序进行搜索。关于MRO(Method Resolution Order)是什么有时间专门写一篇文章总结一下。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;当以上三个步骤都没有找到要访问的属性的时候Python就只能抛出&lt;code&gt;AttributeError&lt;/code&gt;异常了。&lt;/p&gt;
+&lt;h3&gt;Descriptor是什么&lt;/h3&gt;
+&lt;p&gt;讲了这么多，貌似跟descriptor半毛钱关系没有嘛。别急，接着往下看。&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;RevealAccess&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;object&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;initval&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;None&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;'var'&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;val&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;initval&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__get__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;obj&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;objtype&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;'Retrieving'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;val&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__set__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;obj&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;val&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;'Updating'&lt;/span&gt; &lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;val&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;val&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;来测试一下这个类&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;MyClass&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;object&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;RevealAccess&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;'var "x"'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;y&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;
+
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;m&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;MyClass&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;
+&lt;span class="n"&gt;Retrieving&lt;/span&gt; &lt;span class="n"&gt;var&lt;/span&gt; &lt;span class="s"&gt;"x"&lt;/span&gt;
+&lt;span class="mi"&gt;10&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;20&lt;/span&gt;
+&lt;span class="n"&gt;Updating&lt;/span&gt; &lt;span class="n"&gt;var&lt;/span&gt; &lt;span class="s"&gt;"x"&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;
+&lt;span class="n"&gt;Retrieving&lt;/span&gt; &lt;span class="n"&gt;var&lt;/span&gt; &lt;span class="s"&gt;"x"&lt;/span&gt;
+&lt;span class="mi"&gt;20&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;y&lt;/span&gt;
+&lt;span class="mi"&gt;5&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;这个&lt;code&gt;RevealAccess&lt;/code&gt;的对象就是一个descriptor，其作用就是在存取变量的时候做了一个hook。访问属性&lt;code&gt;m.x&lt;/code&gt;就是调用&lt;code&gt;__get__&lt;/code&gt;方法，设置属性值就是调用&lt;code&gt;__set__&lt;/code&gt;方法。还可以有一个&lt;code&gt;__delete__&lt;/code&gt;方法，在&lt;code&gt;del m.x&lt;/code&gt;时被调用。&lt;/p&gt;
+&lt;p&gt;只要一个类定义了以上三种方法，其对象就是一个descriptor。我们把同时定义&lt;code&gt;__get__&lt;/code&gt;和&lt;code&gt;__set__&lt;/code&gt;方法的descriptor叫做&lt;strong&gt;data descriptor&lt;/strong&gt;，把只定义&lt;code&gt;__get__&lt;/code&gt;方法的叫&lt;strong&gt;non-data descriptor&lt;/strong&gt;&lt;/p&gt;
+&lt;h3&gt;Method binding&lt;/h3&gt;
+&lt;p&gt;有了以上两个概念，我们就能讨论Python的方法绑定了。&lt;/p&gt;
+&lt;p&gt;还记得讨论&lt;code&gt;__dict__&lt;/code&gt;时的成员函数&lt;code&gt;f&lt;/code&gt;吗？按照我们的推测，&lt;code&gt;A.__dict__['f']&lt;/code&gt;应该和&lt;code&gt;a.f&lt;/code&gt;是一个东西。但是！！！&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;__dict__&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;'f'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;function&lt;/span&gt; &lt;span class="n"&gt;__main__&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;
+&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;bound&lt;/span&gt; &lt;span class="n"&gt;method&lt;/span&gt; &lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;__main__&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;A&lt;/span&gt; &lt;span class="nb"&gt;object&lt;/span&gt; &lt;span class="n"&gt;at&lt;/span&gt; &lt;span class="mh"&gt;0x7f9d69cc5950&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;这两个显然不是一个东西，一个是&lt;code&gt;function&lt;/code&gt;，一个是&lt;code&gt;bound method&lt;/code&gt;。这是什么情况？淡定，看下面&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;__dict__&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;'f'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;__get__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;bound&lt;/span&gt; &lt;span class="n"&gt;method&lt;/span&gt; &lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;__main__&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;A&lt;/span&gt; &lt;span class="nb"&gt;object&lt;/span&gt; &lt;span class="n"&gt;at&lt;/span&gt; &lt;span class="mh"&gt;0x7f9d69cc5950&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;
+&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;bound&lt;/span&gt; &lt;span class="n"&gt;method&lt;/span&gt; &lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;__main__&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;A&lt;/span&gt; &lt;span class="nb"&gt;object&lt;/span&gt; &lt;span class="n"&gt;at&lt;/span&gt; &lt;span class="mh"&gt;0x7f9d69cc5950&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;这下放心了吧:D&lt;/p&gt;
+&lt;p&gt;其实，类的成员函数就是一个descriptor，在实例化对象a的时候，Python就做了这么一个过程(伪码，详见Objects/funcobject.c)：&lt;code&gt;a.f = A.__dict__['f'].__get__(a, A)&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;纯Python模拟的函数对象就像这样：&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Function&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;object&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="o"&gt;.&lt;/span&gt; &lt;span class="o"&gt;.&lt;/span&gt; &lt;span class="o"&gt;.&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__get__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;obj&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;objtype&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;None&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="s"&gt;"Simulate func_descr_get() in Objects/funcobject.c"&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;types&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;MethodType&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;obj&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;objtype&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;然后就好理解&lt;code&gt;staticmethod&lt;/code&gt;和&lt;code&gt;classmethod&lt;/code&gt;这两个decorator了吧。&lt;code&gt;staticmethod&lt;/code&gt;无视了传入的第一个self参数，&lt;code&gt;classmethod&lt;/code&gt;手工加了一个类对象参数进去。它们的纯Python模拟就像下面所示：&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;StaticMethod&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;object&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+ &lt;span class="s"&gt;"Emulate PyStaticMethod_Type() in Objects/funcobject.c"&lt;/span&gt;
+
+ &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+      &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt;
+
+ &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__get__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;obj&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;objtype&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;None&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+      &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;ClassMethod&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;object&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+     &lt;span class="s"&gt;"Emulate PyClassMethod_Type() in Objects/funcobject.c"&lt;/span&gt;
+
+     &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+          &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt;
+
+     &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__get__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;obj&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;klass&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;None&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+          &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;klass&lt;/span&gt; &lt;span class="ow"&gt;is&lt;/span&gt; &lt;span class="bp"&gt;None&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+               &lt;span class="n"&gt;klass&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;type&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;obj&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+          &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;newfunc&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+               &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;klass&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+          &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;newfunc&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;hr&gt;
+&lt;p&gt;研究Python的底层实现是个很有意思的事，至少能让我在使用Python时更加放心：）&lt;/p&gt;
+&lt;p&gt;全文完&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;参考资料：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;How-To Guide for Descriptors: &lt;a href="http://users.rcn.com/python/download/Descriptor.htm"&gt;http://users.rcn.com/python/download/Descriptor.htm&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Python Attributes and Methods: &lt;a href="http://www.cafepy.com/article/python_attributes_and_methods/python_attributes_and_methods.html"&gt;http://www.cafepy.com/article/python_attributes_and_methods/python_attributes_and_methods.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;《Expert Python Programming》,Tarek Ziadé: &lt;a href="http://book.douban.com/subject/3285148/"&gt;http://book.douban.com/subject/3285148/&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;</description><category>Python</category><guid>http://hbprotoss.github.io/posts/python-descriptor.html</guid><pubDate>Wed, 12 Jun 2013 04:31:54 GMT</pubDate></item><item><title>Trie树的Python实现</title><link>http://hbprotoss.github.io/posts/trieshu-de-pythonshi-xian.html</link><description>&lt;p&gt;又是一个由需求驱动的算法学习的例子。&lt;/p&gt;
 &lt;p&gt;最近&lt;a href="https://github.com/hbprotoss/weibo"&gt;weii&lt;/a&gt;需要实现一个这样的功能：在发送AT好友的时候能给出自动补全的列表。&lt;/p&gt;
 &lt;p&gt;最先想到的是当我给出一个用户名的前几个字的时候能自动提示以这个字开头的所有用户名列表（虽然最后发现这是个很2的解决方案-_-），所以最理想的数据结构就是Trie树，也就是字典树。&lt;/p&gt;
 &lt;p&gt;以前只听过Trie树，现在实际要用了就得把他落到实处了。&lt;/p&gt;

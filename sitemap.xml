@@ -11,7 +11,7 @@
  </url>
  <url>
   <loc>http://hbprotoss.github.io/2013/</loc>
-  <lastmod>2013-05-07</lastmod>
+  <lastmod>2013-06-12</lastmod>
   <priority>0.5000</priority>
  </url>
  <url>
@@ -45,8 +45,18 @@
   <priority>0.5000</priority>
  </url>
  <url>
+  <loc>http://hbprotoss.github.io/2013/06/</loc>
+  <lastmod>2013-06-12</lastmod>
+  <priority>0.5000</priority>
+ </url>
+ <url>
+  <loc>http://hbprotoss.github.io/2013/06/index.html</loc>
+  <lastmod>2013-06-12</lastmod>
+  <priority>0.5000</priority>
+ </url>
+ <url>
   <loc>http://hbprotoss.github.io/2013/index.html</loc>
-  <lastmod>2013-05-15</lastmod>
+  <lastmod>2013-06-12</lastmod>
   <priority>0.5000</priority>
  </url>
  <url>
@@ -81,7 +91,7 @@
  </url>
  <url>
   <loc>http://hbprotoss.github.io/categories/python.html</loc>
-  <lastmod>2013-05-21</lastmod>
+  <lastmod>2013-06-12</lastmod>
   <priority>0.5000</priority>
  </url>
  <url>
@@ -131,7 +141,7 @@
  </url>
  <url>
   <loc>http://hbprotoss.github.io/index.html</loc>
-  <lastmod>2013-05-21</lastmod>
+  <lastmod>2013-06-12</lastmod>
   <priority>0.5000</priority>
  </url>
  <url>
@@ -160,6 +170,11 @@
   <priority>0.5000</priority>
  </url>
  <url>
+  <loc>http://hbprotoss.github.io/posts/python-descriptor.html</loc>
+  <lastmod>2013-06-12</lastmod>
+  <priority>0.5000</priority>
+ </url>
+ <url>
   <loc>http://hbprotoss.github.io/posts/pythonde-importji-zhi.html</loc>
   <lastmod>2013-05-15</lastmod>
   <priority>0.5000</priority>
@@ -176,7 +191,7 @@
  </url>
  <url>
   <loc>http://hbprotoss.github.io/posts/trieshu-de-pythonshi-xian.html</loc>
-  <lastmod>2013-05-21</lastmod>
+  <lastmod>2013-06-12</lastmod>
   <priority>0.5000</priority>
  </url>
  <url>
