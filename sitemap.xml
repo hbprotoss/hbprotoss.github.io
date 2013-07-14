@@ -11,7 +11,7 @@
  </url>
  <url>
   <loc>http://hbprotoss.github.io/2013/</loc>
-  <lastmod>2013-06-12</lastmod>
+  <lastmod>2013-07-14</lastmod>
   <priority>0.5000</priority>
  </url>
  <url>
@@ -55,8 +55,18 @@
   <priority>0.5000</priority>
  </url>
  <url>
+  <loc>http://hbprotoss.github.io/2013/07/</loc>
+  <lastmod>2013-07-14</lastmod>
+  <priority>0.5000</priority>
+ </url>
+ <url>
+  <loc>http://hbprotoss.github.io/2013/07/index.html</loc>
+  <lastmod>2013-07-14</lastmod>
+  <priority>0.5000</priority>
+ </url>
+ <url>
   <loc>http://hbprotoss.github.io/2013/index.html</loc>
-  <lastmod>2013-06-12</lastmod>
+  <lastmod>2013-07-14</lastmod>
   <priority>0.5000</priority>
  </url>
  <url>
@@ -66,57 +76,67 @@
  </url>
  <url>
   <loc>http://hbprotoss.github.io/categories/</loc>
-  <lastmod>2013-05-21</lastmod>
+  <lastmod>2013-07-14</lastmod>
+  <priority>0.5000</priority>
+ </url>
+ <url>
+  <loc>http://hbprotoss.github.io/categories/c.html</loc>
+  <lastmod>2013-07-14</lastmod>
   <priority>0.5000</priority>
  </url>
  <url>
   <loc>http://hbprotoss.github.io/categories/design-pattern.html</loc>
-  <lastmod>2013-05-21</lastmod>
+  <lastmod>2013-07-14</lastmod>
   <priority>0.5000</priority>
  </url>
  <url>
   <loc>http://hbprotoss.github.io/categories/github.html</loc>
-  <lastmod>2013-05-21</lastmod>
+  <lastmod>2013-07-14</lastmod>
   <priority>0.5000</priority>
  </url>
  <url>
   <loc>http://hbprotoss.github.io/categories/index.html</loc>
-  <lastmod>2013-05-21</lastmod>
+  <lastmod>2013-07-14</lastmod>
+  <priority>0.5000</priority>
+ </url>
+ <url>
+  <loc>http://hbprotoss.github.io/categories/macro.html</loc>
+  <lastmod>2013-07-14</lastmod>
   <priority>0.5000</priority>
  </url>
  <url>
   <loc>http://hbprotoss.github.io/categories/nikola.html</loc>
-  <lastmod>2013-05-21</lastmod>
+  <lastmod>2013-07-14</lastmod>
   <priority>0.5000</priority>
  </url>
  <url>
   <loc>http://hbprotoss.github.io/categories/python.html</loc>
-  <lastmod>2013-06-12</lastmod>
+  <lastmod>2013-07-14</lastmod>
   <priority>0.5000</priority>
  </url>
  <url>
   <loc>http://hbprotoss.github.io/categories/qt.html</loc>
-  <lastmod>2013-05-21</lastmod>
+  <lastmod>2013-07-14</lastmod>
   <priority>0.5000</priority>
  </url>
  <url>
   <loc>http://hbprotoss.github.io/categories/shu-ju-jie-gou.html</loc>
-  <lastmod>2013-05-21</lastmod>
+  <lastmod>2013-07-14</lastmod>
   <priority>0.5000</priority>
  </url>
  <url>
   <loc>http://hbprotoss.github.io/categories/suan-fa.html</loc>
-  <lastmod>2013-05-21</lastmod>
+  <lastmod>2013-07-14</lastmod>
   <priority>0.5000</priority>
  </url>
  <url>
   <loc>http://hbprotoss.github.io/categories/xian-cheng-chi.html</loc>
-  <lastmod>2013-05-21</lastmod>
+  <lastmod>2013-07-14</lastmod>
   <priority>0.5000</priority>
  </url>
  <url>
   <loc>http://hbprotoss.github.io/categories/zi-fu-chuan.html</loc>
-  <lastmod>2013-05-21</lastmod>
+  <lastmod>2013-07-14</lastmod>
   <priority>0.5000</priority>
  </url>
  <url>
@@ -141,7 +161,7 @@
  </url>
  <url>
   <loc>http://hbprotoss.github.io/index.html</loc>
-  <lastmod>2013-06-12</lastmod>
+  <lastmod>2013-07-14</lastmod>
   <priority>0.5000</priority>
  </url>
  <url>
@@ -152,6 +172,11 @@
  <url>
   <loc>http://hbprotoss.github.io/listings/index.html</loc>
   <lastmod>2013-05-07</lastmod>
+  <priority>0.5000</priority>
+ </url>
+ <url>
+  <loc>http://hbprotoss.github.io/posts/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.html</loc>
+  <lastmod>2013-07-14</lastmod>
   <priority>0.5000</priority>
  </url>
  <url>
@@ -171,7 +196,7 @@
  </url>
  <url>
   <loc>http://hbprotoss.github.io/posts/python-descriptor.html</loc>
-  <lastmod>2013-06-12</lastmod>
+  <lastmod>2013-07-14</lastmod>
   <priority>0.5000</priority>
  </url>
  <url>
