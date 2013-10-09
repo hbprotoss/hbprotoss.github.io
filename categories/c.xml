@@ -1,5 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0"><channel><title>hbprotoss的博客 (C)</title><link>http://hbprotoss.github.io</link><description></description><lastBuildDate>Tue, 08 Oct 2013 10:30:37 GMT</lastBuildDate><generator>nikola</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Linux下编译链接动态库</title><link>http://hbprotoss.github.io/posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html</link><description>&lt;p&gt;记录下Linux下编译和链接动态库的过程。&lt;/p&gt;
+<rss version="2.0"><channel><title>hbprotoss的博客 (C)</title><link>http://hbprotoss.github.io</link><description></description><lastBuildDate>Wed, 09 Oct 2013 12:39:47 GMT</lastBuildDate><generator>nikola</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>利用LD_PRELOAD进行hook</title><link>http://hbprotoss.github.io/posts/li-yong-ld_preloadjin-xing-hook.html</link><description>&lt;p&gt;好久没玩hook这种猥琐的东西里，今天在Linux下体验了一把。&lt;/p&gt;
+&lt;p&gt;loader在进行动态链接的时候，会将有相同符号名的符号覆盖成LD_PRELOAD指定的so文件中的符号。换句话说，可以用我们自己的so库中的函数替换原来库里有的函数，从而达到hook的目的。这和Windows下通过修改import table来hook API很类似。相比较之下，LD_PRELOAD更方便了，都不用自己写代码了，系统的loader会帮我们搞定。但是LD_PRELOAD有个限制：只能hook动态链接的库，对静态链接的库无效，因为静态链接的代码都写到可执行文件里了嘛，没有坑让你填。&lt;/p&gt;
+&lt;p&gt;上代码&lt;/p&gt;
+&lt;p&gt;先是受害者，我们的主程序main.c，通过strcmp比较字符串是否相等：&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre&gt;&lt;span class="cp"&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include &amp;lt;string.h&amp;gt;&lt;/span&gt;
+
+&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;argc&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[])&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;strcmp&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="s"&gt;"test"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="n"&gt;printf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"Incorrect password&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="k"&gt;else&lt;/span&gt;
+    &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="n"&gt;printf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"Correct password&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;然后是用来hook的库hook.c：&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre&gt;&lt;span class="cp"&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include &amp;lt;string.h&amp;gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include &amp;lt;dlfcn.h&amp;gt;&lt;/span&gt;
+
+&lt;span class="k"&gt;typedef&lt;/span&gt; &lt;span class="nf"&gt;int&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;STRCMP&lt;/span&gt;&lt;span class="p"&gt;)(&lt;/span&gt;&lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+
+&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;strcmp&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;s1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;s2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;handle&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="n"&gt;STRCMP&lt;/span&gt; &lt;span class="n"&gt;old_strcmp&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+    &lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="o"&gt;!&lt;/span&gt;&lt;span class="n"&gt;handle&lt;/span&gt; &lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="n"&gt;handle&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;dlopen&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"libc.so.6"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;RTLD_LAZY&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+        &lt;span class="n"&gt;old_strcmp&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;STRCMP&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;dlsym&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;handle&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;"strcmp"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="n"&gt;printf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"hack function invoked. s1=&amp;lt;%s&amp;gt; s2=&amp;lt;%s&amp;gt;&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;s1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;s2&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;old_strcmp&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;s1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;s2&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;因为hook的目标是strcmp，所以typedef了一个STRCMP函数指针。由于hook的目的是要控制函数行为，所以需要从原库libc.so.6中拿到“正版”strcmp指针，保存成old_strcmp以备调用。&lt;/p&gt;
+&lt;p&gt;Makefile：&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre&gt;&lt;span class="nb"&gt;test&lt;/span&gt;: main.c hook.so
+    gcc -o &lt;span class="nb"&gt;test &lt;/span&gt;main.c
+
+hook.so: hook.c
+    gcc -fPIC -shared -o hook.so hook.c -ldl
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;执行：&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre&gt;&lt;span class="nv"&gt;$ LD_PRELOAD&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;./hook.so ./test 123
+hack &lt;span class="k"&gt;function &lt;/span&gt;invoked. &lt;span class="nv"&gt;s1&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;123&amp;gt; &lt;span class="nv"&gt;s2&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;&lt;span class="nb"&gt;test&lt;/span&gt;&amp;gt;
+Incorrect password
+
+&lt;span class="nv"&gt;$ LD_PRELOAD&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;./hook.so ./test &lt;span class="nb"&gt;test&lt;/span&gt;
+hack &lt;span class="k"&gt;function &lt;/span&gt;invoked. &lt;span class="nv"&gt;s1&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;&lt;span class="nb"&gt;test&lt;/span&gt;&amp;gt; &lt;span class="nv"&gt;s2&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;&lt;span class="nb"&gt;test&lt;/span&gt;&amp;gt;
+Correct password
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;其中有一点不理解的是，&lt;code&gt;dlopen&lt;/code&gt;打开libc.so.6能拿到“正版”strcmp地址，打开libc.so就是hook后的地址。照理说libc.so不是libc.so.6的一个软链吗？为什么结果会不一样嘞？&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;参考资料：&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://www.exploit-db.com/papers/13233/"&gt;Reverse Engineering with LD_PRELOAD&lt;/a&gt;&lt;/p&gt;</description><category>C</category><category>Linux</category><category>Hook</category><category>Security</category><guid>http://hbprotoss.github.io/posts/li-yong-ld_preloadjin-xing-hook.html</guid><pubDate>Wed, 09 Oct 2013 03:44:50 GMT</pubDate></item><item><title>Linux下编译链接动态库</title><link>http://hbprotoss.github.io/posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html</link><description>&lt;p&gt;记录下Linux下编译和链接动态库的过程。&lt;/p&gt;
 &lt;h3&gt;一、 编写动态库&lt;/h3&gt;
 &lt;p&gt;头文件so.h：  &lt;/p&gt;
 &lt;div class="code"&gt;&lt;pre&gt;&lt;span class="cp"&gt;#ifndef  SO_H&lt;/span&gt;
