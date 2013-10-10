@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0"><channel><title>hbprotoss的博客 (Programming)</title><link>http://hbprotoss.github.io</link><description></description><lastBuildDate>Wed, 09 Oct 2013 12:37:59 GMT</lastBuildDate><generator>nikola</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Linux下编译链接动态库</title><link>http://hbprotoss.github.io/posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html</link><description>&lt;p&gt;记录下Linux下编译和链接动态库的过程。&lt;/p&gt;
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>hbprotoss的博客 (Programming)</title><link>http://hbprotoss.github.io/</link><description></description><atom:link href="http://hbprotoss.github.io/categories/programming.xml" type="application/rss+xml" rel="self"></atom:link><language>en</language><lastBuildDate>Thu, 10 Oct 2013 11:57:07 GMT</lastBuildDate><generator>nikola</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Linux下编译链接动态库</title><link>http://hbprotoss.github.io/posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html</link><description>&lt;p&gt;记录下Linux下编译和链接动态库的过程。&lt;/p&gt;
 &lt;h3&gt;一、 编写动态库&lt;/h3&gt;
 &lt;p&gt;头文件so.h：  &lt;/p&gt;
 &lt;div class="code"&gt;&lt;pre&gt;&lt;span class="cp"&gt;#ifndef  SO_H&lt;/span&gt;
 &lt;span class="cp"&gt;#define  SO_H&lt;/span&gt;
 
 &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+
 
 &lt;span class="cp"&gt;#endif  &lt;/span&gt;&lt;span class="cm"&gt;/*SO_H*/&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
@@ -172,4 +173,4 @@ Dynamic section at offset 0xe18 contains 25 entries:
 &lt;li&gt;&lt;a href="http://os.51cto.com/art/201003/186246.htm"&gt;详细分析Linux动态库的使用方式&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="http://stackoverflow.com/questions/34732/how-do-i-list-the-symbols-in-a-so-file"&gt;How do I list the symbols in a .so file&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="http://stackoverflow.com/questions/10480657/import-names-in-elf-binary"&gt;Import names in ELF binary&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;</description><category>C</category><category>Linux</category><category>Programming</category><guid>http://hbprotoss.github.io/posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html</guid><pubDate>Tue, 08 Oct 2013 01:18:31 GMT</pubDate></item></channel></rss>
+&lt;/ol&gt;</description><author></author><category>C</category><category>Linux</category><category>Programming</category><guid>http://hbprotoss.github.io/posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html</guid><pubDate>Tue, 08 Oct 2013 01:18:31 GMT</pubDate></item></channel></rss>
