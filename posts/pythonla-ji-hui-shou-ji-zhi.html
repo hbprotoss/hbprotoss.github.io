@@ -1,0 +1,391 @@
+<!DOCTYPE html><html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="author" content="hbprotoss">
+    <title>Python垃圾回收机制 | hbprotoss的博客</title>
+    
+            <link href="../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+            <link href="../assets/css/bootstrap-responsive.min.css" rel="stylesheet" type="text/css">
+        <link href="../assets/css/rst.css" rel="stylesheet" type="text/css">
+        <link href="../assets/css/code.css" rel="stylesheet" type="text/css">
+        <link href="../assets/css/colorbox.css" rel="stylesheet" type="text/css">
+        <link href="../assets/css/theme.css" rel="stylesheet" type="text/css">
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js" type="text/javascript"></script>
+    <![endif]-->
+            <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+
+    
+
+
+
+    
+</head>
+<body>
+<!-- Menubar -->
+<div class="navbar navbar-fixed-top" id="navbar">
+    <div class="navbar-inner">
+        <div class="container">
+
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </a>
+
+            <a class="brand" href="../">
+            hbprotoss的博客
+            </a>
+            <!-- Everything you want hidden at 940px or less, place within here -->
+            <div class="nav-collapse collapse">
+                <ul class="nav">
+                    
+                <li><a href="../archive.html">Archives</a>
+                </li><li><a href="../categories/index.html">Tags</a>
+                </li><li><a href="../rss.xml">RSS</a>
+
+                </li></ul>
+                    
+<!-- Custom search with google-->
+<form id="search" action="http://google.com/search" method="get" class="navbar-form pull-left">
+<input type="hidden" name="q" value="site:http://hbprotoss.github.io/">
+<input type="text" name="q" maxlength="255" results="0" placeholder="Search">
+</form>
+<!-- End of custom search -->
+
+                <ul class="nav pull-right">
+                
+                
+                    <li>
+			<a href="pythonla-ji-hui-shou-ji-zhi.md" id="sourcelink">Source</a>
+		</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End of Menubar -->
+<div class="container-fluid" id="container-fluid">
+    <!--Body content-->
+    <div class="row-fluid">
+    <div class="span2"></div>
+    <div class="span8">
+    
+    <div class="postbox">
+    
+    <h1>Python垃圾回收机制</h1>
+
+    <hr>
+    <small>
+        Posted: <time class="published" datetime="2013-10-24T10:44:52+08:00">2013-10-24 10:44</time>
+        
+
+		
+
+          |  
+		
+    </small>
+    <hr>
+    <!-- 
+.. link: 
+.. description: 
+.. tags: 
+.. date: 2013/10/24 10:44:52
+.. title: Python垃圾回收机制
+.. slug: pythonla-ji-hui-shou-ji-zhi
+-->
+
+<p>题记：我是来填坑的。。。</p>
+<p>本文主要结合CPython源码分析一下Python的GC机制（面试的时候被问到这个问题，之前理解不深，答得不好，一波大坑啊。。。）</p>
+<hr>
+<p>Python GC主要使用引用计数（reference counting）来跟踪和回收垃圾。在引用计数的基础上，通过“标记-清除”（mark and sweep）解决容器对象可能产生的循环引用问题，通过“分代回收”（generation collection）以空间换时间的方法提高垃圾回收效率。</p>
+<h3>引用计数</h3>
+<p>引用计数法在对象内部维护了一个被其他对象引用数的引用计数值，当这个引用计数值为0时，说明这个对象不再被其他对象引用，就可以被回收了。</p>
+<p>结合源码来看，所有Python对象的头部包含了这样一个结构PyObject（相当于继承自PyObject）：</p>
+<div class="code"><pre><span class="c1">// object.h</span>
+<span class="k">struct</span> <span class="n">_object</span> <span class="p">{</span>
+    <span class="n">Py_ssize_t</span> <span class="n">ob_refcnt</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">PyTypeObject</span> <span class="o">*</span><span class="n">ob_type</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">PyObject</span><span class="p">;</span>
+</pre></div>
+
+
+<p>ob_refcnt就是引用计数值。</p>
+<p>例如，下面是int型对象的定义：</p>
+<div class="code"><pre><span class="c1">// intobject.h</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+        <span class="n">PyObject_HEAD</span>
+        <span class="kt">long</span> <span class="n">ob_ival</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">PyIntObject</span><span class="p">;</span>
+</pre></div>
+
+
+<p>引用计数法有很明显的优点：</p>
+<ol>
+<li>高效</li>
+<li>运行期没有停顿</li>
+<li>对象有确定的生命周期</li>
+<li>易于实现</li>
+</ol>
+<p>原始的引用计数法也有明显的缺点：</p>
+<ol>
+<li>维护引用计数的次数和引用赋值成正比，而不像mark and sweep等基本与回收的内存数量有关。</li>
+<li>无法解决循环引用的问题。A和B相互引用而再没有外部引用A与B中的任何一个，它们的引用计数都为1，但显然应该被回收。</li>
+</ol>
+<p>为了解决这两个致命弱点，Python又引入了以下两种GC机制。</p>
+<h3>标记-清除</h3>
+<p>“标记-清除”法是为了解决循环引用问题。可以包含其他对象引用的容器对象（如list, dict, set，甚至class）都可能产生循环引用，为此，在申请内存时，所有容器对象的头部又加上了<code>PyGC_Head</code>来实现“标记-清除”机制。</p>
+<div class="code"><pre><span class="c1">// objimpl.h</span>
+<span class="k">typedef</span> <span class="k">union</span> <span class="n">_gc_head</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="p">{</span>
+        <span class="k">union</span> <span class="n">_gc_head</span> <span class="o">*</span><span class="n">gc_next</span><span class="p">;</span>
+        <span class="k">union</span> <span class="n">_gc_head</span> <span class="o">*</span><span class="n">gc_prev</span><span class="p">;</span>
+        <span class="n">Py_ssize_t</span> <span class="n">gc_refs</span><span class="p">;</span>
+    <span class="p">}</span> <span class="n">gc</span><span class="p">;</span>
+    <span class="kt">long</span> <span class="kt">double</span> <span class="n">dummy</span><span class="p">;</span>  <span class="cm">/* force worst-case alignment */</span>
+<span class="p">}</span> <span class="n">PyGC_Head</span><span class="p">;</span>
+</pre></div>
+
+
+<p>在为对象申请内存的时候，可以明显看到，实际申请的内存数量已经加上了PyGC_Head的大小</p>
+<div class="code"><pre><span class="c1">// gcmodule.c</span>
+<span class="n">PyObject</span> <span class="o">*</span>
+<span class="nf">_PyObject_GC_Malloc</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">basicsize</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">PyObject</span> <span class="o">*</span><span class="n">op</span><span class="p">;</span>
+    <span class="n">PyGC_Head</span> <span class="o">*</span><span class="n">g</span> <span class="o">=</span> <span class="p">(</span><span class="n">PyGC_Head</span> <span class="o">*</span><span class="p">)</span><span class="n">PyObject_MALLOC</span><span class="p">(</span>
+                <span class="k">sizeof</span><span class="p">(</span><span class="n">PyGC_Head</span><span class="p">)</span> <span class="o">+</span> <span class="n">basicsize</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">g</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">PyErr_NoMemory</span><span class="p">();</span>
+
+    <span class="p">......</span>
+
+    <span class="n">op</span> <span class="o">=</span> <span class="n">FROM_GC</span><span class="p">(</span><span class="n">g</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">op</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>举例来说，从<code>list</code>对象的创建中，有如下主要逻辑：</p>
+<div class="code"><pre><span class="c1">// listobject.c</span>
+<span class="n">PyObject</span> <span class="o">*</span>
+<span class="nf">PyList_New</span><span class="p">(</span><span class="n">Py_ssize_t</span> <span class="n">size</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">PyListObject</span> <span class="o">*</span><span class="n">op</span><span class="p">;</span>
+    <span class="p">......</span>
+    <span class="n">op</span> <span class="o">=</span> <span class="n">PyObject_GC_New</span><span class="p">(</span><span class="n">PyListObject</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">PyList_Type</span><span class="p">);</span>
+    <span class="p">......</span>
+    <span class="n">_PyObject_GC_TRACK</span><span class="p">(</span><span class="n">op</span><span class="p">);</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">PyObject</span> <span class="o">*</span><span class="p">)</span> <span class="n">op</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p><code>_PyObject_GC_TRACK</code>就将对象链接到了第0代对象集合中（后文详述分代回收）。</p>
+<p>垃圾标记时，先将集合中对象的引用计数复制一份副本(以免在操作过程中破坏真实的引用计数值)：</p>
+<div class="code"><pre><span class="c1">// gcmodule.c</span>
+<span class="k">static</span> <span class="kt">void</span>
+<span class="nf">update_refs</span><span class="p">(</span><span class="n">PyGC_Head</span> <span class="o">*</span><span class="n">containers</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">PyGC_Head</span> <span class="o">*</span><span class="n">gc</span> <span class="o">=</span> <span class="n">containers</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_next</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(;</span> <span class="n">gc</span> <span class="o">!=</span> <span class="n">containers</span><span class="p">;</span> <span class="n">gc</span> <span class="o">=</span> <span class="n">gc</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_next</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">assert</span><span class="p">(</span><span class="n">gc</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_refs</span> <span class="o">==</span> <span class="n">GC_REACHABLE</span><span class="p">);</span>
+        <span class="n">gc</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_refs</span> <span class="o">=</span> <span class="n">FROM_GC</span><span class="p">(</span><span class="n">gc</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">ob_refcnt</span><span class="p">;</span>
+        <span class="n">assert</span><span class="p">(</span><span class="n">gc</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_refs</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>然后操作这个副本，遍历对象集合，将被引用对象的引用计数副本值减1：</p>
+<div class="code"><pre><span class="c1">// gcmodule.c</span>
+<span class="k">static</span> <span class="kt">void</span>
+<span class="nf">subtract_refs</span><span class="p">(</span><span class="n">PyGC_Head</span> <span class="o">*</span><span class="n">containers</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">traverseproc</span> <span class="n">traverse</span><span class="p">;</span>
+    <span class="n">PyGC_Head</span> <span class="o">*</span><span class="n">gc</span> <span class="o">=</span> <span class="n">containers</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_next</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(;</span> <span class="n">gc</span> <span class="o">!=</span> <span class="n">containers</span><span class="p">;</span> <span class="n">gc</span><span class="o">=</span><span class="n">gc</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_next</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">traverse</span> <span class="o">=</span> <span class="n">FROM_GC</span><span class="p">(</span><span class="n">gc</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">ob_type</span><span class="o">-&gt;</span><span class="n">tp_traverse</span><span class="p">;</span>
+        <span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="n">traverse</span><span class="p">(</span><span class="n">FROM_GC</span><span class="p">(</span><span class="n">gc</span><span class="p">),</span>
+                   <span class="p">(</span><span class="n">visitproc</span><span class="p">)</span><span class="n">visit_decref</span><span class="p">,</span>
+                   <span class="nb">NULL</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>这个<code>traverse</code>是对象类型定义的函数，用来遍历对象，通过传入的回调函数<code>visit_decref</code>来操作引用计数副本。</p>
+<p>例如<code>dict</code>就要在key和value上都用<code>visit_decref</code>操作一遍：</p>
+<div class="code"><pre><span class="c1">// dictobject.c</span>
+<span class="k">static</span> <span class="kt">int</span>
+<span class="nf">dict_traverse</span><span class="p">(</span><span class="n">PyObject</span> <span class="o">*</span><span class="n">op</span><span class="p">,</span> <span class="n">visitproc</span> <span class="n">visit</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">Py_ssize_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">PyObject</span> <span class="o">*</span><span class="n">pk</span><span class="p">;</span>
+    <span class="n">PyObject</span> <span class="o">*</span><span class="n">pv</span><span class="p">;</span>
+
+    <span class="k">while</span> <span class="p">(</span><span class="n">PyDict_Next</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">i</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">pk</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">pv</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">visit</span><span class="p">(</span><span class="n">pk</span><span class="p">);</span>
+        <span class="n">visit</span><span class="p">(</span><span class="n">pv</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>然后根据引用计数副本值是否为0将集合内的对象分成两类，reachable和unreachable，其中unreachable是可以被回收的对象：</p>
+<div class="code"><pre><span class="c1">// gcmodule.c</span>
+<span class="k">static</span> <span class="kt">void</span>
+<span class="nf">move_unreachable</span><span class="p">(</span><span class="n">PyGC_Head</span> <span class="o">*</span><span class="n">young</span><span class="p">,</span> <span class="n">PyGC_Head</span> <span class="o">*</span><span class="n">unreachable</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">PyGC_Head</span> <span class="o">*</span><span class="n">gc</span> <span class="o">=</span> <span class="n">young</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_next</span><span class="p">;</span>
+    <span class="k">while</span> <span class="p">(</span><span class="n">gc</span> <span class="o">!=</span> <span class="n">young</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">PyGC_Head</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">gc</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_refs</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">PyObject</span> <span class="o">*</span><span class="n">op</span> <span class="o">=</span> <span class="n">FROM_GC</span><span class="p">(</span><span class="n">gc</span><span class="p">);</span>
+            <span class="n">traverseproc</span> <span class="n">traverse</span> <span class="o">=</span> <span class="n">op</span><span class="o">-&gt;</span><span class="n">ob_type</span><span class="o">-&gt;</span><span class="n">tp_traverse</span><span class="p">;</span>
+            <span class="n">assert</span><span class="p">(</span><span class="n">gc</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_refs</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">);</span>
+            <span class="n">gc</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_refs</span> <span class="o">=</span> <span class="n">GC_REACHABLE</span><span class="p">;</span>
+            <span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="n">traverse</span><span class="p">(</span><span class="n">op</span><span class="p">,</span>
+                            <span class="p">(</span><span class="n">visitproc</span><span class="p">)</span><span class="n">visit_reachable</span><span class="p">,</span>
+                            <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="p">)</span><span class="n">young</span><span class="p">);</span>
+            <span class="n">next</span> <span class="o">=</span> <span class="n">gc</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_next</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">else</span> <span class="p">{</span>
+            <span class="n">next</span> <span class="o">=</span> <span class="n">gc</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_next</span><span class="p">;</span>
+            <span class="n">gc_list_move</span><span class="p">(</span><span class="n">gc</span><span class="p">,</span> <span class="n">unreachable</span><span class="p">);</span>
+            <span class="n">gc</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_refs</span> <span class="o">=</span> <span class="n">GC_TENTATIVELY_UNREACHABLE</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="n">gc</span> <span class="o">=</span> <span class="n">next</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>在处理了weak reference和finalizer等琐碎细节后（本文不展开讲述，有兴趣的童鞋请参考python源码），就可以回收unreachable中的对象了。</p>
+<h3>分代回收</h3>
+<p>分代回收的整体思想是：将系统中的所有内存块根据其存活时间划分为不同的集合，每个集合就成为一个“代”，垃圾收集频率随着“代”的存活时间的增大而减小，存活时间通常利用经过几次垃圾回收来度量。</p>
+<p>用来表示“代”的结构体是<code>gc_generation</code>， 包括了当前代链表表头、对象数量上限、当前对象数量：</p>
+<div class="code"><pre><span class="c1">// gcmodule.c</span>
+<span class="k">struct</span> <span class="n">gc_generation</span> <span class="p">{</span>
+    <span class="n">PyGC_Head</span> <span class="n">head</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">threshold</span><span class="p">;</span> <span class="cm">/* collection threshold */</span>
+    <span class="kt">int</span> <span class="n">count</span><span class="p">;</span> <span class="cm">/* count of allocations or collections of younger</span>
+<span class="cm">              generations */</span>
+<span class="p">};</span>
+</pre></div>
+
+
+<p>Python默认定义了三代对象集合，索引数越大，对象存活时间越长。</p>
+<div class="code"><pre><span class="cp">#define NUM_GENERATIONS 3</span>
+<span class="cp">#define GEN_HEAD(n) (&amp;generations[n].head)</span>
+
+<span class="cm">/* linked lists of container objects */</span>
+<span class="k">static</span> <span class="k">struct</span> <span class="n">gc_generation</span> <span class="n">generations</span><span class="p">[</span><span class="n">NUM_GENERATIONS</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="cm">/* PyGC_Head,               threshold,  count */</span>
+    <span class="p">{{{</span><span class="n">GEN_HEAD</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">GEN_HEAD</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="mi">0</span><span class="p">}},</span>   <span class="mi">700</span><span class="p">,</span>        <span class="mi">0</span><span class="p">},</span>
+    <span class="p">{{{</span><span class="n">GEN_HEAD</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">GEN_HEAD</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="mi">0</span><span class="p">}},</span>   <span class="mi">10</span><span class="p">,</span>     <span class="mi">0</span><span class="p">},</span>
+    <span class="p">{{{</span><span class="n">GEN_HEAD</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">GEN_HEAD</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="mi">0</span><span class="p">}},</span>   <span class="mi">10</span><span class="p">,</span>     <span class="mi">0</span><span class="p">},</span>
+<span class="p">};</span>
+</pre></div>
+
+
+<p>新生成的对象会被加入第0代，前面<code>_PyObject_GC_Malloc</code>中省略的部分就是Python GC触发的时机。每新生成一个对象都会检查第0代有没有满，如果满了就开始着手进行垃圾回收：</p>
+<div class="code"><pre> <span class="n">g</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_refs</span> <span class="o">=</span> <span class="n">GC_UNTRACKED</span><span class="p">;</span>
+ <span class="n">generations</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">count</span><span class="o">++</span><span class="p">;</span> <span class="cm">/* number of allocated GC objects */</span>
+ <span class="k">if</span> <span class="p">(</span><span class="n">generations</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">count</span> <span class="o">&gt;</span> <span class="n">generations</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">threshold</span> <span class="o">&amp;&amp;</span>
+     <span class="n">enabled</span> <span class="o">&amp;&amp;</span>
+     <span class="n">generations</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">threshold</span> <span class="o">&amp;&amp;</span>
+     <span class="o">!</span><span class="n">collecting</span> <span class="o">&amp;&amp;</span>
+     <span class="o">!</span><span class="n">PyErr_Occurred</span><span class="p">())</span> <span class="p">{</span>
+          <span class="n">collecting</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+          <span class="n">collect_generations</span><span class="p">();</span>
+          <span class="n">collecting</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+ <span class="p">}</span>
+</pre></div>
+
+
+<hr>
+<p>参考资料：</p>
+<ol>
+<li>《Python源码剖析》，陈儒著，2008</li>
+<li>Wikipedia - Reference counting: <a href="http://en.wikipedia.org/wiki/Reference_counting">http://en.wikipedia.org/wiki/Reference_counting</a></li>
+<li>Wikipedia - Garbage collection: <a href="http://en.wikipedia.org/wiki/Garbage_collection_(computer_science)">http://en.wikipedia.org/wiki/Garbage_collection_(computer_science)</a></li>
+</ol>
+    
+    <ul class="pager">
+        <li class="previous">
+            <a href="li-yong-ld_preloadjin-xing-hook.html">← Previous post</a>
+        </li>
+    </ul>
+
+        
+        
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+        var disqus_shortname ="hbprotoss";
+            var disqus_url="http://hbprotoss.github.io/posts/pythonla-ji-hui-shou-ji-zhi.html";
+        var disqus_title="Python\u5783\u573e\u56de\u6536\u673a\u5236";
+        var disqus_identifier="cache/posts/pythonla-ji-hui-shou-ji-zhi.html";
+        var disqus_config = function () {
+            this.language = "en";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">Comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+    
+
+    </div>
+
+    </div>
+    </div>
+    <!--End of body content-->
+</div>
+<div class="footerbox">
+    
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png"></a><br>本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh">知识共享署名-非商业性使用-禁止演绎 3.0 未本地化版本许可协议</a>进行许可。
+<br>Contents © 2013 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
+</div>
+
+            <script src="../assets/js/jquery-1.10.2.min.js" type="text/javascript"></script>
+            <script src="../assets/js/bootstrap.min.js" type="text/javascript"></script>
+        <script src="../assets/js/jquery.colorbox-min.js" type="text/javascript"></script>
+
+
+	
+<!-- Social buttons -->
+<div id="addthisbox" class="addthis_toolbox addthis_peekaboo_style addthis_default_style addthis_label_style addthis_32x32_style">
+<a class="addthis_button_more">Share</a>
+<ul><li><a class="addthis_button_facebook"></a>
+</li><li><a class="addthis_button_google_plusone_share"></a>
+</li><li><a class="addthis_button_linkedin"></a>
+</li><li><a class="addthis_button_twitter"></a>
+</li></ul>
+</div>
+<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-4f7088a56bb93798"></script>
+<!-- End of social buttons -->
+
+
+    <script type="text/javascript">jQuery("a.image-reference").colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});
+    $(window).on('hashchange', function(){
+        if (location.hash && $(location.hash)[0]) {
+            $('body').animate({scrollTop: $(location.hash).offset().top - $('#navbar').outerHeight(true)*1.2 }, 1);
+        }
+    });
+    $(document).ready(function(){$(window).trigger('hashchange')});
+    </script>
+    
+    
+</body>
+</html>

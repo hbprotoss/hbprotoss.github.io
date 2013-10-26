@@ -72,6 +72,53 @@
     <div class="span8">
     
         <div class="postbox">
+        <h1><a href="posts/pythonde-importji-zhi.html">python的import机制</a>
+        <small>  
+             Posted: <time class="published" datetime="2013-03-18T19:11:42+08:00">2013-03-18 19:11</time>
+        </small></h1>
+        <hr>
+        <p>同一个模块以相同的模块名被导入时，模块内的代码只执行一遍（模块名必须相同）。<br>
+例：  </p>
+<blockquote>
+<p>import/<br>
+    test.py<br>
+    mo/<br>
+        A.py  </p>
+</blockquote>
+<hr>
+<div class="code"><pre><span class="cp"># A.py</span>
+<span class="n">a</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="n">a</span> <span class="o">+=</span> <span class="mi">1</span>
+</pre></div>
+
+
+<hr>
+<div class="code"><pre><span class="cp"># test.py</span>
+<span class="cp">#!/usr/bin/env python3</span>
+<span class="n">import</span> <span class="n">os</span>
+<span class="n">import</span> <span class="n">sys</span>
+<span class="n">import</span> <span class="n">mo</span><span class="p">.</span><span class="n">A</span>
+<span class="n">import</span> <span class="n">mo</span><span class="p">.</span><span class="n">A</span>
+<span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">abspath</span><span class="p">(</span><span class="err">'</span><span class="p">.</span><span class="o">/</span><span class="n">mo</span><span class="err">'</span><span class="p">)</span>
+<span class="n">print</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+<span class="n">sys</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+<span class="n">import</span> <span class="n">A</span>
+</pre></div>
+
+
+<hr>
+<p>test.py中，第4行执行后输出1。第5行不输出，因为mo.A已经被导入当前namespace。  </p>
+<p>但是第9行，虽然都是同一个物理文件A.py，但是被导入时的名字不同（mo.A和A），所以还是会输出1。mo.A和A作为两个独立的module对象存在当前namespace中。  </p>
+<p>如果要把模块中的变量当全局变量来使用的话，一定要从项目顶部通过“.”一层一层import。  </p>
+            
+        
+    <p>
+        <a href="posts/pythonde-importji-zhi.html#disqus_thread" data-disqus-identifier="cache/posts/pythonde-importji-zhi.html">Comments</a>
+
+
+        </p></div>
+        <div class="postbox">
         <h1><a href="posts/shi-xian-jian-dan-xian-cheng-chi.html">实现简单线程池</a>
         <small>  
              Posted: <time class="published" datetime="2013-03-18T18:28:37+08:00">2013-03-18 18:28</time>
