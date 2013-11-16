@@ -72,6 +72,125 @@
     <div class="span8">
     
         <div class="postbox">
+        <h1><a href="posts/innodbyin-qing-suo-yin-xue-xi-bi-ji.html">InnoDB引擎索引学习笔记</a>
+        <small>  
+             Posted: <time class="published" datetime="2013-11-16T19:31:34+08:00">2013-11-16 19:31</time>
+        </small></h1>
+        <hr>
+        <!-- 
+.. link: 
+.. description: 
+.. tags: Database
+.. date: 2013/11/16 19:31:34
+.. title: InnoDB引擎索引学习笔记
+.. slug: innodbyin-qing-suo-yin-xue-xi-bi-ji
+-->
+
+<p>最近在研究学习MySQL，本文记录下索引相关（主要B-Tree索引）的特性。</p>
+<hr>
+<h3>索引是什么</h3>
+<p>数据库索引，是数据库管理系统中一个排序的数据结构，以协助快速查询、更新数据库表中数据。</p>
+<p>按所用的数据结构分，有B-Tree索引（B+ Tree）、哈希索引、R-Tree索引等。按数据块的顺序和索引节点的逻辑顺序是否一致可以分为聚集索引和非聚集索引。聚集索引由于物理块连续，在范围扫描的时候可以减少磁头寻道时间，因而比非聚集索引高效。</p>
+<h3>InnoDB索引结构</h3>
+<p>InnoDB引擎的索引主体结构是B+Tree（这种数据结构的描述可以参考CSDN博主v_JULY_v的<a href="http://blog.csdn.net/v_JULY_v/article/details/6530142">从B树、B+树、B*树谈到R 树</a>）。</p>
+<p>其中，主键索引(Primary Index)是聚集索引，中间节点是用于查询的边界值，叶子节点就是数据节点，叶子节点之间通过指针形成双向链表。如图：</p>
+<p><img alt="primary_index.jpg" src="galleries/InnoDB/primary_index.jpg" title=""></p>
+<p>辅助索引(Secondary Index)同样为B-Tree索引，只是叶子节点不是数据节点，而是对主键的引用。</p>
+<p><img alt="secondary_index.jpg" src="galleries/InnoDB/secondary_index.jpg" title=""></p>
+<p>由于此特性，InnoDB引擎要求数据表必须有一个主键，如果没有主键，在数据表创建的时候会自动生成一个唯一非空索引替代。这个特性也决定了InnoDB表的主键最好是一个自增的ID序列，这样在后续插入的过程中不会造成数据块的唯一，提升性能。</p>
+<p>当所建立的索引为多列索引的时候，例如KEY(a,b,c)，中间节点依旧以最左边的一列a进行索引，只是在叶子节点上保存的不仅仅是a，而是(a,b,c)多字段排序后的序列。</p>
+<h3>性能实测</h3>
+<p>下面结合实际例子阐述现象和内部结构的关系</p>
+<p>首先建立一个测试表：</p>
+<div class="code"><pre><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">test</span> <span class="p">(</span>
+     <span class="n">id</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="n">AUTO_INCREMENT</span><span class="p">,</span>
+     <span class="n">a</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+     <span class="n">b</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+     <span class="k">c</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+     <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">id</span><span class="p">),</span>
+     <span class="k">KEY</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="k">c</span><span class="p">)</span>
+<span class="p">)</span><span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span><span class="p">;</span>
+</pre></div>
+
+
+<p>数据项为(a,b,c)在0~200之间的所有组合项，共计8000000行记录。为了消除几次实验中以query cache为代表的各种server cache对实验数据的影响，每次实验后均重启mysql服务。</p>
+<h4>索引对查询效率的影响</h4>
+<p>首先是建立KEY(a,b,c)索引前后的性能对比，能很明显地看到索引大幅提升查询速度。没有索引的时候需要做全表扫描，建立索引之后通过B-Tree搜索。</p>
+<div class="code"><pre><span class="err">没有索引（除主键，下同）</span>
+<span class="p">[</span><span class="n">SQL</span><span class="p">]</span><span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">test</span> <span class="n">where</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">and</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="n">Affected</span> <span class="n">rows</span><span class="o">:</span> <span class="mi">0</span>
+<span class="nl">Time:</span> <span class="mf">0.324</span><span class="n">s</span>
+
+<span class="err">建立</span><span class="n">KEY</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">)</span>
+<span class="p">[</span><span class="n">SQL</span><span class="p">]</span><span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">test</span> <span class="n">where</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">and</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="n">Affected</span> <span class="n">rows</span><span class="o">:</span> <span class="mi">0</span>
+<span class="nl">Time:</span> <span class="mf">0.004</span><span class="n">s</span>
+</pre></div>
+
+
+<p>由于MySQL优化器的优化，where条件中的各个子条件顺序对索引的使用没有影响。</p>
+<div class="code"><pre><span class="p">[</span><span class="n">SQL</span><span class="p">]</span><span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">test</span> <span class="n">where</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">1</span> <span class="n">and</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="n">Affected</span> <span class="n">rows</span><span class="o">:</span> <span class="mi">0</span>
+<span class="nl">Time:</span> <span class="mf">0.002</span><span class="n">s</span>
+</pre></div>
+
+
+<p>当使用的列非严格的索引最左前缀时，可以想象，只有a加速了索引搜索，找到所有符合a条件的记录的之后只能顺序扫描检查c是否符合条件。所以相比没有索引时要快，但是慢于使用严格索引最左前缀时的速度。</p>
+<div class="code"><pre><span class="p">[</span><span class="n">SQL</span><span class="p">]</span><span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">test</span> <span class="n">where</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">and</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="n">Affected</span> <span class="n">rows</span><span class="o">:</span> <span class="mi">0</span>
+<span class="nl">Time:</span> <span class="mf">0.043</span><span class="n">s</span>
+</pre></div>
+
+
+<p>当没有使用到a列作为条件时完全没法使用索引，甚至比没有索引时还要慢。因为建表的时候a在前，b、c在后，并且数据节点有序。在没有索引的测试中，InnoDB引擎到a不为0时自动停止搜索。而在这个例子中需要扫描全表找出满足符合条件的b、c，达到完全没法忍受的16秒。</p>
+<div class="code"><pre><span class="p">[</span><span class="n">SQL</span><span class="p">]</span><span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">test</span> <span class="n">where</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">and</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="n">Affected</span> <span class="n">rows</span><span class="o">:</span> <span class="mi">0</span>
+<span class="nl">Time:</span> <span class="mf">16.023</span><span class="n">s</span>
+</pre></div>
+
+
+<h4>索引对排序效率的影响</h4>
+<p>只要能用到索引，并且ORDER BY后面的列在索引中，则顺序还是倒序排序对性能无影响。因为叶子节点是个双向链表，倒序可以从后向前遍历，与顺序的代价相同。</p>
+<div class="code"><pre><span class="p">[</span><span class="n">SQL</span><span class="p">]</span><span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">test</span> <span class="n">where</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">ORDER</span> <span class="n">BY</span> <span class="n">b</span><span class="p">;</span>
+<span class="n">Affected</span> <span class="n">rows</span><span class="o">:</span> <span class="mi">0</span>
+<span class="nl">Time:</span> <span class="mf">0.085</span><span class="n">s</span>
+
+<span class="p">[</span><span class="n">SQL</span><span class="p">]</span><span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">test</span> <span class="n">where</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">ORDER</span> <span class="n">BY</span> <span class="n">b</span> <span class="n">DESC</span><span class="p">;</span>
+<span class="n">Affected</span> <span class="n">rows</span><span class="o">:</span> <span class="mi">0</span>
+<span class="nl">Time:</span> <span class="mf">0.089</span><span class="n">s</span>
+</pre></div>
+
+
+<p>但是，当有两个字段排序的顺序不同时，叶子节点的有序性就无法用在排序中，必须读出所有叶子节点之后再按指定的字段进行一趟排序，所以速度就慢了下来。</p>
+<div class="code"><pre><span class="p">[</span><span class="n">SQL</span><span class="p">]</span><span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">test</span> <span class="n">where</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">ORDER</span> <span class="n">BY</span> <span class="n">b</span> <span class="n">DESC</span><span class="p">,</span> <span class="n">c</span> <span class="n">DESC</span><span class="p">;</span>
+<span class="n">Affected</span> <span class="n">rows</span><span class="o">:</span> <span class="mi">0</span>
+<span class="nl">Time:</span> <span class="mf">0.089</span><span class="n">s</span>
+
+<span class="p">[</span><span class="n">SQL</span><span class="p">]</span><span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">test</span> <span class="n">where</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">ORDER</span> <span class="n">BY</span> <span class="n">b</span> <span class="n">ASC</span><span class="p">,</span> <span class="n">c</span> <span class="n">DESC</span><span class="p">;</span>
+<span class="n">Affected</span> <span class="n">rows</span><span class="o">:</span> <span class="mi">0</span>
+<span class="nl">Time:</span> <span class="mf">0.184</span><span class="n">s</span>
+</pre></div>
+
+
+<p>同样，下面的例子中对索引左边的字段a进行范围选择的时候也没法运用索引，因为多个取值的a无法保证b和c字段有序，必须重新排序</p>
+<div class="code"><pre><span class="p">[</span><span class="n">SQL</span><span class="p">]</span><span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">test</span> <span class="n">where</span> <span class="n">a</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="n">ORDER</span> <span class="n">BY</span> <span class="n">b</span><span class="p">;</span>
+<span class="n">Affected</span> <span class="n">rows</span><span class="o">:</span> <span class="mi">0</span>
+<span class="nl">Time:</span> <span class="mf">0.103</span><span class="n">s</span>
+</pre></div>
+
+
+<p>所以，尽可能做到覆盖索引（即where，order by中用到的字段被索引覆盖），能利用索引加速搜索和排序。</p>
+<hr>
+<p>参考资料：</p>
+<p>《高性能MySQL》，电子工业出版社，2010年1月</p>
+            
+        
+    <p>
+        <a href="posts/innodbyin-qing-suo-yin-xue-xi-bi-ji.html#disqus_thread" data-disqus-identifier="cache/posts/innodbyin-qing-suo-yin-xue-xi-bi-ji.html">Comments</a>
+
+
+        </p></div>
+        <div class="postbox">
         <h1><a href="posts/pythonla-ji-hui-shou-ji-zhi.html">Python垃圾回收机制</a>
         <small>  
              Posted: <time class="published" datetime="2013-10-24T10:44:52+08:00">2013-10-24 10:44</time>
@@ -1389,70 +1508,6 @@ Decorator如下：  </p>
         
     <p>
         <a href="posts/multipartform-datade-shi-xian.html#disqus_thread" data-disqus-identifier="cache/posts/multipartform-datade-shi-xian.html">Comments</a>
-
-
-        </p></div>
-        <div class="postbox">
-        <h1><a href="posts/nikolagitpageda-jian-bo-ke.html">nikola+gitpage搭建博客</a>
-        <small>  
-             Posted: <time class="published" datetime="2013-03-18T19:46:37+08:00">2013-03-18 19:46</time>
-        </small></h1>
-        <hr>
-        <p>本来博客是在CSDN上的<a href="http://blog.csdn.net/digimon">http://blog.csdn.net/digimon</a>，但最近CSDN在我这一直无法登录，已经在Evernote上积压了好几篇博客，搞烦了，决定自己搭个博客。<br>
-由于目前是没有收入来源的屌丝，没钱去买个域名、弄个VPS，只能想免费的招了。WordPress这货屏蔽GAE的UA，导致没法申请博客，最后想到了gitpage。虽然gitpage也有随时被墙的风险，但是我的博客主要记录技术内容，作为程序猿翻个伟大的防火墙还是没问题的吧;-)  </p>
-<p>gitpage只支持静态页面，网上搜了一下，生成静态页面的工具还真不少，好像专门为此设计的一样，套餐呐有木有。<br>
-Python的就有不少: <a href="http://www.quora.com/Whats-the-best-available-static-blog-website-generator-in-Python">What's the best available static blog/website generator in Python?</a><br>
-还有更多别的语言支持的工具: <a href="https://iwantmyname.com/blog/2011/02/list-static-website-generators.html">32 Static Website Generators For Your Site, Blog Or Wiki</a>  </p>
-<p>最终选择了nikola，也是因为Quora上那篇文章的推荐。<br>
-nikola官网：<a href="http://nikola.ralsina.com.ar/">http://nikola.ralsina.com.ar/</a>  </p>
-<p>详细安装和配置的教程就不赘述了，可以参考这两篇文章：<br>
-+ <a href="http://nikola.ralsina.com.ar/handbook.html">The Nikola Handbook</a>（官网教程）<br>
-+ <a href="http://rca.is-programmer.com/2013/2/5/using-nikola-write-static-blog.37513.html">用 nikola 写静态博客</a>  </p>
-<p>下面说一下安装和配置nikola时要注意的问题。<br>
-1.  官网上的<a href="http://nikola.ralsina.com.ar/handbook.html#installing-nikola">安装指导</a>中，如果你是Ubuntu用户的话，<a href="http://makotemplates.org/">Mako</a>一定要用pip安装或自己去下，Ubuntu官方源上的版本太旧，运行会出问题。<br>
-2.  喜欢用markdown的童鞋除了更改nikola生成的站点根目录下的从conf.py之外，新建博文的时候要注意加上<code>-f markdown</code>参数：<code>nikola new_post -f markdown</code><br>
-3.  喜欢用markdown的童鞋还得<strong>注意</strong>一下(==!)，官方0.5.4有个bug。在<code>/usr/local/lib/python2.7/dist-packages/nikola/plugins/compile_markdown/__init__.py</code>文件中，在73~81行的字符串前加个字母u。  </p>
-<div class="code"><pre>    <span class="n">with</span> <span class="n">codecs</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">"wb+"</span><span class="p">,</span> <span class="s">"utf8"</span><span class="p">)</span> <span class="n">as</span> <span class="n">fd</span><span class="o">:</span>
-        <span class="k">if</span> <span class="n">onefile</span><span class="o">:</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="err">'</span><span class="o">&lt;!--</span> <span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">)</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="err">'</span><span class="p">..</span> <span class="n">title</span><span class="o">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span><span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">.</span><span class="n">format</span><span class="p">(</span><span class="n">title</span><span class="p">))</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="err">'</span><span class="p">..</span> <span class="n">slug</span><span class="o">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span><span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">.</span><span class="n">format</span><span class="p">(</span><span class="n">slug</span><span class="p">))</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="err">'</span><span class="p">..</span> <span class="n">date</span><span class="o">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span><span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">.</span><span class="n">format</span><span class="p">(</span><span class="n">date</span><span class="p">))</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="err">'</span><span class="p">..</span> <span class="n">tags</span><span class="o">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span><span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">.</span><span class="n">format</span><span class="p">(</span><span class="n">tags</span><span class="p">))</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="err">'</span><span class="p">..</span> <span class="n">link</span><span class="o">:</span> <span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">)</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="err">'</span><span class="p">..</span> <span class="n">description</span><span class="o">:</span> <span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">)</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="err">'</span><span class="o">--&gt;</span><span class="err">\</span><span class="n">n</span><span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">)</span>
-        <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">Write your post here."</span><span class="p">)</span>
-</pre></div>
-
-
-<p>改成  </p>
-<div class="code"><pre>    <span class="n">with</span> <span class="n">codecs</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">"wb+"</span><span class="p">,</span> <span class="s">"utf8"</span><span class="p">)</span> <span class="n">as</span> <span class="n">fd</span><span class="o">:</span>
-        <span class="k">if</span> <span class="n">onefile</span><span class="o">:</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">u</span><span class="err">'</span><span class="o">&lt;!--</span> <span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">)</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">u</span><span class="err">'</span><span class="p">..</span> <span class="n">title</span><span class="o">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span><span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">.</span><span class="n">format</span><span class="p">(</span><span class="n">title</span><span class="p">))</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">u</span><span class="err">'</span><span class="p">..</span> <span class="n">slug</span><span class="o">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span><span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">.</span><span class="n">format</span><span class="p">(</span><span class="n">slug</span><span class="p">))</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">u</span><span class="err">'</span><span class="p">..</span> <span class="n">date</span><span class="o">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span><span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">.</span><span class="n">format</span><span class="p">(</span><span class="n">date</span><span class="p">))</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">u</span><span class="err">'</span><span class="p">..</span> <span class="n">tags</span><span class="o">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span><span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">.</span><span class="n">format</span><span class="p">(</span><span class="n">tags</span><span class="p">))</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">u</span><span class="err">'</span><span class="p">..</span> <span class="n">link</span><span class="o">:</span> <span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">)</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">u</span><span class="err">'</span><span class="p">..</span> <span class="n">description</span><span class="o">:</span> <span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">)</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">u</span><span class="err">'</span><span class="o">--&gt;</span><span class="err">\</span><span class="n">n</span><span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">)</span>
-        <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">u</span><span class="s">"</span><span class="se">\n</span><span class="s">Write your post here."</span><span class="p">)</span>
-</pre></div>
-
-
-<p>因为不加u就是str对象，写入的是utf-8编码的文件，当title等参数里出现非英文字母的时候会出先解码异常。（马上提交个pull request去）<br>
-4. 要快速部署到gitpage，在站点conf.py里添加：</p>
-<div class="code"><pre><span class="nt">DEPLOY_COMMANDS</span> <span class="o">=</span> <span class="cp">[</span>
-<span class="s1">'git --git-dir=output/.git --work-tree=output add -A '</span><span class="p">,</span>
-<span class="s1">'git --git-dir=output/.git --work-tree=output commit -m "latest auto deploy build"'</span><span class="p">,</span>
-<span class="s1">'git --git-dir=output/.git --work-tree=output push origin master'</span>
-<span class="cp">]</span>
-</pre></div>
-            
-        
-    <p>
-        <a href="posts/nikolagitpageda-jian-bo-ke.html#disqus_thread" data-disqus-identifier="cache/posts/nikolagitpageda-jian-bo-ke.html">Comments</a>
 
 
         </p></div>
