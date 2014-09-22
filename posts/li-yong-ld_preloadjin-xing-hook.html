@@ -1,31 +1,52 @@
-<!DOCTYPE html><html lang="en">
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="en">
+    <head>
     <meta charset="utf-8">
-    <meta name="description" content="">
-    <meta name="author" content="hbprotoss">
+    <meta name="viewport" content="width=device-width">
     <title>利用LD_PRELOAD进行hook | hbprotoss的博客</title>
+
     
-            <link href="../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-            <link href="../assets/css/bootstrap-responsive.min.css" rel="stylesheet" type="text/css">
-        <link href="../assets/css/rst.css" rel="stylesheet" type="text/css">
-        <link href="../assets/css/code.css" rel="stylesheet" type="text/css">
-        <link href="../assets/css/colorbox.css" rel="stylesheet" type="text/css">
-        <link href="../assets/css/theme.css" rel="stylesheet" type="text/css">
-    <!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js" type="text/javascript"></script>
-    <![endif]-->
+            <link href="../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+
+    
             <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
 
+      <link rel="canonical" href="http://hbprotoss.github.io/posts/li-yong-ld_preloadjin-xing-hook.html">
+
+
+
+
+    
+        <!--[if lt IE 9]><script src="../assets/js/html5.js"></script><![endif]-->
+
+    
+
+
+    
+
+    <meta name="author" content="hbprotoss">
+        <link rel="prev" href="linuxxia-bian-yi-lian-jie-dong-tai-ku.html" title="Linux下编译链接动态库" type="text/html">
+        <link rel="next" href="pythonla-ji-hui-shou-ji-zhi.html" title="Python垃圾回收机制" type="text/html">
+    
+    <meta name="og:title" content="利用LD_PRELOAD进行hook">
+    <meta name="og:url" content="http://hbprotoss.github.io/posts/li-yong-ld_preloadjin-xing-hook.html">
+    <meta name="og:description" content="好久没玩hook这种猥琐的东西里，今天在Linux下体验了一把。
+loader在进行动态链接的时候，会将有相同符号名的符号覆盖成LD_PRELOAD指定的so文件中的符号。换句话说，可以用我们自己的so库中的函数替换原来库里有的函数，从而达到hook的目的。这和Windows下通过修改import table来hook API很类似。相比较之下，LD_PRELOAD更方便了，都不用自己写代码了，系">
+    <meta name="og:site_name" content="hbprotoss的博客">
+    <meta name="og:type" content="article">
+
+    
+
     
 
 
 
-    
 </head>
 <body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
 <!-- Menubar -->
+
 <div class="navbar navbar-fixed-top" id="navbar">
     <div class="navbar-inner">
         <div class="container">
@@ -37,18 +58,26 @@
             <span class="icon-bar"></span>
         </a>
 
-            <a class="brand" href="../">
-            hbprotoss的博客
+            <a class="brand" href="http://hbprotoss.github.io/">
+
+                <span id="blog-title">hbprotoss的博客</span>
             </a>
             <!-- Everything you want hidden at 940px or less, place within here -->
             <div class="nav-collapse collapse">
                 <ul class="nav">
                     
-                <li><a href="../archive.html">Archives</a>
-                </li><li><a href="../categories/index.html">Tags</a>
-                </li><li><a href="../rss.xml">RSS</a>
+                <li>
+<a href="../archive.html">Archives</a>
+                </li>
+<li>
+<a href="../categories/index.html">Tags</a>
+                </li>
+<li>
+<a href="../rss.xml">RSS</a>
 
-                </li></ul>
+                    
+                </li>
+</ul>
                     
 <!-- Custom search with google-->
 <form id="search" action="http://google.com/search" method="get" class="navbar-form pull-left">
@@ -61,45 +90,55 @@
                 
                 
                     <li>
-			<a href="li-yong-ld_preloadjin-xing-hook.md" id="sourcelink">Source</a>
-		</li>
+    </li>
+<li>
+    <a href="li-yong-ld_preloadjin-xing-hook.md" id="sourcelink">Source</a>
+    </li>
+
+                
                 </ul>
             </div>
         </div>
     </div>
 </div>
 <!-- End of Menubar -->
-<div class="container-fluid" id="container-fluid">
+<div class="container-fluid" id="content">
     <!--Body content-->
     <div class="row-fluid">
     <div class="span2"></div>
     <div class="span8">
     
-    <div class="postbox">
     
-    <h1>利用LD_PRELOAD进行hook</h1>
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article">
+    
+    <header>
+        
+    <h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">利用LD_PRELOAD进行hook</a></h1>
 
-    <hr>
-    <small>
-        Posted: <time class="published" datetime="2013-10-09T11:44:50+08:00">2013-10-09 11:44</time>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="#" rel="bookmark"><time class="published dt-published" datetime="2013-10-09T11:44:50+08:00" itemprop="datePublished" title="Publication date">2013-10-09 11:44</time></a></p>
+                <p class="commentline">
+        
+    <a href="li-yong-ld_preloadjin-xing-hook.html#disqus_thread" data-disqus-identifier="cache/posts/li-yong-ld_preloadjin-xing-hook.html">Comments</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="li-yong-ld_preloadjin-xing-hook.md" id="sourcelink">Source</a></p>
+
+        </div>
         
 
-		
-          |  More posts about
-            <a class="tag" href="../categories/c.html"><span class="badge badge-info">C</span></a>
-            <a class="tag" href="../categories/linux.html"><span class="badge badge-info">Linux</span></a>
-            <a class="tag" href="../categories/hook.html"><span class="badge badge-info">Hook</span></a>
-            <a class="tag" href="../categories/security.html"><span class="badge badge-info">Security</span></a>
+    </header>
 
-          |  
-		
-    </small>
-    <hr>
-    <p>好久没玩hook这种猥琐的东西里，今天在Linux下体验了一把。</p>
+    <div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p>好久没玩hook这种猥琐的东西里，今天在Linux下体验了一把。</p>
 <p>loader在进行动态链接的时候，会将有相同符号名的符号覆盖成LD_PRELOAD指定的so文件中的符号。换句话说，可以用我们自己的so库中的函数替换原来库里有的函数，从而达到hook的目的。这和Windows下通过修改import table来hook API很类似。相比较之下，LD_PRELOAD更方便了，都不用自己写代码了，系统的loader会帮我们搞定。但是LD_PRELOAD有个限制：只能hook动态链接的库，对静态链接的库无效，因为静态链接的代码都写到可执行文件里了嘛，没有坑让你填。</p>
 <p>上代码</p>
 <p>先是受害者，我们的主程序main.c，通过strcmp比较字符串是否相等：</p>
-<div class="code"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
+<pre class="code literal-block"><span class="cp">#include &lt;stdio.h&gt;</span>
 <span class="cp">#include &lt;string.h&gt;</span>
 
 <span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
@@ -114,11 +153,11 @@
     <span class="p">}</span>
     <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
-</pre></div>
+</pre>
 
 
 <p>然后是用来hook的库hook.c：</p>
-<div class="code"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
+<pre class="code literal-block"><span class="cp">#include &lt;stdio.h&gt;</span>
 <span class="cp">#include &lt;string.h&gt;</span>
 <span class="cp">#include &lt;dlfcn.h&gt;</span>
 
@@ -137,65 +176,91 @@
     <span class="n">printf</span><span class="p">(</span><span class="s">"hack function invoked. s1=&lt;%s&gt; s2=&lt;%s&gt;</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">);</span>
     <span class="k">return</span> <span class="n">old_strcmp</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">);</span>
 <span class="p">}</span>
-</pre></div>
+</pre>
 
 
 <p>因为hook的目标是strcmp，所以typedef了一个STRCMP函数指针。由于hook的目的是要控制函数行为，所以需要从原库libc.so.6中拿到“正版”strcmp指针，保存成old_strcmp以备调用。</p>
 <p>Makefile：</p>
-<div class="code"><pre><span class="nb">test</span>: main.c hook.so
+<pre class="code literal-block"><span class="nb">test</span>: main.c hook.so
     gcc -o <span class="nb">test </span>main.c
 
 hook.so: hook.c
     gcc -fPIC -shared -o hook.so hook.c -ldl
-</pre></div>
+</pre>
 
 
 <p>执行：</p>
-<div class="code"><pre><span class="nv">$ LD_PRELOAD</span><span class="o">=</span>./hook.so ./test 123
+<pre class="code literal-block"><span class="nv">$ LD_PRELOAD</span><span class="o">=</span>./hook.so ./test 123
 hack <span class="k">function </span>invoked. <span class="nv">s1</span><span class="o">=</span>&lt;123&gt; <span class="nv">s2</span><span class="o">=</span>&lt;<span class="nb">test</span>&gt;
 Incorrect password
 
 <span class="nv">$ LD_PRELOAD</span><span class="o">=</span>./hook.so ./test <span class="nb">test</span>
 hack <span class="k">function </span>invoked. <span class="nv">s1</span><span class="o">=</span>&lt;<span class="nb">test</span>&gt; <span class="nv">s2</span><span class="o">=</span>&lt;<span class="nb">test</span>&gt;
 Correct password
-</pre></div>
+</pre>
 
 
 <p>其中有一点不理解的是，<code>dlopen</code>打开libc.so.6能拿到“正版”strcmp地址，打开libc.so就是hook后的地址。照理说libc.so不是libc.so.6的一个软链吗？为什么结果会不一样嘞？</p>
 <hr>
 <p>参考资料：</p>
 <p><a href="http://www.exploit-db.com/papers/13233/">Reverse Engineering with LD_PRELOAD</a></p>
+</div>
+    </div>
+    <aside class="postpromonav">
+    <nav>
     
-    <ul class="pager">
-        <li class="previous">
-            <a href="linuxxia-bian-yi-lian-jie-dong-tai-ku.html">← Previous post</a>
-        </li>
-    </ul>
+        <ul itemprop="keywords" class="tags">
+           <li><a class="tag p-category" href="../categories/c.html" rel="tag">C</a></li>
+           <li><a class="tag p-category" href="../categories/hook.html" rel="tag">Hook</a></li>
+           <li><a class="tag p-category" href="../categories/linux.html" rel="tag">Linux</a></li>
+           <li><a class="tag p-category" href="../categories/security.html" rel="tag">Security</a></li>
+        </ul>
 
+    
+        <ul class="pager">
+            <li class="previous">
+                <a href="linuxxia-bian-yi-lian-jie-dong-tai-ku.html" rel="prev" title="Linux下编译链接动态库">Previous post</a>
+            </li>
+            <li class="next">
+                <a href="pythonla-ji-hui-shou-ji-zhi.html" rel="next" title="Python垃圾回收机制">Next post</a>
+            </li>
+        </ul>
+
+    </nav>
+    </aside>
+        <section class="comments">
+        <h2>Comments</h2>
         
         
         <div id="disqus_thread"></div>
-        <script type="text/javascript">
-        var disqus_shortname ="hbprotoss";
-            var disqus_url="http://hbprotoss.github.io/posts/li-yong-ld_preloadjin-xing-hook.html";
-        var disqus_title="\u5229\u7528LD_PRELOAD\u8fdb\u884chook";
-        var disqus_identifier="cache/posts/li-yong-ld_preloadjin-xing-hook.html";
-        var disqus_config = function () {
+        <script>
+        var disqus_shortname ="hbprotoss",
+            disqus_url="http://hbprotoss.github.io/posts/li-yong-ld_preloadjin-xing-hook.html",
+        disqus_title="\u5229\u7528LD_PRELOAD\u8fdb\u884chook",
+        disqus_identifier="cache/posts/li-yong-ld_preloadjin-xing-hook.html",
+        disqus_config = function () {
             this.language = "en";
         };
         (function() {
-            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
             (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
         })();
     </script>
-    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-    <a href="http://disqus.com" class="dsq-brlink">Comments powered by <span class="logo-disqus">Disqus</span></a>
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="//disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
 
 
+        </section>
     
 
-    </div>
+</article>
+
+        
+       <script>var disqus_shortname="hbprotoss";(function(){var a=document.createElement("script");a.async=true;a.src="//"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script>
+
+
 
     </div>
     </div>
@@ -204,37 +269,37 @@ Correct password
 <div class="footerbox">
     
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png"></a><br>本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh">知识共享署名-非商业性使用-禁止演绎 3.0 未本地化版本许可协议</a>进行许可。
-<br>Contents © 2013 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
+<br>Contents © 2014 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
+    
 </div>
 
-            <script src="../assets/js/jquery-1.10.2.min.js" type="text/javascript"></script>
-            <script src="../assets/js/bootstrap.min.js" type="text/javascript"></script>
-        <script src="../assets/js/jquery.colorbox-min.js" type="text/javascript"></script>
-
-
-	
+            <script src="../assets/js/all-nocdn.js"></script>
+    
 <!-- Social buttons -->
 <div id="addthisbox" class="addthis_toolbox addthis_peekaboo_style addthis_default_style addthis_label_style addthis_32x32_style">
 <a class="addthis_button_more">Share</a>
-<ul><li><a class="addthis_button_facebook"></a>
-</li><li><a class="addthis_button_google_plusone_share"></a>
-</li><li><a class="addthis_button_linkedin"></a>
-</li><li><a class="addthis_button_twitter"></a>
-</li></ul>
+<ul>
+<li>
+<a class="addthis_button_facebook"></a>
+</li>
+<li>
+<a class="addthis_button_google_plusone_share"></a>
+</li>
+<li>
+<a class="addthis_button_linkedin"></a>
+</li>
+<li>
+<a class="addthis_button_twitter"></a>
+</li>
+</ul>
 </div>
-<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-4f7088a56bb93798"></script>
+<script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-4f7088a56bb93798"></script>
 <!-- End of social buttons -->
 
 
-    <script type="text/javascript">jQuery("a.image-reference").colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});
-    $(window).on('hashchange', function(){
-        if (location.hash && $(location.hash)[0]) {
-            $('body').animate({scrollTop: $(location.hash).offset().top - $('#navbar').outerHeight(true)*1.2 }, 1);
-        }
-    });
-    $(document).ready(function(){$(window).trigger('hashchange')});
-    </script>
+    <script>jQuery("a.image-reference").colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script>
     
-    
+
+
 </body>
 </html>

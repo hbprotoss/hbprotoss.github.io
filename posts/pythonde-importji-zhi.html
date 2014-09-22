@@ -1,31 +1,73 @@
-<!DOCTYPE html><html lang="en">
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="en">
+    <head>
     <meta charset="utf-8">
-    <meta name="description" content="">
-    <meta name="author" content="hbprotoss">
+    <meta name="viewport" content="width=device-width">
     <title>python的import机制 | hbprotoss的博客</title>
+
     
-            <link href="../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-            <link href="../assets/css/bootstrap-responsive.min.css" rel="stylesheet" type="text/css">
-        <link href="../assets/css/rst.css" rel="stylesheet" type="text/css">
-        <link href="../assets/css/code.css" rel="stylesheet" type="text/css">
-        <link href="../assets/css/colorbox.css" rel="stylesheet" type="text/css">
-        <link href="../assets/css/theme.css" rel="stylesheet" type="text/css">
-    <!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js" type="text/javascript"></script>
-    <![endif]-->
+            <link href="../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+
+    
             <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
 
+      <link rel="canonical" href="http://hbprotoss.github.io/posts/pythonde-importji-zhi.html">
+
+
+
+
+    
+        <!--[if lt IE 9]><script src="../assets/js/html5.js"></script><![endif]-->
+
+    
+
+
+    
+
+    <meta name="author" content="hbprotoss">
+        <link rel="prev" href="shi-xian-jian-dan-xian-cheng-chi.html" title="实现简单线程池" type="text/html">
+        <link rel="next" href="nikolagitpageda-jian-bo-ke.html" title="nikola+gitpage搭建博客" type="text/html">
+    
+    <meta name="og:title" content="python的import机制">
+    <meta name="og:url" content="http://hbprotoss.github.io/posts/pythonde-importji-zhi.html">
+    <meta name="og:description" content="同一个模块以相同的模块名被导入时，模块内的代码只执行一遍（模块名必须相同）。
+例：  
+
+import/
+    test.py
+    mo/
+        A.py  
+
+
+# A.py
+a = 1
+print(a)
+a += 1
+
+
+
+
+# test.py
+#!/usr/bin/env python3
+import os
+import sys
+import mo.A
+import mo.A">
+    <meta name="og:site_name" content="hbprotoss的博客">
+    <meta name="og:type" content="article">
+
+    
+
     
 
 
 
-    
 </head>
 <body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
 <!-- Menubar -->
+
 <div class="navbar navbar-fixed-top" id="navbar">
     <div class="navbar-inner">
         <div class="container">
@@ -37,18 +79,26 @@
             <span class="icon-bar"></span>
         </a>
 
-            <a class="brand" href="../">
-            hbprotoss的博客
+            <a class="brand" href="http://hbprotoss.github.io/">
+
+                <span id="blog-title">hbprotoss的博客</span>
             </a>
             <!-- Everything you want hidden at 940px or less, place within here -->
             <div class="nav-collapse collapse">
                 <ul class="nav">
                     
-                <li><a href="../archive.html">Archives</a>
-                </li><li><a href="../categories/index.html">Tags</a>
-                </li><li><a href="../rss.xml">RSS</a>
+                <li>
+<a href="../archive.html">Archives</a>
+                </li>
+<li>
+<a href="../categories/index.html">Tags</a>
+                </li>
+<li>
+<a href="../rss.xml">RSS</a>
 
-                </li></ul>
+                    
+                </li>
+</ul>
                     
 <!-- Custom search with google-->
 <form id="search" action="http://google.com/search" method="get" class="navbar-form pull-left">
@@ -61,38 +111,51 @@
                 
                 
                     <li>
-			<a href="pythonde-importji-zhi.md" id="sourcelink">Source</a>
-		</li>
+    </li>
+<li>
+    <a href="pythonde-importji-zhi.md" id="sourcelink">Source</a>
+    </li>
+
+                
                 </ul>
             </div>
         </div>
     </div>
 </div>
 <!-- End of Menubar -->
-<div class="container-fluid" id="container-fluid">
+<div class="container-fluid" id="content">
     <!--Body content-->
     <div class="row-fluid">
     <div class="span2"></div>
     <div class="span8">
     
-    <div class="postbox">
     
-    <h1>python的import机制</h1>
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article">
+    
+    <header>
+        
+    <h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">python的import机制</a></h1>
 
-    <hr>
-    <small>
-        Posted: <time class="published" datetime="2013-03-18T19:11:42+08:00">2013-03-18 19:11</time>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="#" rel="bookmark"><time class="published dt-published" datetime="2013-03-18T19:11:42+08:00" itemprop="datePublished" title="Publication date">2013-03-18 19:11</time></a></p>
+                <p class="commentline">
+        
+    <a href="pythonde-importji-zhi.html#disqus_thread" data-disqus-identifier="cache/posts/pythonde-importji-zhi.html">Comments</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="pythonde-importji-zhi.md" id="sourcelink">Source</a></p>
+
+        </div>
         
 
-		
-          |  More posts about
-            <a class="tag" href="../categories/python.html"><span class="badge badge-info">Python</span></a>
+    </header>
 
-          |  
-		
-    </small>
-    <hr>
-    <p>同一个模块以相同的模块名被导入时，模块内的代码只执行一遍（模块名必须相同）。<br>
+    <div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p>同一个模块以相同的模块名被导入时，模块内的代码只执行一遍（模块名必须相同）。<br>
 例：  </p>
 <blockquote>
 <p>import/<br>
@@ -101,15 +164,15 @@
         A.py  </p>
 </blockquote>
 <hr>
-<div class="code"><pre><span class="cp"># A.py</span>
+<pre class="code literal-block"><span class="cp"># A.py</span>
 <span class="n">a</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 <span class="n">a</span> <span class="o">+=</span> <span class="mi">1</span>
-</pre></div>
+</pre>
 
 
 <hr>
-<div class="code"><pre><span class="cp"># test.py</span>
+<pre class="code literal-block"><span class="cp"># test.py</span>
 <span class="cp">#!/usr/bin/env python3</span>
 <span class="n">import</span> <span class="n">os</span>
 <span class="n">import</span> <span class="n">sys</span>
@@ -119,47 +182,67 @@
 <span class="n">print</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 <span class="n">sys</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 <span class="n">import</span> <span class="n">A</span>
-</pre></div>
+</pre>
 
 
 <hr>
 <p>test.py中，第4行执行后输出1。第5行不输出，因为mo.A已经被导入当前namespace。  </p>
 <p>但是第9行，虽然都是同一个物理文件A.py，但是被导入时的名字不同（mo.A和A），所以还是会输出1。mo.A和A作为两个独立的module对象存在当前namespace中。  </p>
 <p>如果要把模块中的变量当全局变量来使用的话，一定要从项目顶部通过“.”一层一层import。  </p>
+</div>
+    </div>
+    <aside class="postpromonav">
+    <nav>
     
-    <ul class="pager">
-        <li class="previous">
-            <a href="shi-xian-jian-dan-xian-cheng-chi.html">← Previous post</a>
-        </li>
-        <li class="next">
-            <a href="nikolagitpageda-jian-bo-ke.html">Next post →</a>
-        </li>
-    </ul>
+        <ul itemprop="keywords" class="tags">
+           <li><a class="tag p-category" href="../categories/python.html" rel="tag">Python</a></li>
+        </ul>
 
+    
+        <ul class="pager">
+            <li class="previous">
+                <a href="shi-xian-jian-dan-xian-cheng-chi.html" rel="prev" title="实现简单线程池">Previous post</a>
+            </li>
+            <li class="next">
+                <a href="nikolagitpageda-jian-bo-ke.html" rel="next" title="nikola+gitpage搭建博客">Next post</a>
+            </li>
+        </ul>
+
+    </nav>
+    </aside>
+        <section class="comments">
+        <h2>Comments</h2>
         
         
         <div id="disqus_thread"></div>
-        <script type="text/javascript">
-        var disqus_shortname ="hbprotoss";
-            var disqus_url="http://hbprotoss.github.io/posts/pythonde-importji-zhi.html";
-        var disqus_title="python\u7684import\u673a\u5236";
-        var disqus_identifier="cache/posts/pythonde-importji-zhi.html";
-        var disqus_config = function () {
+        <script>
+        var disqus_shortname ="hbprotoss",
+            disqus_url="http://hbprotoss.github.io/posts/pythonde-importji-zhi.html",
+        disqus_title="python\u7684import\u673a\u5236",
+        disqus_identifier="cache/posts/pythonde-importji-zhi.html",
+        disqus_config = function () {
             this.language = "en";
         };
         (function() {
-            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
             (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
         })();
     </script>
-    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-    <a href="http://disqus.com" class="dsq-brlink">Comments powered by <span class="logo-disqus">Disqus</span></a>
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="//disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
 
 
+        </section>
     
 
-    </div>
+</article>
+
+        
+       <script>var disqus_shortname="hbprotoss";(function(){var a=document.createElement("script");a.async=true;a.src="//"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script>
+
+
 
     </div>
     </div>
@@ -168,37 +251,37 @@
 <div class="footerbox">
     
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png"></a><br>本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh">知识共享署名-非商业性使用-禁止演绎 3.0 未本地化版本许可协议</a>进行许可。
-<br>Contents © 2013 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
+<br>Contents © 2014 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
+    
 </div>
 
-            <script src="../assets/js/jquery-1.10.2.min.js" type="text/javascript"></script>
-            <script src="../assets/js/bootstrap.min.js" type="text/javascript"></script>
-        <script src="../assets/js/jquery.colorbox-min.js" type="text/javascript"></script>
-
-
-	
+            <script src="../assets/js/all-nocdn.js"></script>
+    
 <!-- Social buttons -->
 <div id="addthisbox" class="addthis_toolbox addthis_peekaboo_style addthis_default_style addthis_label_style addthis_32x32_style">
 <a class="addthis_button_more">Share</a>
-<ul><li><a class="addthis_button_facebook"></a>
-</li><li><a class="addthis_button_google_plusone_share"></a>
-</li><li><a class="addthis_button_linkedin"></a>
-</li><li><a class="addthis_button_twitter"></a>
-</li></ul>
+<ul>
+<li>
+<a class="addthis_button_facebook"></a>
+</li>
+<li>
+<a class="addthis_button_google_plusone_share"></a>
+</li>
+<li>
+<a class="addthis_button_linkedin"></a>
+</li>
+<li>
+<a class="addthis_button_twitter"></a>
+</li>
+</ul>
 </div>
-<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-4f7088a56bb93798"></script>
+<script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-4f7088a56bb93798"></script>
 <!-- End of social buttons -->
 
 
-    <script type="text/javascript">jQuery("a.image-reference").colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});
-    $(window).on('hashchange', function(){
-        if (location.hash && $(location.hash)[0]) {
-            $('body').animate({scrollTop: $(location.hash).offset().top - $('#navbar').outerHeight(true)*1.2 }, 1);
-        }
-    });
-    $(document).ready(function(){$(window).trigger('hashchange')});
-    </script>
+    <script>jQuery("a.image-reference").colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script>
     
-    
+
+
 </body>
 </html>

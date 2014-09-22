@@ -1,31 +1,59 @@
-<!DOCTYPE html><html lang="en">
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="en">
+    <head>
     <meta charset="utf-8">
-    <meta name="description" content="">
-    <meta name="author" content="hbprotoss">
+    <meta name="viewport" content="width=device-width">
     <title>C语言宏的特殊用法和几个坑 | hbprotoss的博客</title>
+
     
-            <link href="../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-            <link href="../assets/css/bootstrap-responsive.min.css" rel="stylesheet" type="text/css">
-        <link href="../assets/css/rst.css" rel="stylesheet" type="text/css">
-        <link href="../assets/css/code.css" rel="stylesheet" type="text/css">
-        <link href="../assets/css/colorbox.css" rel="stylesheet" type="text/css">
-        <link href="../assets/css/theme.css" rel="stylesheet" type="text/css">
-    <!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js" type="text/javascript"></script>
-    <![endif]-->
+            <link href="../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+
+    
             <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
 
+      <link rel="canonical" href="http://hbprotoss.github.io/posts/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.html">
+
+
+
+
+    
+        <!--[if lt IE 9]><script src="../assets/js/html5.js"></script><![endif]-->
+
+    
+
+
+    
+
+    <meta name="author" content="hbprotoss">
+        <link rel="prev" href="python-descriptor.html" title="Python descriptor" type="text/html">
+        <link rel="next" href="linuxxia-bian-yi-lian-jie-dong-tai-ku.html" title="Linux下编译链接动态库" type="text/html">
+    
+    <meta name="og:title" content="C语言宏的特殊用法和几个坑">
+    <meta name="og:url" content="http://hbprotoss.github.io/posts/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.html">
+    <meta name="og:description" content="总结一下C语言中宏的一些特殊用法和几个容易踩的坑。由于本文主要参考GCC文档，某些细节（如宏参数中的空格是否处理之类）在别的编译器可能有细微差别，请参考相应文档。
+宏基础
+宏仅仅是在C预处理阶段的一种文本替换工具，编译完之后对二进制代码不可见。基本用法如下：
+1. 标示符别名
+#define BUFFER_SIZE 1024
+
+
+
+预处理阶段，foo = (char *) malloc (BUFF">
+    <meta name="og:site_name" content="hbprotoss的博客">
+    <meta name="og:type" content="article">
+
+    
+
     
 
 
 
-    
 </head>
 <body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
 <!-- Menubar -->
+
 <div class="navbar navbar-fixed-top" id="navbar">
     <div class="navbar-inner">
         <div class="container">
@@ -37,18 +65,26 @@
             <span class="icon-bar"></span>
         </a>
 
-            <a class="brand" href="../">
-            hbprotoss的博客
+            <a class="brand" href="http://hbprotoss.github.io/">
+
+                <span id="blog-title">hbprotoss的博客</span>
             </a>
             <!-- Everything you want hidden at 940px or less, place within here -->
             <div class="nav-collapse collapse">
                 <ul class="nav">
                     
-                <li><a href="../archive.html">Archives</a>
-                </li><li><a href="../categories/index.html">Tags</a>
-                </li><li><a href="../rss.xml">RSS</a>
+                <li>
+<a href="../archive.html">Archives</a>
+                </li>
+<li>
+<a href="../categories/index.html">Tags</a>
+                </li>
+<li>
+<a href="../rss.xml">RSS</a>
 
-                </li></ul>
+                    
+                </li>
+</ul>
                     
 <!-- Custom search with google-->
 <form id="search" action="http://google.com/search" method="get" class="navbar-form pull-left">
@@ -61,59 +97,71 @@
                 
                 
                     <li>
-			<a href="cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.md" id="sourcelink">Source</a>
-		</li>
+    </li>
+<li>
+    <a href="cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.md" id="sourcelink">Source</a>
+    </li>
+
+                
                 </ul>
             </div>
         </div>
     </div>
 </div>
 <!-- End of Menubar -->
-<div class="container-fluid" id="container-fluid">
+<div class="container-fluid" id="content">
     <!--Body content-->
     <div class="row-fluid">
     <div class="span2"></div>
     <div class="span8">
     
-    <div class="postbox">
     
-    <h1>C语言宏的特殊用法和几个坑</h1>
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article">
+    
+    <header>
+        
+    <h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">C语言宏的特殊用法和几个坑</a></h1>
 
-    <hr>
-    <small>
-        Posted: <time class="published" datetime="2013-07-13T14:25:31+08:00">2013-07-13 14:25</time>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="#" rel="bookmark"><time class="published dt-published" datetime="2013-07-13T14:25:31+08:00" itemprop="datePublished" title="Publication date">2013-07-13 14:25</time></a></p>
+                <p class="commentline">
+        
+    <a href="cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.html#disqus_thread" data-disqus-identifier="cache/posts/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.html">Comments</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.md" id="sourcelink">Source</a></p>
+
+        </div>
         
 
-		
-          |  More posts about
-            <a class="tag" href="../categories/c.html"><span class="badge badge-info">C</span></a>
-            <a class="tag" href="../categories/macro.html"><span class="badge badge-info">Macro</span></a>
+    </header>
 
-          |  
-		
-    </small>
-    <hr>
-    <p>总结一下C语言中宏的一些特殊用法和几个容易踩的坑。由于本文主要参考GCC文档，某些细节（如宏参数中的空格是否处理之类）在别的编译器可能有细微差别，请参考相应文档。</p>
+    <div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p>总结一下C语言中宏的一些特殊用法和几个容易踩的坑。由于本文主要参考GCC文档，某些细节（如宏参数中的空格是否处理之类）在别的编译器可能有细微差别，请参考相应文档。</p>
 <h3>宏基础</h3>
 <p>宏仅仅是在C预处理阶段的一种文本替换工具，编译完之后对二进制代码不可见。基本用法如下：</p>
 <h4>1. 标示符别名</h4>
-<div class="code"><pre><span class="cp">#define BUFFER_SIZE 1024</span>
-</pre></div>
+<pre class="code literal-block"><span class="cp">#define BUFFER_SIZE 1024</span>
+</pre>
 
 
 <p>预处理阶段，<code>foo = (char *) malloc (BUFFER_SIZE);</code>会被替换成<code>foo = (char *) malloc (1024);</code></p>
 <p>宏体换行需要在行末加反斜杠\</p>
-<div class="code"><pre><span class="cp">#define NUMBERS 1, \</span>
+<pre class="code literal-block"><span class="cp">#define NUMBERS 1, \</span>
 <span class="cp">                2, \</span>
 <span class="cp">                3</span>
-</pre></div>
+</pre>
 
 
 <p>预处理阶段<code>int x[] = { NUMBERS };</code>会被扩展成<code>int x[] = { 1, 2, 3 };</code></p>
 <h4>2. 宏函数</h4>
 <p>宏名之后带括号的宏被认为是宏函数。用法和普通函数一样，只不过在预处理阶段，宏函数会被展开。优点是没有普通函数保存寄存器和参数传递的开销，展开后的代码有利于CPU cache的利用和指令预测，速度快。缺点是可执行代码体积大。</p>
-<div class="code"><pre><span class="cp">#define min(X, Y)  ((X) &lt; (Y) ? (X) : (Y))</span>
-</pre></div>
+<pre class="code literal-block"><span class="cp">#define min(X, Y)  ((X) &lt; (Y) ? (X) : (Y))</span>
+</pre>
 
 
 <p><code>y = min(1, 2);</code>会被扩展成<code>y = ((1) &lt; (2) ? (1) : (2));</code></p>
@@ -121,51 +169,51 @@
 <h3>宏特殊用法</h3>
 <h4>1. 字符串化(Stringification)</h4>
 <p>在宏体中，如果宏参数前加个<code>#</code>，那么在宏体扩展的时候，宏参数会被扩展成字符串的形式。如：</p>
-<div class="code"><pre><span class="cp">#define WARN_IF(EXP) \</span>
+<pre class="code literal-block"><span class="cp">#define WARN_IF(EXP) \</span>
 <span class="cp">     do { if (EXP) \</span>
 <span class="cp">             fprintf (stderr, "Warning: " #EXP "\n"); } \</span>
 <span class="cp">     while (0)</span>
-</pre></div>
+</pre>
 
 
 <p><code>WARN_IF (x == 0);</code>会被扩展成：</p>
-<div class="code"><pre><span class="k">do</span> <span class="p">{</span> <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+<pre class="code literal-block"><span class="k">do</span> <span class="p">{</span> <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
     <span class="n">fprintf</span> <span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">"Warning: "</span> <span class="s">"x == 0"</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span> <span class="p">}</span>
 <span class="k">while</span> <span class="p">(</span><span class="mi">0</span><span class="p">);</span>
-</pre></div>
+</pre>
 
 
 <p>这种用法可以用在assert中，如果断言失败，可以将失败的语句输出到反馈信息中</p>
 <h4>2. 连接(Concatenation)</h4>
 <p>在宏体中，如果宏体所在标示符中有<code>##</code>，那么在宏体扩展的时候，宏参数会被直接替换到标示符中。如：</p>
-<div class="code"><pre><span class="cp">#define COMMAND(NAME)  { #NAME, NAME ## _command }</span>
+<pre class="code literal-block"><span class="cp">#define COMMAND(NAME)  { #NAME, NAME ## _command }</span>
 
 <span class="k">struct</span> <span class="n">command</span>
 <span class="p">{</span>
     <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
     <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">function</span><span class="p">)</span> <span class="p">(</span><span class="kt">void</span><span class="p">);</span>
 <span class="p">};</span>
-</pre></div>
+</pre>
 
 
 <p>在宏扩展的时候</p>
-<div class="code"><pre><span class="k">struct</span> <span class="n">command</span> <span class="n">commands</span><span class="p">[]</span> <span class="o">=</span>
+<pre class="code literal-block"><span class="k">struct</span> <span class="n">command</span> <span class="n">commands</span><span class="p">[]</span> <span class="o">=</span>
 <span class="p">{</span>
     <span class="n">COMMAND</span> <span class="p">(</span><span class="n">quit</span><span class="p">),</span>
     <span class="n">COMMAND</span> <span class="p">(</span><span class="n">help</span><span class="p">),</span>
     <span class="p">...</span>
 <span class="p">};</span>
-</pre></div>
+</pre>
 
 
 <p>会被扩展成：</p>
-<div class="code"><pre><span class="k">struct</span> <span class="n">command</span> <span class="n">commands</span><span class="p">[]</span> <span class="o">=</span>
+<pre class="code literal-block"><span class="k">struct</span> <span class="n">command</span> <span class="n">commands</span><span class="p">[]</span> <span class="o">=</span>
 <span class="p">{</span>
     <span class="p">{</span> <span class="s">"quit"</span><span class="p">,</span> <span class="n">quit_command</span> <span class="p">},</span>
     <span class="p">{</span> <span class="s">"help"</span><span class="p">,</span> <span class="n">help_command</span> <span class="p">},</span>
     <span class="p">...</span>
 <span class="p">};</span>
-</pre></div>
+</pre>
 
 
 <p>这样就节省了大量时间，提高效率。</p>
@@ -175,74 +223,74 @@
 <p>由于是纯文本替换，C预处理器不对宏体做任何语法检查，像缺个括号、少个分号神马的预处理器是不管的。这里要格外小心，由此可能引出各种奇葩的问题，一下还很难找到根源。</p>
 <h4>2. 算符优先级问题</h4>
 <p>不仅宏体是纯文本替换，宏参数也是纯文本替换。有以下一段简单的宏，实现乘法：</p>
-<div class="code"><pre><span class="cp">#define MULTIPLY(x, y) x * y</span>
-</pre></div>
+<pre class="code literal-block"><span class="cp">#define MULTIPLY(x, y) x * y</span>
+</pre>
 
 
 <p><code>MULTIPLY(1, 2)</code>没问题，会正常展开成<code>1 * 2</code>。有问题的是这种表达式<code>MULTIPLY(1+2, 3)</code>，展开后成了<code>1+2 * 3</code>，显然优先级错了。</p>
 <p>在宏体中，给引用的参数加个括号就能避免这问题。</p>
-<div class="code"><pre><span class="cp">#define MULTIPLY(x, y) (x) * (y)</span>
-</pre></div>
+<pre class="code literal-block"><span class="cp">#define MULTIPLY(x, y) (x) * (y)</span>
+</pre>
 
 
 <p><code>MULTIPLY(1+2, 3)</code>就会被展开成<code>(1+2) * (3)</code>，优先级正常了。</p>
 <p>其实这个问题和下面要说到的某些问题都属于由于纯文本替换而导致的语义破坏问题，要格外小心。</p>
 <h4>3. 分号吞噬问题</h4>
 <p>有如下宏定义：</p>
-<div class="code"><pre><span class="cp">#define SKIP_SPACES(p, limit)  \</span>
+<pre class="code literal-block"><span class="cp">#define SKIP_SPACES(p, limit)  \</span>
 <span class="cp">     { char *lim = (limit);         \</span>
 <span class="cp">       while (p &lt; lim) {            \</span>
 <span class="cp">         if (*p++ != ' ') {         \</span>
 <span class="cp">           p--; break; }}}</span>
-</pre></div>
+</pre>
 
 
 <p>假设有如下一段代码：</p>
-<div class="code"><pre><span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">p</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+<pre class="code literal-block"><span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">p</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
    <span class="n">SKIP_SPACES</span> <span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">lim</span><span class="p">);</span>
 <span class="k">else</span> <span class="p">...</span>
-</pre></div>
+</pre>
 
 
 <p>一编译，GCC报<code>error: ‘else’ without a previous ‘if’</code>。原来这个看似是一个函数的宏被展开后是一段大括号括起来的代码块，加上分号之后这个if逻辑块就结束了，所以编译器发现这个else没有对应的if。</p>
 <p>这个问题一般用<code>do ... while(0)</code>的形式来解决：</p>
-<div class="code"><pre><span class="cp">#define SKIP_SPACES(p, limit)     \</span>
+<pre class="code literal-block"><span class="cp">#define SKIP_SPACES(p, limit)     \</span>
 <span class="cp">     do { char *lim = (limit);         \</span>
 <span class="cp">          while (p &lt; lim) {            \</span>
 <span class="cp">            if (*p++ != ' ') {         \</span>
 <span class="cp">              p--; break; }}}          \</span>
 <span class="cp">     while (0)</span>
-</pre></div>
+</pre>
 
 
 <p>展开后就成了</p>
-<div class="code"><pre><span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">p</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+<pre class="code literal-block"><span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">p</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
     <span class="k">do</span> <span class="p">...</span> <span class="k">while</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
 <span class="k">else</span> <span class="p">...</span>
-</pre></div>
+</pre>
 
 
 <p>这样就消除了分号吞噬问题。</p>
 <p>这个技巧在Linux内核源码里很常见，比如这个置位宏<code>#define SET_REG_BIT(reg, bit)              do { (reg |= (1 &lt;&lt; (bit))); } while (0)</code>(位于arch/mips/include/asm/mach-pnx833x/gpio.h)</p>
 <h4>4. 宏参数重复调用</h4>
 <p>有如下宏定义：</p>
-<div class="code"><pre><span class="cp">#define min(X, Y)  ((X) &lt; (Y) ? (X) : (Y))</span>
-</pre></div>
+<pre class="code literal-block"><span class="cp">#define min(X, Y)  ((X) &lt; (Y) ? (X) : (Y))</span>
+</pre>
 
 
 <p>当有如下调用时<code>next = min (x + y, foo (z));</code>，宏体被展开成<code>next = ((x + y) &lt; (foo (z)) ? (x + y) : (foo (z)));</code>，可以看到，<code>foo(z)</code>被重复调用了两次，做了重复计算。更严重的是，如果foo是不可重入的(foo内修改了全局或静态变量)，程序会产生逻辑错误。</p>
 <p>所以，尽量不要在宏参数中传入函数调用。</p>
 <h4>5. 对自身的递归引用</h4>
 <p>有如下宏定义：</p>
-<div class="code"><pre><span class="cp">#define foo (4 + foo)</span>
-</pre></div>
+<pre class="code literal-block"><span class="cp">#define foo (4 + foo)</span>
+</pre>
 
 
 <p>按前面的理解，<code>(4 + foo)</code>会展开成<code>(4 + (4 + foo)</code>，然后一直展开下去，直至内存耗尽。但是，预处理器采取的策略是<strong><em>只展开一次</em></strong>。也就是说，<code>foo</code>只会展开成<code>(4 + foo)</code>，而展开之后<code>foo</code>的含义就要根据上下文来确定了。</p>
 <p>对于以下的交叉引用，宏体也只会展开一次。</p>
-<div class="code"><pre><span class="cp">#define x (4 + y)</span>
+<pre class="code literal-block"><span class="cp">#define x (4 + y)</span>
 <span class="cp">#define y (2 * x)</span>
-</pre></div>
+</pre>
 
 
 <p><code>x</code>展开成<code>(4 + y) -&gt; (4 + (2 * x))</code>，<code>y</code>展开成<code>(2 * x) -&gt; (2 * (4 + y))</code>。</p>
@@ -250,55 +298,78 @@
 <h4>6. 宏参数预处理</h4>
 <p>宏参数中若包含另外的宏，那么宏参数在被代入到宏体之前会做一次完全的展开，除非宏体中含有<code>#</code>或<code>##</code>。</p>
 <p>有如下宏定义：</p>
-<div class="code"><pre><span class="cp">#define AFTERX(x) X_ ## x</span>
+<pre class="code literal-block"><span class="cp">#define AFTERX(x) X_ ## x</span>
 <span class="cp">#define XAFTERX(x) AFTERX(x)</span>
 <span class="cp">#define TABLESIZE 1024</span>
 <span class="cp">#define BUFSIZE TABLESIZE</span>
-</pre></div>
+</pre>
 
 
 <ul>
-<li><code>AFTERX(BUFSIZE)</code>会被展开成<code>X_BUFSIZE</code>。因为宏体中含有<code>##</code>，宏参数直接代入宏体。</li>
-<li><code>XAFTERX(BUFSIZE)</code>会被展开成<code>X_1024</code>。因为<code>XAFTERX(x)</code>的宏体是<code>AFTERX(x)</code>，并没有<code>#</code>或<code>##</code>，所以<code>BUFSIZE</code>在代入前会被完全展开成<code>1024</code>，然后才代入宏体，变成<code>X_1024</code>。</li>
+<li>
+<code>AFTERX(BUFSIZE)</code>会被展开成<code>X_BUFSIZE</code>。因为宏体中含有<code>##</code>，宏参数直接代入宏体。</li>
+<li>
+<code>XAFTERX(BUFSIZE)</code>会被展开成<code>X_1024</code>。因为<code>XAFTERX(x)</code>的宏体是<code>AFTERX(x)</code>，并没有<code>#</code>或<code>##</code>，所以<code>BUFSIZE</code>在代入前会被完全展开成<code>1024</code>，然后才代入宏体，变成<code>X_1024</code>。</li>
 </ul>
 <p>-EOF-</p>
 <hr>
 <p>参考资料：</p>
 <p><a href="http://gcc.gnu.org/onlinedocs/cpp/Macros.html">http://gcc.gnu.org/onlinedocs/cpp/Macros.html</a></p>
+</div>
+    </div>
+    <aside class="postpromonav">
+    <nav>
     
-    <ul class="pager">
-        <li class="previous">
-            <a href="python-descriptor.html">← Previous post</a>
-        </li>
-        <li class="next">
-            <a href="linuxxia-bian-yi-lian-jie-dong-tai-ku.html">Next post →</a>
-        </li>
-    </ul>
+        <ul itemprop="keywords" class="tags">
+           <li><a class="tag p-category" href="../categories/c.html" rel="tag">C</a></li>
+           <li><a class="tag p-category" href="../categories/macro.html" rel="tag">Macro</a></li>
+        </ul>
 
+    
+        <ul class="pager">
+            <li class="previous">
+                <a href="python-descriptor.html" rel="prev" title="Python descriptor">Previous post</a>
+            </li>
+            <li class="next">
+                <a href="linuxxia-bian-yi-lian-jie-dong-tai-ku.html" rel="next" title="Linux下编译链接动态库">Next post</a>
+            </li>
+        </ul>
+
+    </nav>
+    </aside>
+        <section class="comments">
+        <h2>Comments</h2>
         
         
         <div id="disqus_thread"></div>
-        <script type="text/javascript">
-        var disqus_shortname ="hbprotoss";
-            var disqus_url="http://hbprotoss.github.io/posts/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.html";
-        var disqus_title="C\u8bed\u8a00\u5b8f\u7684\u7279\u6b8a\u7528\u6cd5\u548c\u51e0\u4e2a\u5751";
-        var disqus_identifier="cache/posts/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.html";
-        var disqus_config = function () {
+        <script>
+        var disqus_shortname ="hbprotoss",
+            disqus_url="http://hbprotoss.github.io/posts/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.html",
+        disqus_title="C\u8bed\u8a00\u5b8f\u7684\u7279\u6b8a\u7528\u6cd5\u548c\u51e0\u4e2a\u5751",
+        disqus_identifier="cache/posts/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.html",
+        disqus_config = function () {
             this.language = "en";
         };
         (function() {
-            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
             (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
         })();
     </script>
-    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-    <a href="http://disqus.com" class="dsq-brlink">Comments powered by <span class="logo-disqus">Disqus</span></a>
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="//disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
 
 
+        </section>
     
 
-    </div>
+</article>
+
+        
+       <script>var disqus_shortname="hbprotoss";(function(){var a=document.createElement("script");a.async=true;a.src="//"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script>
+
+
 
     </div>
     </div>
@@ -307,37 +378,37 @@
 <div class="footerbox">
     
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png"></a><br>本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh">知识共享署名-非商业性使用-禁止演绎 3.0 未本地化版本许可协议</a>进行许可。
-<br>Contents © 2013 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
+<br>Contents © 2014 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
+    
 </div>
 
-            <script src="../assets/js/jquery-1.10.2.min.js" type="text/javascript"></script>
-            <script src="../assets/js/bootstrap.min.js" type="text/javascript"></script>
-        <script src="../assets/js/jquery.colorbox-min.js" type="text/javascript"></script>
-
-
-	
+            <script src="../assets/js/all-nocdn.js"></script>
+    
 <!-- Social buttons -->
 <div id="addthisbox" class="addthis_toolbox addthis_peekaboo_style addthis_default_style addthis_label_style addthis_32x32_style">
 <a class="addthis_button_more">Share</a>
-<ul><li><a class="addthis_button_facebook"></a>
-</li><li><a class="addthis_button_google_plusone_share"></a>
-</li><li><a class="addthis_button_linkedin"></a>
-</li><li><a class="addthis_button_twitter"></a>
-</li></ul>
+<ul>
+<li>
+<a class="addthis_button_facebook"></a>
+</li>
+<li>
+<a class="addthis_button_google_plusone_share"></a>
+</li>
+<li>
+<a class="addthis_button_linkedin"></a>
+</li>
+<li>
+<a class="addthis_button_twitter"></a>
+</li>
+</ul>
 </div>
-<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-4f7088a56bb93798"></script>
+<script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-4f7088a56bb93798"></script>
 <!-- End of social buttons -->
 
 
-    <script type="text/javascript">jQuery("a.image-reference").colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});
-    $(window).on('hashchange', function(){
-        if (location.hash && $(location.hash)[0]) {
-            $('body').animate({scrollTop: $(location.hash).offset().top - $('#navbar').outerHeight(true)*1.2 }, 1);
-        }
-    });
-    $(document).ready(function(){$(window).trigger('hashchange')});
-    </script>
+    <script>jQuery("a.image-reference").colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script>
     
-    
+
+
 </body>
 </html>

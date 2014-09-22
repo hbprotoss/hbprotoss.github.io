@@ -1,29 +1,36 @@
-<!DOCTYPE html><html lang="en">
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="en">
+    <head>
     <meta charset="utf-8">
-    <meta name="description" content="">
-    <meta name="author" content="hbprotoss">
+    <meta name="viewport" content="width=device-width">
     <title>hbprotoss的博客 | hbprotoss的博客</title>
-    
-            <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-            <link href="assets/css/bootstrap-responsive.min.css" rel="stylesheet" type="text/css">
-        <link href="assets/css/rst.css" rel="stylesheet" type="text/css">
-        <link href="assets/css/code.css" rel="stylesheet" type="text/css">
-        <link href="assets/css/colorbox.css" rel="stylesheet" type="text/css">
-        <link href="assets/css/theme.css" rel="stylesheet" type="text/css">
-    <!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js" type="text/javascript"></script>
-    <![endif]-->
-            <link rel="alternate" type="application/rss+xml" title="RSS" href="rss.xml">
 
     
+            <link href="assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+
     
+            <link rel="alternate" type="application/rss+xml" title="RSS" href="rss.xml">
+
+      <link rel="canonical" href="http://hbprotoss.github.io/index.html">
+
+
+
+        <link rel="next" href="index-1.html" type="text/html">
+
     
+        <!--[if lt IE 9]><script src="assets/js/html5.js"></script><![endif]-->
+
+    
+
+
+
+
 </head>
 <body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
 <!-- Menubar -->
+
 <div class="navbar navbar-fixed-top" id="navbar">
     <div class="navbar-inner">
         <div class="container">
@@ -35,18 +42,26 @@
             <span class="icon-bar"></span>
         </a>
 
-            <a class="brand" href=".">
-            hbprotoss的博客
+            <a class="brand" href="http://hbprotoss.github.io/">
+
+                <span id="blog-title">hbprotoss的博客</span>
             </a>
             <!-- Everything you want hidden at 940px or less, place within here -->
             <div class="nav-collapse collapse">
                 <ul class="nav">
                     
-                <li><a href="archive.html">Archives</a>
-                </li><li><a href="categories/index.html">Tags</a>
-                </li><li><a href="rss.xml">RSS</a>
+                <li>
+<a href="archive.html">Archives</a>
+                </li>
+<li>
+<a href="categories/index.html">Tags</a>
+                </li>
+<li>
+<a href="rss.xml">RSS</a>
 
-                </li></ul>
+                    
+                </li>
+</ul>
                     
 <!-- Custom search with google-->
 <form id="search" action="http://google.com/search" method="get" class="navbar-form pull-left">
@@ -59,29 +74,396 @@
                 
                 
                     <li>
+                
                 </ul>
             </div>
         </div>
     </div>
 </div>
 <!-- End of Menubar -->
-<div class="container-fluid" id="container-fluid">
+<div class="container-fluid" id="content">
     <!--Body content-->
     <div class="row-fluid">
     <div class="span2"></div>
     <div class="span8">
     
-        <div class="postbox">
-        <h1><a href="posts/li-yong-ld_preloadjin-xing-hook.html">利用LD_PRELOAD进行hook</a>
-        <small>  
-             Posted: <time class="published" datetime="2013-10-09T11:44:50+08:00">2013-10-09 11:44</time>
-        </small></h1>
-        <hr>
-        <p>好久没玩hook这种猥琐的东西里，今天在Linux下体验了一把。</p>
+    
+<div class="postindex">
+    <article class="h-entry post-text">
+    <header>
+        <h1 class="p-name entry-title"><a href="posts/innodbyin-qing-suo-yin-xue-xi-bi-ji.html" class="u-url">InnoDB引擎索引学习笔记</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="posts/innodbyin-qing-suo-yin-xue-xi-bi-ji.html" rel="bookmark"><time class="published dt-published" datetime="2013-11-16T19:31:34+08:00" itemprop="datePublished" title="Publication date">2013-11-16 19:31</time></a></p>
+                <p class="commentline">
+        
+    <a href="posts/innodbyin-qing-suo-yin-xue-xi-bi-ji.html#disqus_thread" data-disqus-identifier="cache/posts/innodbyin-qing-suo-yin-xue-xi-bi-ji.html">Comments</a>
+
+
+        </p>
+</div>
+    </header>
+    <div class="e-content entry-content">
+    <div>
+<p>最近在研究学习MySQL，本文记录下索引相关（主要B-Tree索引）的特性。</p>
+<hr>
+<h3>索引是什么</h3>
+<p>数据库索引，是数据库管理系统中一个排序的数据结构，以协助快速查询、更新数据库表中数据。</p>
+<p>按所用的数据结构分，有B-Tree索引（B+ Tree）、哈希索引、R-Tree索引等。按数据块的顺序和索引节点的逻辑顺序是否一致可以分为聚集索引和非聚集索引。聚集索引由于物理块连续，在范围扫描的时候可以减少磁头寻道时间，因而比非聚集索引高效。</p>
+<h3>InnoDB索引结构</h3>
+<p>InnoDB引擎的索引主体结构是B+Tree（这种数据结构的描述可以参考CSDN博主v_JULY_v的<a href="http://blog.csdn.net/v_JULY_v/article/details/6530142">从B树、B+树、B*树谈到R 树</a>）。</p>
+<p>其中，主键索引(Primary Index)是聚集索引，中间节点是用于查询的边界值，叶子节点就是数据节点，叶子节点之间通过指针形成双向链表。如图：</p>
+<p><img alt="primary_index.jpg" src="galleries/InnoDB/primary_index.jpg" title=""></p>
+<p>辅助索引(Secondary Index)同样为B-Tree索引，只是叶子节点不是数据节点，而是对主键的引用。</p>
+<p><img alt="secondary_index.jpg" src="galleries/InnoDB/secondary_index.jpg" title=""></p>
+<p>由于此特性，InnoDB引擎要求数据表必须有一个主键，如果没有主键，在数据表创建的时候会自动生成一个唯一非空索引替代。这个特性也决定了InnoDB表的主键最好是一个自增的ID序列，这样在后续插入的过程中不会造成数据块的唯一，提升性能。</p>
+<p>当所建立的索引为多列索引的时候，例如KEY(a,b,c)，中间节点依旧以最左边的一列a进行索引，只是在叶子节点上保存的不仅仅是a，而是(a,b,c)多字段排序后的序列。</p>
+<h3>性能实测</h3>
+<p>下面结合实际例子阐述现象和内部结构的关系</p>
+<p>首先建立一个测试表：</p>
+<pre class="code literal-block"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">test</span> <span class="p">(</span>
+     <span class="n">id</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="n">AUTO_INCREMENT</span><span class="p">,</span>
+     <span class="n">a</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+     <span class="n">b</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+     <span class="k">c</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+     <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">id</span><span class="p">),</span>
+     <span class="k">KEY</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="k">c</span><span class="p">)</span>
+<span class="p">)</span><span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span><span class="p">;</span>
+</pre>
+
+
+<p>数据项为(a,b,c)在0~200之间的所有组合项，共计8000000行记录。为了消除几次实验中以query cache为代表的各种server cache对实验数据的影响，每次实验后均重启mysql服务。</p>
+<h4>索引对查询效率的影响</h4>
+<p>首先是建立KEY(a,b,c)索引前后的性能对比，能很明显地看到索引大幅提升查询速度。没有索引的时候需要做全表扫描，建立索引之后通过B-Tree搜索。</p>
+<pre class="code literal-block"><span class="err">没有索引（除主键，下同）</span>
+<span class="p">[</span><span class="n">SQL</span><span class="p">]</span><span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">test</span> <span class="n">where</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">and</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="n">Affected</span> <span class="n">rows</span><span class="o">:</span> <span class="mi">0</span>
+<span class="nl">Time:</span> <span class="mf">0.324</span><span class="n">s</span>
+
+<span class="err">建立</span><span class="n">KEY</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">)</span>
+<span class="p">[</span><span class="n">SQL</span><span class="p">]</span><span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">test</span> <span class="n">where</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">and</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="n">Affected</span> <span class="n">rows</span><span class="o">:</span> <span class="mi">0</span>
+<span class="nl">Time:</span> <span class="mf">0.004</span><span class="n">s</span>
+</pre>
+
+
+<p>由于MySQL优化器的优化，where条件中的各个子条件顺序对索引的使用没有影响。</p>
+<pre class="code literal-block"><span class="p">[</span><span class="n">SQL</span><span class="p">]</span><span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">test</span> <span class="n">where</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">1</span> <span class="n">and</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="n">Affected</span> <span class="n">rows</span><span class="o">:</span> <span class="mi">0</span>
+<span class="nl">Time:</span> <span class="mf">0.002</span><span class="n">s</span>
+</pre>
+
+
+<p>当使用的列非严格的索引最左前缀时，可以想象，只有a加速了索引搜索，找到所有符合a条件的记录的之后只能顺序扫描检查c是否符合条件。所以相比没有索引时要快，但是慢于使用严格索引最左前缀时的速度。</p>
+<pre class="code literal-block"><span class="p">[</span><span class="n">SQL</span><span class="p">]</span><span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">test</span> <span class="n">where</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">and</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="n">Affected</span> <span class="n">rows</span><span class="o">:</span> <span class="mi">0</span>
+<span class="nl">Time:</span> <span class="mf">0.043</span><span class="n">s</span>
+</pre>
+
+
+<p>当没有使用到a列作为条件时完全没法使用索引，甚至比没有索引时还要慢。因为建表的时候a在前，b、c在后，并且数据节点有序。在没有索引的测试中，InnoDB引擎到a不为0时自动停止搜索。而在这个例子中需要扫描全表找出满足符合条件的b、c，达到完全没法忍受的16秒。</p>
+<pre class="code literal-block"><span class="p">[</span><span class="n">SQL</span><span class="p">]</span><span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">test</span> <span class="n">where</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">and</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="n">Affected</span> <span class="n">rows</span><span class="o">:</span> <span class="mi">0</span>
+<span class="nl">Time:</span> <span class="mf">16.023</span><span class="n">s</span>
+</pre>
+
+
+<h4>索引对排序效率的影响</h4>
+<p>只要能用到索引，并且ORDER BY后面的列在索引中，则顺序还是倒序排序对性能无影响。因为叶子节点是个双向链表，倒序可以从后向前遍历，与顺序的代价相同。</p>
+<pre class="code literal-block"><span class="p">[</span><span class="n">SQL</span><span class="p">]</span><span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">test</span> <span class="n">where</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">ORDER</span> <span class="n">BY</span> <span class="n">b</span><span class="p">;</span>
+<span class="n">Affected</span> <span class="n">rows</span><span class="o">:</span> <span class="mi">0</span>
+<span class="nl">Time:</span> <span class="mf">0.085</span><span class="n">s</span>
+
+<span class="p">[</span><span class="n">SQL</span><span class="p">]</span><span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">test</span> <span class="n">where</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">ORDER</span> <span class="n">BY</span> <span class="n">b</span> <span class="n">DESC</span><span class="p">;</span>
+<span class="n">Affected</span> <span class="n">rows</span><span class="o">:</span> <span class="mi">0</span>
+<span class="nl">Time:</span> <span class="mf">0.089</span><span class="n">s</span>
+</pre>
+
+
+<p>但是，当有两个字段排序的顺序不同时，叶子节点的有序性就无法用在排序中，必须读出所有叶子节点之后再按指定的字段进行一趟排序，所以速度就慢了下来。</p>
+<pre class="code literal-block"><span class="p">[</span><span class="n">SQL</span><span class="p">]</span><span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">test</span> <span class="n">where</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">ORDER</span> <span class="n">BY</span> <span class="n">b</span> <span class="n">DESC</span><span class="p">,</span> <span class="n">c</span> <span class="n">DESC</span><span class="p">;</span>
+<span class="n">Affected</span> <span class="n">rows</span><span class="o">:</span> <span class="mi">0</span>
+<span class="nl">Time:</span> <span class="mf">0.089</span><span class="n">s</span>
+
+<span class="p">[</span><span class="n">SQL</span><span class="p">]</span><span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">test</span> <span class="n">where</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">ORDER</span> <span class="n">BY</span> <span class="n">b</span> <span class="n">ASC</span><span class="p">,</span> <span class="n">c</span> <span class="n">DESC</span><span class="p">;</span>
+<span class="n">Affected</span> <span class="n">rows</span><span class="o">:</span> <span class="mi">0</span>
+<span class="nl">Time:</span> <span class="mf">0.184</span><span class="n">s</span>
+</pre>
+
+
+<p>同样，下面的例子中对索引左边的字段a进行范围选择的时候也没法运用索引，因为多个取值的a无法保证b和c字段有序，必须重新排序</p>
+<pre class="code literal-block"><span class="p">[</span><span class="n">SQL</span><span class="p">]</span><span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">test</span> <span class="n">where</span> <span class="n">a</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="n">ORDER</span> <span class="n">BY</span> <span class="n">b</span><span class="p">;</span>
+<span class="n">Affected</span> <span class="n">rows</span><span class="o">:</span> <span class="mi">0</span>
+<span class="nl">Time:</span> <span class="mf">0.103</span><span class="n">s</span>
+</pre>
+
+
+<p>所以，尽可能做到覆盖索引（即where，order by中用到的字段被索引覆盖），能利用索引加速搜索和排序。</p>
+<hr>
+<p>参考资料：</p>
+<p>《高性能MySQL》，电子工业出版社，2010年1月</p>
+</div>
+    </div>
+    </article>
+    <article class="h-entry post-text">
+    <header>
+        <h1 class="p-name entry-title"><a href="posts/pythonla-ji-hui-shou-ji-zhi.html" class="u-url">Python垃圾回收机制</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="posts/pythonla-ji-hui-shou-ji-zhi.html" rel="bookmark"><time class="published dt-published" datetime="2013-10-24T10:44:52+08:00" itemprop="datePublished" title="Publication date">2013-10-24 10:44</time></a></p>
+                <p class="commentline">
+        
+    <a href="posts/pythonla-ji-hui-shou-ji-zhi.html#disqus_thread" data-disqus-identifier="cache/posts/pythonla-ji-hui-shou-ji-zhi.html">Comments</a>
+
+
+        </p>
+</div>
+    </header>
+    <div class="e-content entry-content">
+    <div>
+<p>题记：我是来填坑的。。。</p>
+<p>本文主要结合CPython源码分析一下Python的GC机制（面试的时候被问到这个问题，之前理解不深，答得不好，一波大坑啊。。。）</p>
+<hr>
+<p>Python GC主要使用引用计数（reference counting）来跟踪和回收垃圾。在引用计数的基础上，通过“标记-清除”（mark and sweep）解决容器对象可能产生的循环引用问题，通过“分代回收”（generation collection）以空间换时间的方法提高垃圾回收效率。</p>
+<h3>引用计数</h3>
+<p>引用计数法在对象内部维护了一个被其他对象引用数的引用计数值，当这个引用计数值为0时，说明这个对象不再被其他对象引用，就可以被回收了。</p>
+<p>结合源码来看，所有Python对象的头部包含了这样一个结构PyObject（相当于继承自PyObject）：</p>
+<pre class="code literal-block"><span class="c1">// object.h</span>
+<span class="k">struct</span> <span class="n">_object</span> <span class="p">{</span>
+    <span class="n">Py_ssize_t</span> <span class="n">ob_refcnt</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">PyTypeObject</span> <span class="o">*</span><span class="n">ob_type</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">PyObject</span><span class="p">;</span>
+</pre>
+
+
+<p>ob_refcnt就是引用计数值。</p>
+<p>例如，下面是int型对象的定义：</p>
+<pre class="code literal-block"><span class="c1">// intobject.h</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+        <span class="n">PyObject_HEAD</span>
+        <span class="kt">long</span> <span class="n">ob_ival</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">PyIntObject</span><span class="p">;</span>
+</pre>
+
+
+<p>引用计数法有很明显的优点：</p>
+<ol>
+<li>高效</li>
+<li>运行期没有停顿</li>
+<li>对象有确定的生命周期</li>
+<li>易于实现</li>
+</ol>
+<p>原始的引用计数法也有明显的缺点：</p>
+<ol>
+<li>维护引用计数的次数和引用赋值成正比，而不像mark and sweep等基本与回收的内存数量有关。</li>
+<li>无法解决循环引用的问题。A和B相互引用而再没有外部引用A与B中的任何一个，它们的引用计数都为1，但显然应该被回收。</li>
+</ol>
+<p>为了解决这两个致命弱点，Python又引入了以下两种GC机制。</p>
+<h3>标记-清除</h3>
+<p>“标记-清除”法是为了解决循环引用问题。可以包含其他对象引用的容器对象（如list, dict, set，甚至class）都可能产生循环引用，为此，在申请内存时，所有容器对象的头部又加上了<code>PyGC_Head</code>来实现“标记-清除”机制。</p>
+<pre class="code literal-block"><span class="c1">// objimpl.h</span>
+<span class="k">typedef</span> <span class="k">union</span> <span class="n">_gc_head</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="p">{</span>
+        <span class="k">union</span> <span class="n">_gc_head</span> <span class="o">*</span><span class="n">gc_next</span><span class="p">;</span>
+        <span class="k">union</span> <span class="n">_gc_head</span> <span class="o">*</span><span class="n">gc_prev</span><span class="p">;</span>
+        <span class="n">Py_ssize_t</span> <span class="n">gc_refs</span><span class="p">;</span>
+    <span class="p">}</span> <span class="n">gc</span><span class="p">;</span>
+    <span class="kt">long</span> <span class="kt">double</span> <span class="n">dummy</span><span class="p">;</span>  <span class="cm">/* force worst-case alignment */</span>
+<span class="p">}</span> <span class="n">PyGC_Head</span><span class="p">;</span>
+</pre>
+
+
+<p>在为对象申请内存的时候，可以明显看到，实际申请的内存数量已经加上了PyGC_Head的大小</p>
+<pre class="code literal-block"><span class="c1">// gcmodule.c</span>
+<span class="n">PyObject</span> <span class="o">*</span>
+<span class="nf">_PyObject_GC_Malloc</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">basicsize</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">PyObject</span> <span class="o">*</span><span class="n">op</span><span class="p">;</span>
+    <span class="n">PyGC_Head</span> <span class="o">*</span><span class="n">g</span> <span class="o">=</span> <span class="p">(</span><span class="n">PyGC_Head</span> <span class="o">*</span><span class="p">)</span><span class="n">PyObject_MALLOC</span><span class="p">(</span>
+                <span class="k">sizeof</span><span class="p">(</span><span class="n">PyGC_Head</span><span class="p">)</span> <span class="o">+</span> <span class="n">basicsize</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">g</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">PyErr_NoMemory</span><span class="p">();</span>
+
+    <span class="p">......</span>
+
+    <span class="n">op</span> <span class="o">=</span> <span class="n">FROM_GC</span><span class="p">(</span><span class="n">g</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">op</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+
+
+<p>举例来说，从<code>list</code>对象的创建中，有如下主要逻辑：</p>
+<pre class="code literal-block"><span class="c1">// listobject.c</span>
+<span class="n">PyObject</span> <span class="o">*</span>
+<span class="nf">PyList_New</span><span class="p">(</span><span class="n">Py_ssize_t</span> <span class="n">size</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">PyListObject</span> <span class="o">*</span><span class="n">op</span><span class="p">;</span>
+    <span class="p">......</span>
+    <span class="n">op</span> <span class="o">=</span> <span class="n">PyObject_GC_New</span><span class="p">(</span><span class="n">PyListObject</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">PyList_Type</span><span class="p">);</span>
+    <span class="p">......</span>
+    <span class="n">_PyObject_GC_TRACK</span><span class="p">(</span><span class="n">op</span><span class="p">);</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">PyObject</span> <span class="o">*</span><span class="p">)</span> <span class="n">op</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+
+
+<p><code>_PyObject_GC_TRACK</code>就将对象链接到了第0代对象集合中（后文详述分代回收）。</p>
+<p>垃圾标记时，先将集合中对象的引用计数复制一份副本(以免在操作过程中破坏真实的引用计数值)：</p>
+<pre class="code literal-block"><span class="c1">// gcmodule.c</span>
+<span class="k">static</span> <span class="kt">void</span>
+<span class="nf">update_refs</span><span class="p">(</span><span class="n">PyGC_Head</span> <span class="o">*</span><span class="n">containers</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">PyGC_Head</span> <span class="o">*</span><span class="n">gc</span> <span class="o">=</span> <span class="n">containers</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_next</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(;</span> <span class="n">gc</span> <span class="o">!=</span> <span class="n">containers</span><span class="p">;</span> <span class="n">gc</span> <span class="o">=</span> <span class="n">gc</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_next</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">assert</span><span class="p">(</span><span class="n">gc</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_refs</span> <span class="o">==</span> <span class="n">GC_REACHABLE</span><span class="p">);</span>
+        <span class="n">gc</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_refs</span> <span class="o">=</span> <span class="n">FROM_GC</span><span class="p">(</span><span class="n">gc</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">ob_refcnt</span><span class="p">;</span>
+        <span class="n">assert</span><span class="p">(</span><span class="n">gc</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_refs</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre>
+
+
+<p>然后操作这个副本，遍历对象集合，将被引用对象的引用计数副本值减1：</p>
+<pre class="code literal-block"><span class="c1">// gcmodule.c</span>
+<span class="k">static</span> <span class="kt">void</span>
+<span class="nf">subtract_refs</span><span class="p">(</span><span class="n">PyGC_Head</span> <span class="o">*</span><span class="n">containers</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">traverseproc</span> <span class="n">traverse</span><span class="p">;</span>
+    <span class="n">PyGC_Head</span> <span class="o">*</span><span class="n">gc</span> <span class="o">=</span> <span class="n">containers</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_next</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(;</span> <span class="n">gc</span> <span class="o">!=</span> <span class="n">containers</span><span class="p">;</span> <span class="n">gc</span><span class="o">=</span><span class="n">gc</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_next</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">traverse</span> <span class="o">=</span> <span class="n">FROM_GC</span><span class="p">(</span><span class="n">gc</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">ob_type</span><span class="o">-&gt;</span><span class="n">tp_traverse</span><span class="p">;</span>
+        <span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="n">traverse</span><span class="p">(</span><span class="n">FROM_GC</span><span class="p">(</span><span class="n">gc</span><span class="p">),</span>
+                   <span class="p">(</span><span class="n">visitproc</span><span class="p">)</span><span class="n">visit_decref</span><span class="p">,</span>
+                   <span class="nb">NULL</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre>
+
+
+<p>这个<code>traverse</code>是对象类型定义的函数，用来遍历对象，通过传入的回调函数<code>visit_decref</code>来操作引用计数副本。</p>
+<p>例如<code>dict</code>就要在key和value上都用<code>visit_decref</code>操作一遍：</p>
+<pre class="code literal-block"><span class="c1">// dictobject.c</span>
+<span class="k">static</span> <span class="kt">int</span>
+<span class="nf">dict_traverse</span><span class="p">(</span><span class="n">PyObject</span> <span class="o">*</span><span class="n">op</span><span class="p">,</span> <span class="n">visitproc</span> <span class="n">visit</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">Py_ssize_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">PyObject</span> <span class="o">*</span><span class="n">pk</span><span class="p">;</span>
+    <span class="n">PyObject</span> <span class="o">*</span><span class="n">pv</span><span class="p">;</span>
+
+    <span class="k">while</span> <span class="p">(</span><span class="n">PyDict_Next</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">i</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">pk</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">pv</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">visit</span><span class="p">(</span><span class="n">pk</span><span class="p">);</span>
+        <span class="n">visit</span><span class="p">(</span><span class="n">pv</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+
+
+<p>然后根据引用计数副本值是否为0将集合内的对象分成两类，reachable和unreachable，其中unreachable是可以被回收的对象：</p>
+<pre class="code literal-block"><span class="c1">// gcmodule.c</span>
+<span class="k">static</span> <span class="kt">void</span>
+<span class="nf">move_unreachable</span><span class="p">(</span><span class="n">PyGC_Head</span> <span class="o">*</span><span class="n">young</span><span class="p">,</span> <span class="n">PyGC_Head</span> <span class="o">*</span><span class="n">unreachable</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">PyGC_Head</span> <span class="o">*</span><span class="n">gc</span> <span class="o">=</span> <span class="n">young</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_next</span><span class="p">;</span>
+    <span class="k">while</span> <span class="p">(</span><span class="n">gc</span> <span class="o">!=</span> <span class="n">young</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">PyGC_Head</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">gc</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_refs</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">PyObject</span> <span class="o">*</span><span class="n">op</span> <span class="o">=</span> <span class="n">FROM_GC</span><span class="p">(</span><span class="n">gc</span><span class="p">);</span>
+            <span class="n">traverseproc</span> <span class="n">traverse</span> <span class="o">=</span> <span class="n">op</span><span class="o">-&gt;</span><span class="n">ob_type</span><span class="o">-&gt;</span><span class="n">tp_traverse</span><span class="p">;</span>
+            <span class="n">assert</span><span class="p">(</span><span class="n">gc</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_refs</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">);</span>
+            <span class="n">gc</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_refs</span> <span class="o">=</span> <span class="n">GC_REACHABLE</span><span class="p">;</span>
+            <span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="n">traverse</span><span class="p">(</span><span class="n">op</span><span class="p">,</span>
+                            <span class="p">(</span><span class="n">visitproc</span><span class="p">)</span><span class="n">visit_reachable</span><span class="p">,</span>
+                            <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="p">)</span><span class="n">young</span><span class="p">);</span>
+            <span class="n">next</span> <span class="o">=</span> <span class="n">gc</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_next</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">else</span> <span class="p">{</span>
+            <span class="n">next</span> <span class="o">=</span> <span class="n">gc</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_next</span><span class="p">;</span>
+            <span class="n">gc_list_move</span><span class="p">(</span><span class="n">gc</span><span class="p">,</span> <span class="n">unreachable</span><span class="p">);</span>
+            <span class="n">gc</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_refs</span> <span class="o">=</span> <span class="n">GC_TENTATIVELY_UNREACHABLE</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="n">gc</span> <span class="o">=</span> <span class="n">next</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre>
+
+
+<p>在处理了weak reference和finalizer等琐碎细节后（本文不展开讲述，有兴趣的童鞋请参考python源码），就可以回收unreachable中的对象了。</p>
+<h3>分代回收</h3>
+<p>分代回收的整体思想是：将系统中的所有内存块根据其存活时间划分为不同的集合，每个集合就成为一个“代”，垃圾收集频率随着“代”的存活时间的增大而减小，存活时间通常利用经过几次垃圾回收来度量。</p>
+<p>用来表示“代”的结构体是<code>gc_generation</code>， 包括了当前代链表表头、对象数量上限、当前对象数量：</p>
+<pre class="code literal-block"><span class="c1">// gcmodule.c</span>
+<span class="k">struct</span> <span class="n">gc_generation</span> <span class="p">{</span>
+    <span class="n">PyGC_Head</span> <span class="n">head</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">threshold</span><span class="p">;</span> <span class="cm">/* collection threshold */</span>
+    <span class="kt">int</span> <span class="n">count</span><span class="p">;</span> <span class="cm">/* count of allocations or collections of younger</span>
+<span class="cm">              generations */</span>
+<span class="p">};</span>
+</pre>
+
+
+<p>Python默认定义了三代对象集合，索引数越大，对象存活时间越长。</p>
+<pre class="code literal-block"><span class="cp">#define NUM_GENERATIONS 3</span>
+<span class="cp">#define GEN_HEAD(n) (&amp;generations[n].head)</span>
+
+<span class="cm">/* linked lists of container objects */</span>
+<span class="k">static</span> <span class="k">struct</span> <span class="n">gc_generation</span> <span class="n">generations</span><span class="p">[</span><span class="n">NUM_GENERATIONS</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="cm">/* PyGC_Head,               threshold,  count */</span>
+    <span class="p">{{{</span><span class="n">GEN_HEAD</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">GEN_HEAD</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="mi">0</span><span class="p">}},</span>   <span class="mi">700</span><span class="p">,</span>        <span class="mi">0</span><span class="p">},</span>
+    <span class="p">{{{</span><span class="n">GEN_HEAD</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">GEN_HEAD</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="mi">0</span><span class="p">}},</span>   <span class="mi">10</span><span class="p">,</span>     <span class="mi">0</span><span class="p">},</span>
+    <span class="p">{{{</span><span class="n">GEN_HEAD</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">GEN_HEAD</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="mi">0</span><span class="p">}},</span>   <span class="mi">10</span><span class="p">,</span>     <span class="mi">0</span><span class="p">},</span>
+<span class="p">};</span>
+</pre>
+
+
+<p>新生成的对象会被加入第0代，前面<code>_PyObject_GC_Malloc</code>中省略的部分就是Python GC触发的时机。每新生成一个对象都会检查第0代有没有满，如果满了就开始着手进行垃圾回收：</p>
+<pre class="code literal-block"> <span class="n">g</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_refs</span> <span class="o">=</span> <span class="n">GC_UNTRACKED</span><span class="p">;</span>
+ <span class="n">generations</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">count</span><span class="o">++</span><span class="p">;</span> <span class="cm">/* number of allocated GC objects */</span>
+ <span class="k">if</span> <span class="p">(</span><span class="n">generations</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">count</span> <span class="o">&gt;</span> <span class="n">generations</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">threshold</span> <span class="o">&amp;&amp;</span>
+     <span class="n">enabled</span> <span class="o">&amp;&amp;</span>
+     <span class="n">generations</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">threshold</span> <span class="o">&amp;&amp;</span>
+     <span class="o">!</span><span class="n">collecting</span> <span class="o">&amp;&amp;</span>
+     <span class="o">!</span><span class="n">PyErr_Occurred</span><span class="p">())</span> <span class="p">{</span>
+          <span class="n">collecting</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+          <span class="n">collect_generations</span><span class="p">();</span>
+          <span class="n">collecting</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+ <span class="p">}</span>
+</pre>
+
+
+<hr>
+<p>参考资料：</p>
+<ol>
+<li>《Python源码剖析》，陈儒著，2008</li>
+<li>Wikipedia - Reference counting: <a href="http://en.wikipedia.org/wiki/Reference_counting">http://en.wikipedia.org/wiki/Reference_counting</a>
+</li>
+<li>Wikipedia - Garbage collection: <a href="http://en.wikipedia.org/wiki/Garbage_collection_(computer_science)">http://en.wikipedia.org/wiki/Garbage_collection_(computer_science)</a>
+</li>
+</ol>
+</div>
+    </div>
+    </article>
+    <article class="h-entry post-text">
+    <header>
+        <h1 class="p-name entry-title"><a href="posts/li-yong-ld_preloadjin-xing-hook.html" class="u-url">利用LD_PRELOAD进行hook</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="posts/li-yong-ld_preloadjin-xing-hook.html" rel="bookmark"><time class="published dt-published" datetime="2013-10-09T11:44:50+08:00" itemprop="datePublished" title="Publication date">2013-10-09 11:44</time></a></p>
+                <p class="commentline">
+        
+    <a href="posts/li-yong-ld_preloadjin-xing-hook.html#disqus_thread" data-disqus-identifier="cache/posts/li-yong-ld_preloadjin-xing-hook.html">Comments</a>
+
+
+        </p>
+</div>
+    </header>
+    <div class="e-content entry-content">
+    <div>
+<p>好久没玩hook这种猥琐的东西里，今天在Linux下体验了一把。</p>
 <p>loader在进行动态链接的时候，会将有相同符号名的符号覆盖成LD_PRELOAD指定的so文件中的符号。换句话说，可以用我们自己的so库中的函数替换原来库里有的函数，从而达到hook的目的。这和Windows下通过修改import table来hook API很类似。相比较之下，LD_PRELOAD更方便了，都不用自己写代码了，系统的loader会帮我们搞定。但是LD_PRELOAD有个限制：只能hook动态链接的库，对静态链接的库无效，因为静态链接的代码都写到可执行文件里了嘛，没有坑让你填。</p>
 <p>上代码</p>
 <p>先是受害者，我们的主程序main.c，通过strcmp比较字符串是否相等：</p>
-<div class="code"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
+<pre class="code literal-block"><span class="cp">#include &lt;stdio.h&gt;</span>
 <span class="cp">#include &lt;string.h&gt;</span>
 
 <span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
@@ -96,11 +478,11 @@
     <span class="p">}</span>
     <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
-</pre></div>
+</pre>
 
 
 <p>然后是用来hook的库hook.c：</p>
-<div class="code"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
+<pre class="code literal-block"><span class="cp">#include &lt;stdio.h&gt;</span>
 <span class="cp">#include &lt;string.h&gt;</span>
 <span class="cp">#include &lt;dlfcn.h&gt;</span>
 
@@ -119,73 +501,79 @@
     <span class="n">printf</span><span class="p">(</span><span class="s">"hack function invoked. s1=&lt;%s&gt; s2=&lt;%s&gt;</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">);</span>
     <span class="k">return</span> <span class="n">old_strcmp</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">);</span>
 <span class="p">}</span>
-</pre></div>
+</pre>
 
 
 <p>因为hook的目标是strcmp，所以typedef了一个STRCMP函数指针。由于hook的目的是要控制函数行为，所以需要从原库libc.so.6中拿到“正版”strcmp指针，保存成old_strcmp以备调用。</p>
 <p>Makefile：</p>
-<div class="code"><pre><span class="nb">test</span>: main.c hook.so
+<pre class="code literal-block"><span class="nb">test</span>: main.c hook.so
     gcc -o <span class="nb">test </span>main.c
 
 hook.so: hook.c
     gcc -fPIC -shared -o hook.so hook.c -ldl
-</pre></div>
+</pre>
 
 
 <p>执行：</p>
-<div class="code"><pre><span class="nv">$ LD_PRELOAD</span><span class="o">=</span>./hook.so ./test 123
+<pre class="code literal-block"><span class="nv">$ LD_PRELOAD</span><span class="o">=</span>./hook.so ./test 123
 hack <span class="k">function </span>invoked. <span class="nv">s1</span><span class="o">=</span>&lt;123&gt; <span class="nv">s2</span><span class="o">=</span>&lt;<span class="nb">test</span>&gt;
 Incorrect password
 
 <span class="nv">$ LD_PRELOAD</span><span class="o">=</span>./hook.so ./test <span class="nb">test</span>
 hack <span class="k">function </span>invoked. <span class="nv">s1</span><span class="o">=</span>&lt;<span class="nb">test</span>&gt; <span class="nv">s2</span><span class="o">=</span>&lt;<span class="nb">test</span>&gt;
 Correct password
-</pre></div>
+</pre>
 
 
 <p>其中有一点不理解的是，<code>dlopen</code>打开libc.so.6能拿到“正版”strcmp地址，打开libc.so就是hook后的地址。照理说libc.so不是libc.so.6的一个软链吗？为什么结果会不一样嘞？</p>
 <hr>
 <p>参考资料：</p>
 <p><a href="http://www.exploit-db.com/papers/13233/">Reverse Engineering with LD_PRELOAD</a></p>
-            
+</div>
+    </div>
+    </article>
+    <article class="h-entry post-text">
+    <header>
+        <h1 class="p-name entry-title"><a href="posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html" class="u-url">Linux下编译链接动态库</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html" rel="bookmark"><time class="published dt-published" datetime="2013-10-08T09:18:31+08:00" itemprop="datePublished" title="Publication date">2013-10-08 09:18</time></a></p>
+                <p class="commentline">
         
-    <p>
-        <a href="posts/li-yong-ld_preloadjin-xing-hook.html#disqus_thread" data-disqus-identifier="cache/posts/li-yong-ld_preloadjin-xing-hook.html">Comments</a>
+    <a href="posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html#disqus_thread" data-disqus-identifier="cache/posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html">Comments</a>
 
 
-        </p></div>
-        <div class="postbox">
-        <h1><a href="posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html">Linux下编译链接动态库</a>
-        <small>  
-             Posted: <time class="published" datetime="2013-10-08T09:18:31+08:00">2013-10-08 09:18</time>
-        </small></h1>
-        <hr>
-        <p>记录下Linux下编译和链接动态库的过程。</p>
+        </p>
+</div>
+    </header>
+    <div class="e-content entry-content">
+    <div>
+<p>记录下Linux下编译和链接动态库的过程。</p>
 <h3>一、 编写动态库</h3>
 <p>头文件so.h：  </p>
-<div class="code"><pre><span class="cp">#ifndef  SO_H</span>
+<pre class="code literal-block"><span class="cp">#ifndef  SO_H</span>
 <span class="cp">#define  SO_H</span>
 
 <span class="kt">int</span> <span class="nf">add</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">);</span>
 
 
 <span class="cp">#endif  </span><span class="cm">/*SO_H*/</span><span class="cp"></span>
-</pre></div>
+</pre>
 
 
 <p>实现文件so.c：</p>
-<div class="code"><pre><span class="cp">#include "so.h"</span>
+<pre class="code literal-block"><span class="cp">#include "so.h"</span>
 
 <span class="kt">int</span> <span class="nf">add</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">;</span>
 <span class="p">}</span>
-</pre></div>
+</pre>
 
 
 <h3>二、编译动态库</h3>
-<div class="code"><pre>gcc so.c -fPIC -shared -o libtest.so
-</pre></div>
+<pre class="code literal-block">gcc so.c -fPIC -shared -o libtest.so
+</pre>
 
 
 <p>解释一下各个参数含义：</p>
@@ -194,7 +582,7 @@ Correct password
 <li>说明我们要生成的是动态库so(Shared Object)文件，从而进行动态链接。</li>
 </ol>
 <p>通过<code>nm -g libtest.so</code>可以看到，导出符号表中已经有<code>add</code>这个符号了：</p>
-<div class="code"><pre><span class="nv">$ </span>nm -g libtest.so 
+<pre class="code literal-block"><span class="nv">$ </span>nm -g libtest.so 
 0000000000000670 T add
 0000000000201030 B __bss_start
                  w __cxa_finalize@@GLIBC_2.2.5
@@ -206,13 +594,13 @@ Correct password
                  w _ITM_deregisterTMCloneTable
                  w _ITM_registerTMCloneTable
                  w _Jv_RegisterClasses
-</pre></div>
+</pre>
 
 
 <h3>三、使用动态库</h3>
 <h4>1. 隐式链接(编译时链接)</h4>
 <p>编写主程序main.c：</p>
-<div class="code"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
+<pre class="code literal-block"><span class="cp">#include &lt;stdio.h&gt;</span>
 <span class="cp">#include "so.h"</span>
 
 <span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
@@ -220,7 +608,7 @@ Correct password
     <span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span>
     <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
-</pre></div>
+</pre>
 
 
 <p>使用<code>gcc main.c -L. -ltest -o test</code>进行编译。</p>
@@ -229,18 +617,18 @@ Correct password
 <li>-l：指定需要链接的库。该名称是处在头lib和后缀.so中的名称，如上动态库libtest.so的l参数为-l test</li>
 </ul>
 <p>此时通过<code>readelf test -d</code>已经能看到生成的可执行文件test的Dynamic section里依赖libtest.so了</p>
-<div class="code"><pre><span class="nv">$ </span>readelf <span class="nb">test</span> -d
+<pre class="code literal-block"><span class="nv">$ </span>readelf <span class="nb">test</span> -d
 
 Dynamic section at offset 0xe18 contains 25 entries:
   Tag        Type                         Name/Value
  0x0000000000000001 <span class="o">(</span>NEEDED<span class="o">)</span>             Shared library: <span class="o">[</span>libtest.so<span class="o">]</span>
  0x0000000000000001 <span class="o">(</span>NEEDED<span class="o">)</span>             Shared library: <span class="o">[</span>libc.so.6<span class="o">]</span>
 ......
-</pre></div>
+</pre>
 
 
 <p>dynamic symbols中也有一个undefined symbol(add)</p>
-<div class="code"><pre><span class="nv">$ </span>nm -D <span class="nb">test </span>
+<pre class="code literal-block"><span class="nv">$ </span>nm -D <span class="nb">test </span>
 <span class="nb">                 </span>U add
 0000000000601048 B __bss_start
 0000000000601048 D _edata
@@ -253,23 +641,23 @@ Dynamic section at offset 0xe18 contains 25 entries:
                  w _Jv_RegisterClasses
                  U __libc_start_main
                  U <span class="nb">printf</span>
-</pre></div>
+</pre>
 
 
 <p>在执行隐式链接的程序之前要注意设置<code>LD_LIBRARY_PATH</code>环境变量，或者把前面生成的libtest.so复制到系统路径下，否则会找不到动态库。</p>
-<div class="code"><pre><span class="err">$</span> <span class="p">.</span><span class="o">/</span><span class="n">test</span> 
+<pre class="code literal-block"><span class="err">$</span> <span class="p">.</span><span class="o">/</span><span class="n">test</span> 
 <span class="p">.</span><span class="o">/</span><span class="n">test</span><span class="o">:</span> <span class="n">error</span> <span class="k">while</span> <span class="n">loading</span> <span class="n">shared</span> <span class="n">libraries</span><span class="o">:</span> <span class="n">libtest</span><span class="p">.</span><span class="n">so</span><span class="o">:</span> <span class="n">cannot</span> <span class="n">open</span> <span class="n">shared</span> <span class="n">object</span> <span class="n">file</span><span class="o">:</span> <span class="n">No</span> <span class="n">such</span> <span class="n">file</span> <span class="n">or</span> <span class="n">directory</span>
 
 <span class="err">$</span> <span class="n">export</span> <span class="n">LD_LIBRARY_PATH</span><span class="o">=</span><span class="p">.</span>
 
 <span class="err">$</span> <span class="p">.</span><span class="o">/</span><span class="n">test</span> 
 <span class="mi">3</span>
-</pre></div>
+</pre>
 
 
 <h4>2. 显式链接(运行时链接)</h4>
 <p>编写主程序dyn_main.c</p>
-<div class="code"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
+<pre class="code literal-block"><span class="cp">#include &lt;stdio.h&gt;</span>
 <span class="cp">#include &lt;dlfcn.h&gt;</span>
 
 <span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
@@ -291,23 +679,23 @@ Dynamic section at offset 0xe18 contains 25 entries:
     <span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span>
     <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
-</pre></div>
+</pre>
 
 
 <p>使用<code>gcc dyn_main.c -ldl -o dyn_test</code>编译。</p>
 <p>这时通过<code>readelf dyn_test -d</code>可以发现，dyn_test不依赖libtest.so：</p>
-<div class="code"><pre><span class="err">$</span> <span class="n">readelf</span> <span class="n">dyn_test</span> <span class="o">-</span><span class="n">d</span>
+<pre class="code literal-block"><span class="err">$</span> <span class="n">readelf</span> <span class="n">dyn_test</span> <span class="o">-</span><span class="n">d</span>
 
 <span class="n">Dynamic</span> <span class="n">section</span> <span class="n">at</span> <span class="n">offset</span> <span class="mh">0xe18</span> <span class="n">contains</span> <span class="mi">25</span> <span class="n">entries</span><span class="o">:</span>
   <span class="n">Tag</span>        <span class="n">Type</span>                         <span class="n">Name</span><span class="o">/</span><span class="n">Value</span>
  <span class="mh">0x0000000000000001</span> <span class="p">(</span><span class="n">NEEDED</span><span class="p">)</span>             <span class="n">Shared</span> <span class="n">library</span><span class="o">:</span> <span class="p">[</span><span class="n">libdl</span><span class="p">.</span><span class="n">so</span><span class="mf">.2</span><span class="p">]</span>
  <span class="mh">0x0000000000000001</span> <span class="p">(</span><span class="n">NEEDED</span><span class="p">)</span>             <span class="n">Shared</span> <span class="n">library</span><span class="o">:</span> <span class="p">[</span><span class="n">libc</span><span class="p">.</span><span class="n">so</span><span class="mf">.6</span><span class="p">]</span>
 <span class="p">......</span>
-</pre></div>
+</pre>
 
 
 <p>dyn_test的dynamic symbols中也没有add：</p>
-<div class="code"><pre><span class="err">$</span> <span class="n">nm</span> <span class="o">-</span><span class="n">D</span> <span class="n">dyn_test</span> 
+<pre class="code literal-block"><span class="err">$</span> <span class="n">nm</span> <span class="o">-</span><span class="n">D</span> <span class="n">dyn_test</span> 
                  <span class="n">U</span> <span class="n">dlerror</span>
                  <span class="n">U</span> <span class="n">dlopen</span>
                  <span class="n">U</span> <span class="n">dlsym</span>
@@ -318,13 +706,13 @@ Dynamic section at offset 0xe18 contains 25 entries:
                  <span class="n">U</span> <span class="n">__libc_start_main</span>
                  <span class="n">U</span> <span class="n">printf</span>
                  <span class="n">U</span> <span class="n">puts</span>
-</pre></div>
+</pre>
 
 
 <p>运行程序也不需要设置<code>LD_LIBRARY_PATH</code>环境变量</p>
-<div class="code"><pre><span class="nv">$ </span>./dyn_test 
+<pre class="code literal-block"><span class="nv">$ </span>./dyn_test 
 3
-</pre></div>
+</pre>
 
 
 <hr>
@@ -335,40 +723,46 @@ Dynamic section at offset 0xe18 contains 25 entries:
 <li><a href="http://stackoverflow.com/questions/34732/how-do-i-list-the-symbols-in-a-so-file">How do I list the symbols in a .so file</a></li>
 <li><a href="http://stackoverflow.com/questions/10480657/import-names-in-elf-binary">Import names in ELF binary</a></li>
 </ol>
-            
+</div>
+    </div>
+    </article>
+    <article class="h-entry post-text">
+    <header>
+        <h1 class="p-name entry-title"><a href="posts/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.html" class="u-url">C语言宏的特殊用法和几个坑</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="posts/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.html" rel="bookmark"><time class="published dt-published" datetime="2013-07-13T14:25:31+08:00" itemprop="datePublished" title="Publication date">2013-07-13 14:25</time></a></p>
+                <p class="commentline">
         
-    <p>
-        <a href="posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html#disqus_thread" data-disqus-identifier="cache/posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html">Comments</a>
+    <a href="posts/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.html#disqus_thread" data-disqus-identifier="cache/posts/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.html">Comments</a>
 
 
-        </p></div>
-        <div class="postbox">
-        <h1><a href="posts/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.html">C语言宏的特殊用法和几个坑</a>
-        <small>  
-             Posted: <time class="published" datetime="2013-07-13T14:25:31+08:00">2013-07-13 14:25</time>
-        </small></h1>
-        <hr>
-        <p>总结一下C语言中宏的一些特殊用法和几个容易踩的坑。由于本文主要参考GCC文档，某些细节（如宏参数中的空格是否处理之类）在别的编译器可能有细微差别，请参考相应文档。</p>
+        </p>
+</div>
+    </header>
+    <div class="e-content entry-content">
+    <div>
+<p>总结一下C语言中宏的一些特殊用法和几个容易踩的坑。由于本文主要参考GCC文档，某些细节（如宏参数中的空格是否处理之类）在别的编译器可能有细微差别，请参考相应文档。</p>
 <h3>宏基础</h3>
 <p>宏仅仅是在C预处理阶段的一种文本替换工具，编译完之后对二进制代码不可见。基本用法如下：</p>
 <h4>1. 标示符别名</h4>
-<div class="code"><pre><span class="cp">#define BUFFER_SIZE 1024</span>
-</pre></div>
+<pre class="code literal-block"><span class="cp">#define BUFFER_SIZE 1024</span>
+</pre>
 
 
 <p>预处理阶段，<code>foo = (char *) malloc (BUFFER_SIZE);</code>会被替换成<code>foo = (char *) malloc (1024);</code></p>
 <p>宏体换行需要在行末加反斜杠\</p>
-<div class="code"><pre><span class="cp">#define NUMBERS 1, \</span>
+<pre class="code literal-block"><span class="cp">#define NUMBERS 1, \</span>
 <span class="cp">                2, \</span>
 <span class="cp">                3</span>
-</pre></div>
+</pre>
 
 
 <p>预处理阶段<code>int x[] = { NUMBERS };</code>会被扩展成<code>int x[] = { 1, 2, 3 };</code></p>
 <h4>2. 宏函数</h4>
 <p>宏名之后带括号的宏被认为是宏函数。用法和普通函数一样，只不过在预处理阶段，宏函数会被展开。优点是没有普通函数保存寄存器和参数传递的开销，展开后的代码有利于CPU cache的利用和指令预测，速度快。缺点是可执行代码体积大。</p>
-<div class="code"><pre><span class="cp">#define min(X, Y)  ((X) &lt; (Y) ? (X) : (Y))</span>
-</pre></div>
+<pre class="code literal-block"><span class="cp">#define min(X, Y)  ((X) &lt; (Y) ? (X) : (Y))</span>
+</pre>
 
 
 <p><code>y = min(1, 2);</code>会被扩展成<code>y = ((1) &lt; (2) ? (1) : (2));</code></p>
@@ -376,51 +770,51 @@ Dynamic section at offset 0xe18 contains 25 entries:
 <h3>宏特殊用法</h3>
 <h4>1. 字符串化(Stringification)</h4>
 <p>在宏体中，如果宏参数前加个<code>#</code>，那么在宏体扩展的时候，宏参数会被扩展成字符串的形式。如：</p>
-<div class="code"><pre><span class="cp">#define WARN_IF(EXP) \</span>
+<pre class="code literal-block"><span class="cp">#define WARN_IF(EXP) \</span>
 <span class="cp">     do { if (EXP) \</span>
 <span class="cp">             fprintf (stderr, "Warning: " #EXP "\n"); } \</span>
 <span class="cp">     while (0)</span>
-</pre></div>
+</pre>
 
 
 <p><code>WARN_IF (x == 0);</code>会被扩展成：</p>
-<div class="code"><pre><span class="k">do</span> <span class="p">{</span> <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+<pre class="code literal-block"><span class="k">do</span> <span class="p">{</span> <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
     <span class="n">fprintf</span> <span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">"Warning: "</span> <span class="s">"x == 0"</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span> <span class="p">}</span>
 <span class="k">while</span> <span class="p">(</span><span class="mi">0</span><span class="p">);</span>
-</pre></div>
+</pre>
 
 
 <p>这种用法可以用在assert中，如果断言失败，可以将失败的语句输出到反馈信息中</p>
 <h4>2. 连接(Concatenation)</h4>
 <p>在宏体中，如果宏体所在标示符中有<code>##</code>，那么在宏体扩展的时候，宏参数会被直接替换到标示符中。如：</p>
-<div class="code"><pre><span class="cp">#define COMMAND(NAME)  { #NAME, NAME ## _command }</span>
+<pre class="code literal-block"><span class="cp">#define COMMAND(NAME)  { #NAME, NAME ## _command }</span>
 
 <span class="k">struct</span> <span class="n">command</span>
 <span class="p">{</span>
     <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
     <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">function</span><span class="p">)</span> <span class="p">(</span><span class="kt">void</span><span class="p">);</span>
 <span class="p">};</span>
-</pre></div>
+</pre>
 
 
 <p>在宏扩展的时候</p>
-<div class="code"><pre><span class="k">struct</span> <span class="n">command</span> <span class="n">commands</span><span class="p">[]</span> <span class="o">=</span>
+<pre class="code literal-block"><span class="k">struct</span> <span class="n">command</span> <span class="n">commands</span><span class="p">[]</span> <span class="o">=</span>
 <span class="p">{</span>
     <span class="n">COMMAND</span> <span class="p">(</span><span class="n">quit</span><span class="p">),</span>
     <span class="n">COMMAND</span> <span class="p">(</span><span class="n">help</span><span class="p">),</span>
     <span class="p">...</span>
 <span class="p">};</span>
-</pre></div>
+</pre>
 
 
 <p>会被扩展成：</p>
-<div class="code"><pre><span class="k">struct</span> <span class="n">command</span> <span class="n">commands</span><span class="p">[]</span> <span class="o">=</span>
+<pre class="code literal-block"><span class="k">struct</span> <span class="n">command</span> <span class="n">commands</span><span class="p">[]</span> <span class="o">=</span>
 <span class="p">{</span>
     <span class="p">{</span> <span class="s">"quit"</span><span class="p">,</span> <span class="n">quit_command</span> <span class="p">},</span>
     <span class="p">{</span> <span class="s">"help"</span><span class="p">,</span> <span class="n">help_command</span> <span class="p">},</span>
     <span class="p">...</span>
 <span class="p">};</span>
-</pre></div>
+</pre>
 
 
 <p>这样就节省了大量时间，提高效率。</p>
@@ -430,74 +824,74 @@ Dynamic section at offset 0xe18 contains 25 entries:
 <p>由于是纯文本替换，C预处理器不对宏体做任何语法检查，像缺个括号、少个分号神马的预处理器是不管的。这里要格外小心，由此可能引出各种奇葩的问题，一下还很难找到根源。</p>
 <h4>2. 算符优先级问题</h4>
 <p>不仅宏体是纯文本替换，宏参数也是纯文本替换。有以下一段简单的宏，实现乘法：</p>
-<div class="code"><pre><span class="cp">#define MULTIPLY(x, y) x * y</span>
-</pre></div>
+<pre class="code literal-block"><span class="cp">#define MULTIPLY(x, y) x * y</span>
+</pre>
 
 
 <p><code>MULTIPLY(1, 2)</code>没问题，会正常展开成<code>1 * 2</code>。有问题的是这种表达式<code>MULTIPLY(1+2, 3)</code>，展开后成了<code>1+2 * 3</code>，显然优先级错了。</p>
 <p>在宏体中，给引用的参数加个括号就能避免这问题。</p>
-<div class="code"><pre><span class="cp">#define MULTIPLY(x, y) (x) * (y)</span>
-</pre></div>
+<pre class="code literal-block"><span class="cp">#define MULTIPLY(x, y) (x) * (y)</span>
+</pre>
 
 
 <p><code>MULTIPLY(1+2, 3)</code>就会被展开成<code>(1+2) * (3)</code>，优先级正常了。</p>
 <p>其实这个问题和下面要说到的某些问题都属于由于纯文本替换而导致的语义破坏问题，要格外小心。</p>
 <h4>3. 分号吞噬问题</h4>
 <p>有如下宏定义：</p>
-<div class="code"><pre><span class="cp">#define SKIP_SPACES(p, limit)  \</span>
+<pre class="code literal-block"><span class="cp">#define SKIP_SPACES(p, limit)  \</span>
 <span class="cp">     { char *lim = (limit);         \</span>
 <span class="cp">       while (p &lt; lim) {            \</span>
 <span class="cp">         if (*p++ != ' ') {         \</span>
 <span class="cp">           p--; break; }}}</span>
-</pre></div>
+</pre>
 
 
 <p>假设有如下一段代码：</p>
-<div class="code"><pre><span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">p</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+<pre class="code literal-block"><span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">p</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
    <span class="n">SKIP_SPACES</span> <span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">lim</span><span class="p">);</span>
 <span class="k">else</span> <span class="p">...</span>
-</pre></div>
+</pre>
 
 
 <p>一编译，GCC报<code>error: ‘else’ without a previous ‘if’</code>。原来这个看似是一个函数的宏被展开后是一段大括号括起来的代码块，加上分号之后这个if逻辑块就结束了，所以编译器发现这个else没有对应的if。</p>
 <p>这个问题一般用<code>do ... while(0)</code>的形式来解决：</p>
-<div class="code"><pre><span class="cp">#define SKIP_SPACES(p, limit)     \</span>
+<pre class="code literal-block"><span class="cp">#define SKIP_SPACES(p, limit)     \</span>
 <span class="cp">     do { char *lim = (limit);         \</span>
 <span class="cp">          while (p &lt; lim) {            \</span>
 <span class="cp">            if (*p++ != ' ') {         \</span>
 <span class="cp">              p--; break; }}}          \</span>
 <span class="cp">     while (0)</span>
-</pre></div>
+</pre>
 
 
 <p>展开后就成了</p>
-<div class="code"><pre><span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">p</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+<pre class="code literal-block"><span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">p</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
     <span class="k">do</span> <span class="p">...</span> <span class="k">while</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
 <span class="k">else</span> <span class="p">...</span>
-</pre></div>
+</pre>
 
 
 <p>这样就消除了分号吞噬问题。</p>
 <p>这个技巧在Linux内核源码里很常见，比如这个置位宏<code>#define SET_REG_BIT(reg, bit)              do { (reg |= (1 &lt;&lt; (bit))); } while (0)</code>(位于arch/mips/include/asm/mach-pnx833x/gpio.h)</p>
 <h4>4. 宏参数重复调用</h4>
 <p>有如下宏定义：</p>
-<div class="code"><pre><span class="cp">#define min(X, Y)  ((X) &lt; (Y) ? (X) : (Y))</span>
-</pre></div>
+<pre class="code literal-block"><span class="cp">#define min(X, Y)  ((X) &lt; (Y) ? (X) : (Y))</span>
+</pre>
 
 
 <p>当有如下调用时<code>next = min (x + y, foo (z));</code>，宏体被展开成<code>next = ((x + y) &lt; (foo (z)) ? (x + y) : (foo (z)));</code>，可以看到，<code>foo(z)</code>被重复调用了两次，做了重复计算。更严重的是，如果foo是不可重入的(foo内修改了全局或静态变量)，程序会产生逻辑错误。</p>
 <p>所以，尽量不要在宏参数中传入函数调用。</p>
 <h4>5. 对自身的递归引用</h4>
 <p>有如下宏定义：</p>
-<div class="code"><pre><span class="cp">#define foo (4 + foo)</span>
-</pre></div>
+<pre class="code literal-block"><span class="cp">#define foo (4 + foo)</span>
+</pre>
 
 
 <p>按前面的理解，<code>(4 + foo)</code>会展开成<code>(4 + (4 + foo)</code>，然后一直展开下去，直至内存耗尽。但是，预处理器采取的策略是<strong><em>只展开一次</em></strong>。也就是说，<code>foo</code>只会展开成<code>(4 + foo)</code>，而展开之后<code>foo</code>的含义就要根据上下文来确定了。</p>
 <p>对于以下的交叉引用，宏体也只会展开一次。</p>
-<div class="code"><pre><span class="cp">#define x (4 + y)</span>
+<pre class="code literal-block"><span class="cp">#define x (4 + y)</span>
 <span class="cp">#define y (2 * x)</span>
-</pre></div>
+</pre>
 
 
 <p><code>x</code>展开成<code>(4 + y) -&gt; (4 + (2 * x))</code>，<code>y</code>展开成<code>(2 * x) -&gt; (2 * (4 + y))</code>。</p>
@@ -505,38 +899,46 @@ Dynamic section at offset 0xe18 contains 25 entries:
 <h4>6. 宏参数预处理</h4>
 <p>宏参数中若包含另外的宏，那么宏参数在被代入到宏体之前会做一次完全的展开，除非宏体中含有<code>#</code>或<code>##</code>。</p>
 <p>有如下宏定义：</p>
-<div class="code"><pre><span class="cp">#define AFTERX(x) X_ ## x</span>
+<pre class="code literal-block"><span class="cp">#define AFTERX(x) X_ ## x</span>
 <span class="cp">#define XAFTERX(x) AFTERX(x)</span>
 <span class="cp">#define TABLESIZE 1024</span>
 <span class="cp">#define BUFSIZE TABLESIZE</span>
-</pre></div>
+</pre>
 
 
 <ul>
-<li><code>AFTERX(BUFSIZE)</code>会被展开成<code>X_BUFSIZE</code>。因为宏体中含有<code>##</code>，宏参数直接代入宏体。</li>
-<li><code>XAFTERX(BUFSIZE)</code>会被展开成<code>X_1024</code>。因为<code>XAFTERX(x)</code>的宏体是<code>AFTERX(x)</code>，并没有<code>#</code>或<code>##</code>，所以<code>BUFSIZE</code>在代入前会被完全展开成<code>1024</code>，然后才代入宏体，变成<code>X_1024</code>。</li>
+<li>
+<code>AFTERX(BUFSIZE)</code>会被展开成<code>X_BUFSIZE</code>。因为宏体中含有<code>##</code>，宏参数直接代入宏体。</li>
+<li>
+<code>XAFTERX(BUFSIZE)</code>会被展开成<code>X_1024</code>。因为<code>XAFTERX(x)</code>的宏体是<code>AFTERX(x)</code>，并没有<code>#</code>或<code>##</code>，所以<code>BUFSIZE</code>在代入前会被完全展开成<code>1024</code>，然后才代入宏体，变成<code>X_1024</code>。</li>
 </ul>
 <p>-EOF-</p>
 <hr>
 <p>参考资料：</p>
 <p><a href="http://gcc.gnu.org/onlinedocs/cpp/Macros.html">http://gcc.gnu.org/onlinedocs/cpp/Macros.html</a></p>
-            
+</div>
+    </div>
+    </article>
+    <article class="h-entry post-text">
+    <header>
+        <h1 class="p-name entry-title"><a href="posts/python-descriptor.html" class="u-url">Python descriptor</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="posts/python-descriptor.html" rel="bookmark"><time class="published dt-published" datetime="2013-06-12T12:31:54+08:00" itemprop="datePublished" title="Publication date">2013-06-12 12:31</time></a></p>
+                <p class="commentline">
         
-    <p>
-        <a href="posts/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.html#disqus_thread" data-disqus-identifier="cache/posts/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.html">Comments</a>
+    <a href="posts/python-descriptor.html#disqus_thread" data-disqus-identifier="cache/posts/python-descriptor.html">Comments</a>
 
 
-        </p></div>
-        <div class="postbox">
-        <h1><a href="posts/python-descriptor.html">Python descriptor</a>
-        <small>  
-             Posted: <time class="published" datetime="2013-06-12T12:31:54+08:00">2013-06-12 12:31</time>
-        </small></h1>
-        <hr>
-        <p>一次偶然发现，Python的对象竟然可以在运行期动态添加类定义时没有的属性，这又颠覆了我对Python OO机制的理解。Google了一把，顺着<code>__dict__</code>属性一路找到descriptor，揭开了隐藏在Python对象之后的内幕。</p>
+        </p>
+</div>
+    </header>
+    <div class="e-content entry-content">
+    <div>
+<p>一次偶然发现，Python的对象竟然可以在运行期动态添加类定义时没有的属性，这又颠覆了我对Python OO机制的理解。Google了一把，顺着<code>__dict__</code>属性一路找到descriptor，揭开了隐藏在Python对象之后的内幕。</p>
 <p>本文主要记录Python的descriptor机制，以及其在Python对象的属性、方法绑定上的作用。</p>
 <p>先从本文的始作俑者，运行期动态添加对象属性开始讲起。</p>
-<div class="code"><pre><span class="k">class</span> <span class="nc">A</span><span class="p">:</span>
+<pre class="code literal-block"><span class="k">class</span> <span class="nc">A</span><span class="p">:</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s">'value'</span>
     <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -544,41 +946,43 @@ Dynamic section at offset 0xe18 contains 25 entries:
 <span class="n">a</span> <span class="o">=</span> <span class="n">A</span><span class="p">()</span>
 <span class="n">a</span><span class="o">.</span><span class="n">attr</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="k">print</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">attr</span><span class="p">)</span>
-</pre></div>
+</pre>
 
 
 <p>以上代码奇迹般的没有报错，而且还输出了1。这肯定会让写过C++/Java代码的童鞋表示吃惊，Python变量类型动态也就不稀奇了，对象属性还能动态添加的？Python到底在背后做了什么？</p>
 <h3>神奇的__dict__</h3>
 <p>在<code>a.attr = 1</code>前后分别加上一行<code>print(a.__dict__)</code>就会得到如下结果:  </p>
-<div class="code"><pre><span class="p">{</span><span class="s">'value'</span><span class="p">:</span> <span class="s">'value'</span><span class="p">}</span>  
+<pre class="code literal-block"><span class="p">{</span><span class="s">'value'</span><span class="p">:</span> <span class="s">'value'</span><span class="p">}</span>  
 <span class="mi">1</span>  
 <span class="p">{</span><span class="s">'value'</span><span class="p">:</span> <span class="s">'value'</span><span class="p">,</span> <span class="s">'attr'</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span> 
-</pre></div>
+</pre>
 
 
 <p>显而易见，我们在运行期定义的属性和类定义时定义的属性都被放在了<code>__dict__</code>里。</p>
 <p>到这里有人可能就有疑问了，Python里的一切不都是对象麽？为什么成员函数<code>__init__</code>、<code>f</code>不在这个字典里？</p>
 <p>看看<code>A.__dict__</code>里有什么就明白了：  </p>
-<div class="code"><pre><span class="p">{</span><span class="s">'__dict__'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">attribute</span> <span class="s">'__dict__'</span> <span class="n">of</span> <span class="s">'A'</span> <span class="n">objects</span><span class="o">&gt;</span><span class="p">,</span>
+<pre class="code literal-block"><span class="p">{</span><span class="s">'__dict__'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">attribute</span> <span class="s">'__dict__'</span> <span class="n">of</span> <span class="s">'A'</span> <span class="n">objects</span><span class="o">&gt;</span><span class="p">,</span>
  <span class="s">'__doc__'</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
  <span class="s">'__init__'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">__main__</span><span class="o">.</span><span class="n">__init__</span><span class="o">&gt;</span><span class="p">,</span>
  <span class="s">'__module__'</span><span class="p">:</span> <span class="s">'__main__'</span><span class="p">,</span>
  <span class="s">'__weakref__'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">attribute</span> <span class="s">'__weakref__'</span> <span class="n">of</span> <span class="s">'A'</span> <span class="n">objects</span><span class="o">&gt;</span><span class="p">,</span>
  <span class="s">'f'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">__main__</span><span class="o">.</span><span class="n">f</span><span class="o">&gt;</span><span class="p">}</span>
-</pre></div>
+</pre>
 
 
 <p>这时才恍然大悟，如果成员变量看做是对象的属性，那么成员函数就应该看成是类的属性，被全部对象共享嘛。</p>
 <p>更精确地讲，以<code>object.attribute</code>访问一个对象的属性时，属性的搜索顺序为：</p>
 <ol>
-<li>对象自身，<code>object.__dict__</code></li>
-<li>对象类型，<code>object.__class__.__dict__</code></li>
+<li>对象自身，<code>object.__dict__</code>
+</li>
+<li>对象类型，<code>object.__class__.__dict__</code>
+</li>
 <li>对象类型的基类，<code>object.__class__.__bases__</code>中的所有<code>__dict__</code>。注意，当多重继承的情况下有菱形继承的时候，Python会根据MRO确定的顺序进行搜索。关于MRO(Method Resolution Order)是什么有时间专门写一篇文章总结一下。</li>
 </ol>
 <p>当以上三个步骤都没有找到要访问的属性的时候Python就只能抛出<code>AttributeError</code>异常了。</p>
 <h3>Descriptor是什么</h3>
 <p>讲了这么多，貌似跟descriptor半毛钱关系没有嘛。别急，接着往下看。</p>
-<div class="code"><pre><span class="k">class</span> <span class="nc">RevealAccess</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<pre class="code literal-block"><span class="k">class</span> <span class="nc">RevealAccess</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initval</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'var'</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">val</span> <span class="o">=</span> <span class="n">initval</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
@@ -590,11 +994,11 @@ Dynamic section at offset 0xe18 contains 25 entries:
     <span class="k">def</span> <span class="nf">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
         <span class="k">print</span> <span class="s">'Updating'</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">val</span> <span class="o">=</span> <span class="n">val</span>
-</pre></div>
+</pre>
 
 
 <p>来测试一下这个类</p>
-<div class="code"><pre><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">MyClass</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<pre class="code literal-block"><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">MyClass</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">RevealAccess</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="s">'var "x"'</span><span class="p">)</span>
     <span class="n">y</span> <span class="o">=</span> <span class="mi">5</span>
 
@@ -609,7 +1013,7 @@ Dynamic section at offset 0xe18 contains 25 entries:
 <span class="mi">20</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">m</span><span class="o">.</span><span class="n">y</span>
 <span class="mi">5</span>
-</pre></div>
+</pre>
 
 
 <p>这个<code>RevealAccess</code>的对象就是一个descriptor，其作用就是在存取变量的时候做了一个hook。访问属性<code>m.x</code>就是调用<code>__get__</code>方法，设置属性值就是调用<code>__set__</code>方法。还可以有一个<code>__delete__</code>方法，在<code>del m.x</code>时被调用。</p>
@@ -617,34 +1021,34 @@ Dynamic section at offset 0xe18 contains 25 entries:
 <h3>Method binding</h3>
 <p>有了以上两个概念，我们就能讨论Python的方法绑定了。</p>
 <p>还记得讨论<code>__dict__</code>时的成员函数<code>f</code>吗？按照我们的推测，<code>A.__dict__['f']</code>应该和<code>a.f</code>是一个东西。但是！！！</p>
-<div class="code"><pre><span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="s">'f'</span><span class="p">]</span>
+<pre class="code literal-block"><span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="s">'f'</span><span class="p">]</span>
 <span class="o">&lt;</span><span class="n">function</span> <span class="n">__main__</span><span class="o">.</span><span class="n">f</span><span class="o">&gt;</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">f</span>
 <span class="o">&lt;</span><span class="n">bound</span> <span class="n">method</span> <span class="n">A</span><span class="o">.</span><span class="n">f</span> <span class="n">of</span> <span class="o">&lt;</span><span class="n">__main__</span><span class="o">.</span><span class="n">A</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x7f9d69cc5950</span><span class="o">&gt;&gt;</span>
-</pre></div>
+</pre>
 
 
 <p>这两个显然不是一个东西，一个是<code>function</code>，一个是<code>bound method</code>。这是什么情况？淡定，看下面</p>
-<div class="code"><pre><span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="s">'f'</span><span class="p">]</span><span class="o">.</span><span class="n">__get__</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">A</span><span class="p">)</span>
+<pre class="code literal-block"><span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="s">'f'</span><span class="p">]</span><span class="o">.</span><span class="n">__get__</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">A</span><span class="p">)</span>
 <span class="o">&lt;</span><span class="n">bound</span> <span class="n">method</span> <span class="n">A</span><span class="o">.</span><span class="n">f</span> <span class="n">of</span> <span class="o">&lt;</span><span class="n">__main__</span><span class="o">.</span><span class="n">A</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x7f9d69cc5950</span><span class="o">&gt;&gt;</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">f</span>
 <span class="o">&lt;</span><span class="n">bound</span> <span class="n">method</span> <span class="n">A</span><span class="o">.</span><span class="n">f</span> <span class="n">of</span> <span class="o">&lt;</span><span class="n">__main__</span><span class="o">.</span><span class="n">A</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x7f9d69cc5950</span><span class="o">&gt;&gt;</span>
-</pre></div>
+</pre>
 
 
 <p>这下放心了吧:D</p>
 <p>其实，类的成员函数就是一个descriptor，在实例化对象a的时候，Python就做了这么一个过程(伪码，详见Objects/funcobject.c)：<code>a.f = A.__dict__['f'].__get__(a, A)</code></p>
 <p>纯Python模拟的函数对象就像这样：</p>
-<div class="code"><pre><span class="k">class</span> <span class="nc">Function</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<pre class="code literal-block"><span class="k">class</span> <span class="nc">Function</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="o">.</span> <span class="o">.</span> <span class="o">.</span>
     <span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">objtype</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="s">"Simulate func_descr_get() in Objects/funcobject.c"</span>
         <span class="k">return</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">objtype</span><span class="p">)</span>
-</pre></div>
+</pre>
 
 
 <p>然后就好理解<code>staticmethod</code>和<code>classmethod</code>这两个decorator了吧。<code>staticmethod</code>无视了传入的第一个self参数，<code>classmethod</code>手工加了一个类对象参数进去。它们的纯Python模拟就像下面所示：</p>
-<div class="code"><pre><span class="k">class</span> <span class="nc">StaticMethod</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<pre class="code literal-block"><span class="k">class</span> <span class="nc">StaticMethod</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
  <span class="s">"Emulate PyStaticMethod_Type() in Objects/funcobject.c"</span>
 
  <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
@@ -665,7 +1069,7 @@ Dynamic section at offset 0xe18 contains 25 entries:
           <span class="k">def</span> <span class="nf">newfunc</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">klass</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
           <span class="k">return</span> <span class="n">newfunc</span>
-</pre></div>
+</pre>
 
 
 <hr>
@@ -674,31 +1078,40 @@ Dynamic section at offset 0xe18 contains 25 entries:
 <hr>
 <p>参考资料：</p>
 <ol>
-<li>How-To Guide for Descriptors: <a href="http://users.rcn.com/python/download/Descriptor.htm">http://users.rcn.com/python/download/Descriptor.htm</a></li>
-<li>Python Attributes and Methods: <a href="http://www.cafepy.com/article/python_attributes_and_methods/python_attributes_and_methods.html">http://www.cafepy.com/article/python_attributes_and_methods/python_attributes_and_methods.html</a></li>
-<li>《Expert Python Programming》,Tarek Ziadé: <a href="http://book.douban.com/subject/3285148/">http://book.douban.com/subject/3285148/</a></li>
+<li>How-To Guide for Descriptors: <a href="http://users.rcn.com/python/download/Descriptor.htm">http://users.rcn.com/python/download/Descriptor.htm</a>
+</li>
+<li>Python Attributes and Methods: <a href="http://www.cafepy.com/article/python_attributes_and_methods/python_attributes_and_methods.html">http://www.cafepy.com/article/python_attributes_and_methods/python_attributes_and_methods.html</a>
+</li>
+<li>《Expert Python Programming》,Tarek Ziadé: <a href="http://book.douban.com/subject/3285148/">http://book.douban.com/subject/3285148/</a>
+</li>
 </ol>
-            
+</div>
+    </div>
+    </article>
+    <article class="h-entry post-text">
+    <header>
+        <h1 class="p-name entry-title"><a href="posts/trieshu-de-pythonshi-xian.html" class="u-url">Trie树的Python实现</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="posts/trieshu-de-pythonshi-xian.html" rel="bookmark"><time class="published dt-published" datetime="2013-05-21T19:48:53+08:00" itemprop="datePublished" title="Publication date">2013-05-21 19:48</time></a></p>
+                <p class="commentline">
         
-    <p>
-        <a href="posts/python-descriptor.html#disqus_thread" data-disqus-identifier="cache/posts/python-descriptor.html">Comments</a>
+    <a href="posts/trieshu-de-pythonshi-xian.html#disqus_thread" data-disqus-identifier="cache/posts/trieshu-de-pythonshi-xian.html">Comments</a>
 
 
-        </p></div>
-        <div class="postbox">
-        <h1><a href="posts/trieshu-de-pythonshi-xian.html">Trie树的Python实现</a>
-        <small>  
-             Posted: <time class="published" datetime="2013-05-21T19:48:53+08:00">2013-05-21 19:48</time>
-        </small></h1>
-        <hr>
-        <p>又是一个由需求驱动的算法学习的例子。</p>
+        </p>
+</div>
+    </header>
+    <div class="e-content entry-content">
+    <div>
+<p>又是一个由需求驱动的算法学习的例子。</p>
 <p>最近<a href="https://github.com/hbprotoss/weibo">weii</a>需要实现一个这样的功能：在发送AT好友的时候能给出自动补全的列表。</p>
 <p>最先想到的是当我给出一个用户名的前几个字的时候能自动提示以这个字开头的所有用户名列表（虽然最后发现这是个很2的解决方案-_-），所以最理想的数据结构就是Trie树，也就是字典树。</p>
 <p>以前只听过Trie树，现在实际要用了就得把他落到实处了。</p>
 <p>首先是<a href="http://zh.wikipedia.org/wiki/Trie">Trie树在维基百科上的定义</a>：在计算机科学中，trie，又称前缀树，是一种有序树，用于保存关联数组，其中的键通常是字符串。与二叉查找树不同，键不是直接保存在节点中，而是由节点在树中的位置决定。一个节点的所有子孙都有相同的前缀，也就是这个节点对应的字符串，而根节点对应空字符串。一般情况下，不是所有的节点都有对应的值，只有叶子节点和部分内部节点所对应的键才有相关的值。</p>
 <p>说白了就跟在字典里查单词一样：先拿第一个字母在根节点查找下一结点的位置，如果找到就拿第二个字母在刚刚找到的节点下继续往下查找；如果找不到就说明这个字符串在树中不存在。</p>
 <p>C语言实现的代码也在维基百科上：<a href="http://zh.wikipedia.org/wiki/Trie#.E5.AE.9E.E4.BE.8B">http://zh.wikipedia.org/wiki/Trie#.E5.AE.9E.E4.BE.8B</a></p>
-<div class="code"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
+<pre class="code literal-block"><span class="cp">#include &lt;stdio.h&gt;</span>
 <span class="cp">#include &lt;stdlib.h&gt;</span>
 <span class="cp">#include &lt;string.h&gt;</span>
 
@@ -800,7 +1213,7 @@ Dynamic section at offset 0xe18 contains 25 entries:
 
         <span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
 <span class="p">}</span>
-</pre></div>
+</pre>
 
 
 <p>但这个版本的实现有两个问题：</p>
@@ -815,7 +1228,7 @@ Dynamic section at offset 0xe18 contains 25 entries:
 </ol>
 <p>Python版的关键改造就是节点的next表用dict代替，维护的是<code>字符-&gt;子节点</code>的映射。查找时，若待查询字符是next里的一个键就说明该字符在Trie树里，以这个键得到值就能找到下一节点。插入时也只要插入<code>字符-&gt;子节点</code>的映射就可以了。</p>
 <p>具体代码在：<a href="https://github.com/hbprotoss/codejam/blob/master/trie.py">https://github.com/hbprotoss/codejam/blob/master/trie.py</a></p>
-<div class="code"><pre><span class="c">#!/usr/bin/env python3</span>
+<pre class="code literal-block"><span class="c">#!/usr/bin/env python3</span>
 
 <span class="k">class</span> <span class="nc">Trie</span><span class="p">:</span>
     <span class="n">root</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -877,24 +1290,30 @@ Dynamic section at offset 0xe18 contains 25 entries:
         <span class="k">else</span><span class="p">:</span>
             <span class="n">tree</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
         <span class="k">print</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
-</pre></div>
+</pre>
 
 
 <p>全文完。</p>
-            
+</div>
+    </div>
+    </article>
+    <article class="h-entry post-text">
+    <header>
+        <h1 class="p-name entry-title"><a href="posts/tong-su-yan-yi-kmp.html" class="u-url">通俗演绎KMP</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="posts/tong-su-yan-yi-kmp.html" rel="bookmark"><time class="published dt-published" datetime="2013-05-07T20:09:38+08:00" itemprop="datePublished" title="Publication date">2013-05-07 20:09</time></a></p>
+                <p class="commentline">
         
-    <p>
-        <a href="posts/trieshu-de-pythonshi-xian.html#disqus_thread" data-disqus-identifier="cache/posts/trieshu-de-pythonshi-xian.html">Comments</a>
+    <a href="posts/tong-su-yan-yi-kmp.html#disqus_thread" data-disqus-identifier="cache/posts/tong-su-yan-yi-kmp.html">Comments</a>
 
 
-        </p></div>
-        <div class="postbox">
-        <h1><a href="posts/tong-su-yan-yi-kmp.html">通俗演绎KMP</a>
-        <small>  
-             Posted: <time class="published" datetime="2013-05-07T20:09:38+08:00">2013-05-07 20:09</time>
-        </small></h1>
-        <hr>
-        <p>最近要实现关键字过滤功能，小看了一些经典的字符串匹配算法。<br>
+        </p>
+</div>
+    </header>
+    <div class="e-content entry-content">
+    <div>
+<p>最近要实现关键字过滤功能，小看了一些经典的字符串匹配算法。<br>
 本文要介绍的是KMP算法（<strong>Knuth–Morris–Pratt Algorithm</strong>）,那个Knuth应该再熟悉不过了。  </p>
 <p>KMP算法是从朴素匹配算法改进而来。回忆一下朴素的匹配算法是怎么完成字符串的匹配的呢？<br>
 1. 将原串和模式串左对齐，然后一位一位比较，直到有一个字符不匹配<br>
@@ -929,23 +1348,30 @@ ABCDABF的partial match table如下：<br>
 </ul>
 <p>具体代码参考<a href="https://github.com/hbprotoss/codejam/blob/master/kmp.py">https://github.com/hbprotoss/codejam/blob/master/kmp.py</a></p>
 <p>全文完。</p>
-            
+</div>
+    </div>
+    </article>
+    <article class="h-entry post-text">
+    <header>
+        <h1 class="p-name entry-title"><a href="posts/python-decoratorde-ying-yong.html" class="u-url">Python decorator的应用</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="posts/python-decoratorde-ying-yong.html" rel="bookmark"><time class="published dt-published" datetime="2013-04-03T21:23:39+08:00" itemprop="datePublished" title="Publication date">2013-04-03 21:23</time></a></p>
+                <p class="commentline">
         
-    <p>
-        <a href="posts/tong-su-yan-yi-kmp.html#disqus_thread" data-disqus-identifier="cache/posts/tong-su-yan-yi-kmp.html">Comments</a>
+    <a href="posts/python-decoratorde-ying-yong.html#disqus_thread" data-disqus-identifier="cache/posts/python-decoratorde-ying-yong.html">Comments</a>
 
 
-        </p></div>
-        <div class="postbox">
-        <h1><a href="posts/python-decoratorde-ying-yong.html">Python decorator的应用</a>
-        <small>  
-             Posted: <time class="published" datetime="2013-04-03T21:23:39+08:00">2013-04-03 21:23</time>
-        </small></h1>
-        <hr>
-        <p>Decorator是23种设计模式之一，提出的目的是为了在不改变现有代码的前提下，通过在头部或尾部添加代码来扩展功能。<br>
+        </p>
+</div>
+    </header>
+    <div class="e-content entry-content">
+    <div>
+<p>Decorator是23种设计模式之一，提出的目的是为了在不改变现有代码的前提下，通过在头部或尾部添加代码来扩展功能。<br>
 Python语言内建支持decorator模式。由于语法不是本文重点，对语法不熟悉的童鞋可以参考以下几篇文章：  </p>
 <ol>
-<li>Stackoverflow上的神文：<a href="http://stackoverflow.com/a/1594484/837187">Understanding Python decorators</a></li>
+<li>Stackoverflow上的神文：<a href="http://stackoverflow.com/a/1594484/837187">Understanding Python decorators</a>
+</li>
 <li><a href="http://blog.donews.com/limodou/archive/2004/12/19/207521.aspx">[Python学习]decorator的使用</a></li>
 <li><a href="http://www.python.org/dev/peps/pep-0318/">PEP318</a></li>
 </ol>
@@ -958,7 +1384,7 @@ Python语言内建支持decorator模式。由于语法不是本文重点，对�
 </ul>
 <p>异常可能来自访问API过程中的网络问题，以及解析json发现服务器返回了错误代码（比如API访问过于频繁，access token有问题等）。在写头几个API的时候做法很自然，用try-except块包裹可能出异常的代码，将各种标准库的异常或者服务器返回的错误信息封装成自己的exception，raise一下告诉主程序有异常需要处理。<br>
 但是写了几个方法后发现，每个方法的异常处理流程几乎一模一样，特别是封装标准库的异常，唯一不同的就是解析服务器返回的错误信息。伪码如下：  </p>
-<div class="code"><pre><span class="n">def</span> <span class="n">method</span><span class="p">(</span><span class="n">xxx</span><span class="p">)</span><span class="o">:</span>
+<pre class="code literal-block"><span class="n">def</span> <span class="n">method</span><span class="p">(</span><span class="n">xxx</span><span class="p">)</span><span class="o">:</span>
     <span class="nl">try:</span>
         <span class="n">f</span> <span class="o">=</span> <span class="n">urllib</span><span class="p">.</span><span class="n">request</span><span class="p">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
         <span class="n">raw_data</span> <span class="o">=</span> <span class="n">f</span><span class="p">.</span><span class="n">read</span><span class="p">().</span><span class="n">decode</span><span class="p">(</span><span class="err">'</span><span class="n">utf</span><span class="o">-</span><span class="mi">8</span><span class="err">'</span><span class="p">)</span>
@@ -972,13 +1398,13 @@ Python语言内建支持decorator模式。由于语法不是本文重点，对�
         <span class="n">xxx</span>
     <span class="nl">else:</span>
         <span class="k">return</span> <span class="n">rtn</span>
-</pre></div>
+</pre>
 
 
 <p>出于懒的原因（说得好听点，出于代码复用的目的:D)，得想个办法把这些重复性的工作提取出来。<br>
 仔细观察可以发现，这些方法在except处理完异常之后都没有额外的工作需要进行。换句话说，可以认为这些代码都位于核心处理代码之后，这是自然就想到了decorator模式，将异常处理放在decorator里，再decorate一下各个方法就可以了。<br>
 Decorator如下：  </p>
-<div class="code"><pre><span class="n">def</span> <span class="n">sinaMethod</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="o">:</span>
+<pre class="code literal-block"><span class="n">def</span> <span class="n">sinaMethod</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="o">:</span>
     <span class="n">def</span> <span class="n">func_wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">:</span>
         <span class="nl">try:</span>
             <span class="n">raw_rtn</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -997,7 +1423,7 @@ Decorator如下：  </p>
         <span class="nl">else:</span>
             <span class="k">return</span> <span class="n">raw_rtn</span>
     <span class="k">return</span> <span class="n">func_wrapper</span>
-</pre></div>
+</pre>
 
 
 <p>其作用就是，尝试调用被装饰函数，如果顺利的话直接返回结果。如果有HTTPError异常发生，则解析之，并根据相应情况封装成自定义的异常抛出。<br>
@@ -1007,20 +1433,26 @@ Decorator如下：  </p>
 就这么简单~~  </p>
 <hr>
 <p>PS：附带说一句，编程语言对设计模式在语法上的支持会大大简化程序猿的编码量。如果是C++/Java，甚至C要用decorator模式就得协商老长一段了~~^_^</p>
-            
+</div>
+    </div>
+    </article>
+    <article class="h-entry post-text">
+    <header>
+        <h1 class="p-name entry-title"><a href="posts/multipartform-datade-shi-xian.html" class="u-url">multipart/form-data的实现</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="posts/multipartform-datade-shi-xian.html" rel="bookmark"><time class="published dt-published" datetime="2013-03-29T09:19:39+08:00" itemprop="datePublished" title="Publication date">2013-03-29 09:19</time></a></p>
+                <p class="commentline">
         
-    <p>
-        <a href="posts/python-decoratorde-ying-yong.html#disqus_thread" data-disqus-identifier="cache/posts/python-decoratorde-ying-yong.html">Comments</a>
+    <a href="posts/multipartform-datade-shi-xian.html#disqus_thread" data-disqus-identifier="cache/posts/multipartform-datade-shi-xian.html">Comments</a>
 
 
-        </p></div>
-        <div class="postbox">
-        <h1><a href="posts/multipartform-datade-shi-xian.html">multipart/form-data的实现</a>
-        <small>  
-             Posted: <time class="published" datetime="2013-03-29T09:19:39+08:00">2013-03-29 09:19</time>
-        </small></h1>
-        <hr>
-        <p>写之前先吐槽几句：Python社区太懒了，Python3都推出多少年了，那么多第三方库还不port到Python3。不能安于现状啊！  </p>
+        </p>
+</div>
+    </header>
+    <div class="e-content entry-content">
+    <div>
+<p>写之前先吐槽几句：Python社区太懒了，Python3都推出多少年了，那么多第三方库还不port到Python3。不能安于现状啊！  </p>
 <hr>
 <p>下面是正题：</p>
 <p>最近写微博客户端，上传图片需要multipart/form-data编码图片和参数，由于前面说的原因，没有第三方库可用，所以就自己实现一下。</p>
@@ -1035,7 +1467,8 @@ Decorator如下：  </p>
 <li>数据。要注意的是数据的编码，文档上说"7BIT encoding"，ISO-8859-1即可。</li>
 </ol>
 <p>下面贴一段上传新浪微博图片的代码：  </p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+<table class="codehilitetable"><tr>
+<td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
  4
@@ -1088,7 +1521,9 @@ Decorator如下：  </p>
 51
 52
 53
-54</pre></div></td><td class="code"><div class="code"><pre><span class="c">#!/usr/bin/env python3</span>
+54</pre></div></td>
+<td class="code">
+<pre class="code literal-block"><span class="c">#!/usr/bin/env python3</span>
 
 <span class="kn">import</span> <span class="nn">urllib.request</span>
 <span class="kn">import</span> <span class="nn">urllib.parse</span>
@@ -1142,143 +1577,30 @@ Decorator如下：  </p>
     <span class="nb">print</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
 <span class="k">except</span> <span class="n">urllib</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">HTTPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
-</pre></div>
-</td></tr></table>
+</pre>
+</td>
+</tr></table>
 
 <p><strong>其中尤其要注意的是，POST上去的data部分要encode成ISO-8859-1。一开始一直encode成UTF-8，死活报的都是格式错误。</strong></p>
-            
-        
-    <p>
-        <a href="posts/multipartform-datade-shi-xian.html#disqus_thread" data-disqus-identifier="cache/posts/multipartform-datade-shi-xian.html">Comments</a>
-
-
-        </p></div>
-        <div class="postbox">
-        <h1><a href="posts/nikolagitpageda-jian-bo-ke.html">nikola+gitpage搭建博客</a>
-        <small>  
-             Posted: <time class="published" datetime="2013-03-18T19:46:37+08:00">2013-03-18 19:46</time>
-        </small></h1>
-        <hr>
-        <p>本来博客是在CSDN上的<a href="http://blog.csdn.net/digimon">http://blog.csdn.net/digimon</a>，但最近CSDN在我这一直无法登录，已经在Evernote上积压了好几篇博客，搞烦了，决定自己搭个博客。<br>
-由于目前是没有收入来源的屌丝，没钱去买个域名、弄个VPS，只能想免费的招了。WordPress这货屏蔽GAE的UA，导致没法申请博客，最后想到了gitpage。虽然gitpage也有随时被墙的风险，但是我的博客主要记录技术内容，作为程序猿翻个伟大的防火墙还是没问题的吧;-)  </p>
-<p>gitpage只支持静态页面，网上搜了一下，生成静态页面的工具还真不少，好像专门为此设计的一样，套餐呐有木有。<br>
-Python的就有不少: <a href="http://www.quora.com/Whats-the-best-available-static-blog-website-generator-in-Python">What's the best available static blog/website generator in Python?</a><br>
-还有更多别的语言支持的工具: <a href="https://iwantmyname.com/blog/2011/02/list-static-website-generators.html">32 Static Website Generators For Your Site, Blog Or Wiki</a>  </p>
-<p>最终选择了nikola，也是因为Quora上那篇文章的推荐。<br>
-nikola官网：<a href="http://nikola.ralsina.com.ar/">http://nikola.ralsina.com.ar/</a>  </p>
-<p>详细安装和配置的教程就不赘述了，可以参考这两篇文章：<br>
-+ <a href="http://nikola.ralsina.com.ar/handbook.html">The Nikola Handbook</a>（官网教程）<br>
-+ <a href="http://rca.is-programmer.com/2013/2/5/using-nikola-write-static-blog.37513.html">用 nikola 写静态博客</a>  </p>
-<p>下面说一下安装和配置nikola时要注意的问题。<br>
-1.  官网上的<a href="http://nikola.ralsina.com.ar/handbook.html#installing-nikola">安装指导</a>中，如果你是Ubuntu用户的话，<a href="http://makotemplates.org/">Mako</a>一定要用pip安装或自己去下，Ubuntu官方源上的版本太旧，运行会出问题。<br>
-2.  喜欢用markdown的童鞋除了更改nikola生成的站点根目录下的从conf.py之外，新建博文的时候要注意加上<code>-f markdown</code>参数：<code>nikola new_post -f markdown</code><br>
-3.  喜欢用markdown的童鞋还得<strong>注意</strong>一下(==!)，官方0.5.4有个bug。在<code>/usr/local/lib/python2.7/dist-packages/nikola/plugins/compile_markdown/__init__.py</code>文件中，在73~81行的字符串前加个字母u。  </p>
-<div class="code"><pre>    <span class="n">with</span> <span class="n">codecs</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">"wb+"</span><span class="p">,</span> <span class="s">"utf8"</span><span class="p">)</span> <span class="n">as</span> <span class="n">fd</span><span class="o">:</span>
-        <span class="k">if</span> <span class="n">onefile</span><span class="o">:</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="err">'</span><span class="o">&lt;!--</span> <span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">)</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="err">'</span><span class="p">..</span> <span class="n">title</span><span class="o">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span><span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">.</span><span class="n">format</span><span class="p">(</span><span class="n">title</span><span class="p">))</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="err">'</span><span class="p">..</span> <span class="n">slug</span><span class="o">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span><span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">.</span><span class="n">format</span><span class="p">(</span><span class="n">slug</span><span class="p">))</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="err">'</span><span class="p">..</span> <span class="n">date</span><span class="o">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span><span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">.</span><span class="n">format</span><span class="p">(</span><span class="n">date</span><span class="p">))</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="err">'</span><span class="p">..</span> <span class="n">tags</span><span class="o">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span><span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">.</span><span class="n">format</span><span class="p">(</span><span class="n">tags</span><span class="p">))</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="err">'</span><span class="p">..</span> <span class="n">link</span><span class="o">:</span> <span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">)</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="err">'</span><span class="p">..</span> <span class="n">description</span><span class="o">:</span> <span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">)</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="err">'</span><span class="o">--&gt;</span><span class="err">\</span><span class="n">n</span><span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">)</span>
-        <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">Write your post here."</span><span class="p">)</span>
-</pre></div>
-
-
-<p>改成  </p>
-<div class="code"><pre>    <span class="n">with</span> <span class="n">codecs</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">"wb+"</span><span class="p">,</span> <span class="s">"utf8"</span><span class="p">)</span> <span class="n">as</span> <span class="n">fd</span><span class="o">:</span>
-        <span class="k">if</span> <span class="n">onefile</span><span class="o">:</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">u</span><span class="err">'</span><span class="o">&lt;!--</span> <span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">)</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">u</span><span class="err">'</span><span class="p">..</span> <span class="n">title</span><span class="o">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span><span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">.</span><span class="n">format</span><span class="p">(</span><span class="n">title</span><span class="p">))</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">u</span><span class="err">'</span><span class="p">..</span> <span class="n">slug</span><span class="o">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span><span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">.</span><span class="n">format</span><span class="p">(</span><span class="n">slug</span><span class="p">))</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">u</span><span class="err">'</span><span class="p">..</span> <span class="n">date</span><span class="o">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span><span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">.</span><span class="n">format</span><span class="p">(</span><span class="n">date</span><span class="p">))</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">u</span><span class="err">'</span><span class="p">..</span> <span class="n">tags</span><span class="o">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span><span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">.</span><span class="n">format</span><span class="p">(</span><span class="n">tags</span><span class="p">))</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">u</span><span class="err">'</span><span class="p">..</span> <span class="n">link</span><span class="o">:</span> <span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">)</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">u</span><span class="err">'</span><span class="p">..</span> <span class="n">description</span><span class="o">:</span> <span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">)</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">u</span><span class="err">'</span><span class="o">--&gt;</span><span class="err">\</span><span class="n">n</span><span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">)</span>
-        <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">u</span><span class="s">"</span><span class="se">\n</span><span class="s">Write your post here."</span><span class="p">)</span>
-</pre></div>
-
-
-<p>因为不加u就是str对象，写入的是utf-8编码的文件，当title等参数里出现非英文字母的时候会出先解码异常。（马上提交个pull request去）<br>
-4. 要快速部署到gitpage，在站点conf.py里添加：</p>
-<div class="code"><pre><span class="nt">DEPLOY_COMMANDS</span> <span class="o">=</span> <span class="cp">[</span>
-<span class="s1">'git --git-dir=output/.git --work-tree=output add -A '</span><span class="p">,</span>
-<span class="s1">'git --git-dir=output/.git --work-tree=output commit -m "latest auto deploy build"'</span><span class="p">,</span>
-<span class="s1">'git --git-dir=output/.git --work-tree=output push origin master'</span>
-<span class="cp">]</span>
-</pre></div>
-            
-        
-    <p>
-        <a href="posts/nikolagitpageda-jian-bo-ke.html#disqus_thread" data-disqus-identifier="cache/posts/nikolagitpageda-jian-bo-ke.html">Comments</a>
-
-
-        </p></div>
-        <div class="postbox">
-        <h1><a href="posts/pythonde-importji-zhi.html">python的import机制</a>
-        <small>  
-             Posted: <time class="published" datetime="2013-03-18T19:11:42+08:00">2013-03-18 19:11</time>
-        </small></h1>
-        <hr>
-        <p>同一个模块以相同的模块名被导入时，模块内的代码只执行一遍（模块名必须相同）。<br>
-例：  </p>
-<blockquote>
-<p>import/<br>
-    test.py<br>
-    mo/<br>
-        A.py  </p>
-</blockquote>
-<hr>
-<div class="code"><pre><span class="cp"># A.py</span>
-<span class="n">a</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="n">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-<span class="n">a</span> <span class="o">+=</span> <span class="mi">1</span>
-</pre></div>
-
-
-<hr>
-<div class="code"><pre><span class="cp"># test.py</span>
-<span class="cp">#!/usr/bin/env python3</span>
-<span class="n">import</span> <span class="n">os</span>
-<span class="n">import</span> <span class="n">sys</span>
-<span class="n">import</span> <span class="n">mo</span><span class="p">.</span><span class="n">A</span>
-<span class="n">import</span> <span class="n">mo</span><span class="p">.</span><span class="n">A</span>
-<span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">abspath</span><span class="p">(</span><span class="err">'</span><span class="p">.</span><span class="o">/</span><span class="n">mo</span><span class="err">'</span><span class="p">)</span>
-<span class="n">print</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-<span class="n">sys</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-<span class="n">import</span> <span class="n">A</span>
-</pre></div>
-
-
-<hr>
-<p>test.py中，第4行执行后输出1。第5行不输出，因为mo.A已经被导入当前namespace。  </p>
-<p>但是第9行，虽然都是同一个物理文件A.py，但是被导入时的名字不同（mo.A和A），所以还是会输出1。mo.A和A作为两个独立的module对象存在当前namespace中。  </p>
-<p>如果要把模块中的变量当全局变量来使用的话，一定要从项目顶部通过“.”一层一层import。  </p>
-            
-        
-    <p>
-        <a href="posts/pythonde-importji-zhi.html#disqus_thread" data-disqus-identifier="cache/posts/pythonde-importji-zhi.html">Comments</a>
-
-
-        </p></div>
-    
-<div>
-<ul class="pager">
-    <li class="next">
-        <a href="index-1.html">Older posts →</a>
-    </li>
-</ul>
+</div>
+    </div>
+    </article>
 </div>
 
-    
+        <nav class="postindexpager">
+        <ul class="pager">
+            <li class="next">
+                <a href="index-1.html" rel="next">Older posts</a>
+            </li>
+        </ul>
+        </nav>
+
+
         
-       <script type="text/javascript">var disqus_shortname="hbprotoss";(function(){var a=document.createElement("script");a.async=true;a.type="text/javascript";a.src="http://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("HEAD")[0]||document.getElementsByTagName("BODY")[0]).appendChild(a)}());</script>
+       <script>var disqus_shortname="hbprotoss";(function(){var a=document.createElement("script");a.async=true;a.src="//"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script>
 
 
-	
+
 
 
     </div>
@@ -1288,37 +1610,37 @@ nikola官网：<a href="http://nikola.ralsina.com.ar/">http://nikola.ralsina.com
 <div class="footerbox">
     
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png"></a><br>本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh">知识共享署名-非商业性使用-禁止演绎 3.0 未本地化版本许可协议</a>进行许可。
-<br>Contents © 2013 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
+<br>Contents © 2014 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
+    
 </div>
 
-            <script src="assets/js/jquery-1.10.2.min.js" type="text/javascript"></script>
-            <script src="assets/js/bootstrap.min.js" type="text/javascript"></script>
-        <script src="assets/js/jquery.colorbox-min.js" type="text/javascript"></script>
-
-
-	
+            <script src="assets/js/all-nocdn.js"></script>
+    
 <!-- Social buttons -->
 <div id="addthisbox" class="addthis_toolbox addthis_peekaboo_style addthis_default_style addthis_label_style addthis_32x32_style">
 <a class="addthis_button_more">Share</a>
-<ul><li><a class="addthis_button_facebook"></a>
-</li><li><a class="addthis_button_google_plusone_share"></a>
-</li><li><a class="addthis_button_linkedin"></a>
-</li><li><a class="addthis_button_twitter"></a>
-</li></ul>
+<ul>
+<li>
+<a class="addthis_button_facebook"></a>
+</li>
+<li>
+<a class="addthis_button_google_plusone_share"></a>
+</li>
+<li>
+<a class="addthis_button_linkedin"></a>
+</li>
+<li>
+<a class="addthis_button_twitter"></a>
+</li>
+</ul>
 </div>
-<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-4f7088a56bb93798"></script>
+<script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-4f7088a56bb93798"></script>
 <!-- End of social buttons -->
 
 
-    <script type="text/javascript">jQuery("a.image-reference").colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});
-    $(window).on('hashchange', function(){
-        if (location.hash && $(location.hash)[0]) {
-            $('body').animate({scrollTop: $(location.hash).offset().top - $('#navbar').outerHeight(true)*1.2 }, 1);
-        }
-    });
-    $(document).ready(function(){$(window).trigger('hashchange')});
-    </script>
+    <script>jQuery("a.image-reference").colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script>
     
-    
+
+
 </body>
 </html>

@@ -1,31 +1,55 @@
-<!DOCTYPE html><html lang="en">
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="en">
+    <head>
     <meta charset="utf-8">
-    <meta name="description" content="">
-    <meta name="author" content="hbprotoss">
+    <meta name="viewport" content="width=device-width">
     <title>Trie树的Python实现 | hbprotoss的博客</title>
+
     
-            <link href="../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-            <link href="../assets/css/bootstrap-responsive.min.css" rel="stylesheet" type="text/css">
-        <link href="../assets/css/rst.css" rel="stylesheet" type="text/css">
-        <link href="../assets/css/code.css" rel="stylesheet" type="text/css">
-        <link href="../assets/css/colorbox.css" rel="stylesheet" type="text/css">
-        <link href="../assets/css/theme.css" rel="stylesheet" type="text/css">
-    <!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js" type="text/javascript"></script>
-    <![endif]-->
+            <link href="../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+
+    
             <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
 
+      <link rel="canonical" href="http://hbprotoss.github.io/posts/trieshu-de-pythonshi-xian.html">
+
+
+
+
+    
+        <!--[if lt IE 9]><script src="../assets/js/html5.js"></script><![endif]-->
+
+    
+
+
+    
+
+    <meta name="author" content="hbprotoss">
+        <link rel="prev" href="tong-su-yan-yi-kmp.html" title="通俗演绎KMP" type="text/html">
+        <link rel="next" href="python-descriptor.html" title="Python descriptor" type="text/html">
+    
+    <meta name="og:title" content="Trie树的Python实现">
+    <meta name="og:url" content="http://hbprotoss.github.io/posts/trieshu-de-pythonshi-xian.html">
+    <meta name="og:description" content="又是一个由需求驱动的算法学习的例子。
+最近weii需要实现一个这样的功能：在发送AT好友的时候能给出自动补全的列表。
+最先想到的是当我给出一个用户名的前几个字的时候能自动提示以这个字开头的所有用户名列表（虽然最后发现这是个很2的解决方案-_-），所以最理想的数据结构就是Trie树，也就是字典树。
+以前只听过Trie树，现在实际要用了就得把他落到实处了。
+首先是Trie树在维基百科上的定义：在计算机">
+    <meta name="og:site_name" content="hbprotoss的博客">
+    <meta name="og:type" content="article">
+
+    
+
     
 
 
 
-    
 </head>
 <body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
 <!-- Menubar -->
+
 <div class="navbar navbar-fixed-top" id="navbar">
     <div class="navbar-inner">
         <div class="container">
@@ -37,18 +61,26 @@
             <span class="icon-bar"></span>
         </a>
 
-            <a class="brand" href="../">
-            hbprotoss的博客
+            <a class="brand" href="http://hbprotoss.github.io/">
+
+                <span id="blog-title">hbprotoss的博客</span>
             </a>
             <!-- Everything you want hidden at 940px or less, place within here -->
             <div class="nav-collapse collapse">
                 <ul class="nav">
                     
-                <li><a href="../archive.html">Archives</a>
-                </li><li><a href="../categories/index.html">Tags</a>
-                </li><li><a href="../rss.xml">RSS</a>
+                <li>
+<a href="../archive.html">Archives</a>
+                </li>
+<li>
+<a href="../categories/index.html">Tags</a>
+                </li>
+<li>
+<a href="../rss.xml">RSS</a>
 
-                </li></ul>
+                    
+                </li>
+</ul>
                     
 <!-- Custom search with google-->
 <form id="search" action="http://google.com/search" method="get" class="navbar-form pull-left">
@@ -61,47 +93,58 @@
                 
                 
                     <li>
-			<a href="trieshu-de-pythonshi-xian.md" id="sourcelink">Source</a>
-		</li>
+    </li>
+<li>
+    <a href="trieshu-de-pythonshi-xian.md" id="sourcelink">Source</a>
+    </li>
+
+                
                 </ul>
             </div>
         </div>
     </div>
 </div>
 <!-- End of Menubar -->
-<div class="container-fluid" id="container-fluid">
+<div class="container-fluid" id="content">
     <!--Body content-->
     <div class="row-fluid">
     <div class="span2"></div>
     <div class="span8">
     
-    <div class="postbox">
     
-    <h1>Trie树的Python实现</h1>
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article">
+    
+    <header>
+        
+    <h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">Trie树的Python实现</a></h1>
 
-    <hr>
-    <small>
-        Posted: <time class="published" datetime="2013-05-21T19:48:53+08:00">2013-05-21 19:48</time>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="#" rel="bookmark"><time class="published dt-published" datetime="2013-05-21T19:48:53+08:00" itemprop="datePublished" title="Publication date">2013-05-21 19:48</time></a></p>
+                <p class="commentline">
+        
+    <a href="trieshu-de-pythonshi-xian.html#disqus_thread" data-disqus-identifier="cache/posts/trieshu-de-pythonshi-xian.html">Comments</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="trieshu-de-pythonshi-xian.md" id="sourcelink">Source</a></p>
+
+        </div>
         
 
-		
-          |  More posts about
-            <a class="tag" href="../categories/shu-ju-jie-gou.html"><span class="badge badge-info">数据结构</span></a>
-            <a class="tag" href="../categories/suan-fa.html"><span class="badge badge-info">算法</span></a>
-            <a class="tag" href="../categories/python.html"><span class="badge badge-info">Python</span></a>
+    </header>
 
-          |  
-		
-    </small>
-    <hr>
-    <p>又是一个由需求驱动的算法学习的例子。</p>
+    <div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p>又是一个由需求驱动的算法学习的例子。</p>
 <p>最近<a href="https://github.com/hbprotoss/weibo">weii</a>需要实现一个这样的功能：在发送AT好友的时候能给出自动补全的列表。</p>
 <p>最先想到的是当我给出一个用户名的前几个字的时候能自动提示以这个字开头的所有用户名列表（虽然最后发现这是个很2的解决方案-_-），所以最理想的数据结构就是Trie树，也就是字典树。</p>
 <p>以前只听过Trie树，现在实际要用了就得把他落到实处了。</p>
 <p>首先是<a href="http://zh.wikipedia.org/wiki/Trie">Trie树在维基百科上的定义</a>：在计算机科学中，trie，又称前缀树，是一种有序树，用于保存关联数组，其中的键通常是字符串。与二叉查找树不同，键不是直接保存在节点中，而是由节点在树中的位置决定。一个节点的所有子孙都有相同的前缀，也就是这个节点对应的字符串，而根节点对应空字符串。一般情况下，不是所有的节点都有对应的值，只有叶子节点和部分内部节点所对应的键才有相关的值。</p>
 <p>说白了就跟在字典里查单词一样：先拿第一个字母在根节点查找下一结点的位置，如果找到就拿第二个字母在刚刚找到的节点下继续往下查找；如果找不到就说明这个字符串在树中不存在。</p>
 <p>C语言实现的代码也在维基百科上：<a href="http://zh.wikipedia.org/wiki/Trie#.E5.AE.9E.E4.BE.8B">http://zh.wikipedia.org/wiki/Trie#.E5.AE.9E.E4.BE.8B</a></p>
-<div class="code"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
+<pre class="code literal-block"><span class="cp">#include &lt;stdio.h&gt;</span>
 <span class="cp">#include &lt;stdlib.h&gt;</span>
 <span class="cp">#include &lt;string.h&gt;</span>
 
@@ -203,7 +246,7 @@
 
         <span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
 <span class="p">}</span>
-</pre></div>
+</pre>
 
 
 <p>但这个版本的实现有两个问题：</p>
@@ -218,7 +261,7 @@
 </ol>
 <p>Python版的关键改造就是节点的next表用dict代替，维护的是<code>字符-&gt;子节点</code>的映射。查找时，若待查询字符是next里的一个键就说明该字符在Trie树里，以这个键得到值就能找到下一节点。插入时也只要插入<code>字符-&gt;子节点</code>的映射就可以了。</p>
 <p>具体代码在：<a href="https://github.com/hbprotoss/codejam/blob/master/trie.py">https://github.com/hbprotoss/codejam/blob/master/trie.py</a></p>
-<div class="code"><pre><span class="c">#!/usr/bin/env python3</span>
+<pre class="code literal-block"><span class="c">#!/usr/bin/env python3</span>
 
 <span class="k">class</span> <span class="nc">Trie</span><span class="p">:</span>
     <span class="n">root</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -280,44 +323,66 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">tree</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
         <span class="k">print</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
-</pre></div>
+</pre>
 
 
 <p>全文完。</p>
+</div>
+    </div>
+    <aside class="postpromonav">
+    <nav>
     
-    <ul class="pager">
-        <li class="previous">
-            <a href="tong-su-yan-yi-kmp.html">← Previous post</a>
-        </li>
-        <li class="next">
-            <a href="python-descriptor.html">Next post →</a>
-        </li>
-    </ul>
+        <ul itemprop="keywords" class="tags">
+           <li><a class="tag p-category" href="../categories/python.html" rel="tag">Python</a></li>
+           <li><a class="tag p-category" href="../categories/shu-ju-jie-gou.html" rel="tag">数据结构</a></li>
+           <li><a class="tag p-category" href="../categories/suan-fa.html" rel="tag">算法</a></li>
+        </ul>
 
+    
+        <ul class="pager">
+            <li class="previous">
+                <a href="tong-su-yan-yi-kmp.html" rel="prev" title="通俗演绎KMP">Previous post</a>
+            </li>
+            <li class="next">
+                <a href="python-descriptor.html" rel="next" title="Python descriptor">Next post</a>
+            </li>
+        </ul>
+
+    </nav>
+    </aside>
+        <section class="comments">
+        <h2>Comments</h2>
         
         
         <div id="disqus_thread"></div>
-        <script type="text/javascript">
-        var disqus_shortname ="hbprotoss";
-            var disqus_url="http://hbprotoss.github.io/posts/trieshu-de-pythonshi-xian.html";
-        var disqus_title="Trie\u6811\u7684Python\u5b9e\u73b0";
-        var disqus_identifier="cache/posts/trieshu-de-pythonshi-xian.html";
-        var disqus_config = function () {
+        <script>
+        var disqus_shortname ="hbprotoss",
+            disqus_url="http://hbprotoss.github.io/posts/trieshu-de-pythonshi-xian.html",
+        disqus_title="Trie\u6811\u7684Python\u5b9e\u73b0",
+        disqus_identifier="cache/posts/trieshu-de-pythonshi-xian.html",
+        disqus_config = function () {
             this.language = "en";
         };
         (function() {
-            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
             (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
         })();
     </script>
-    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-    <a href="http://disqus.com" class="dsq-brlink">Comments powered by <span class="logo-disqus">Disqus</span></a>
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="//disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
 
 
+        </section>
     
 
-    </div>
+</article>
+
+        
+       <script>var disqus_shortname="hbprotoss";(function(){var a=document.createElement("script");a.async=true;a.src="//"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script>
+
+
 
     </div>
     </div>
@@ -326,37 +391,37 @@
 <div class="footerbox">
     
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png"></a><br>本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh">知识共享署名-非商业性使用-禁止演绎 3.0 未本地化版本许可协议</a>进行许可。
-<br>Contents © 2013 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
+<br>Contents © 2014 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
+    
 </div>
 
-            <script src="../assets/js/jquery-1.10.2.min.js" type="text/javascript"></script>
-            <script src="../assets/js/bootstrap.min.js" type="text/javascript"></script>
-        <script src="../assets/js/jquery.colorbox-min.js" type="text/javascript"></script>
-
-
-	
+            <script src="../assets/js/all-nocdn.js"></script>
+    
 <!-- Social buttons -->
 <div id="addthisbox" class="addthis_toolbox addthis_peekaboo_style addthis_default_style addthis_label_style addthis_32x32_style">
 <a class="addthis_button_more">Share</a>
-<ul><li><a class="addthis_button_facebook"></a>
-</li><li><a class="addthis_button_google_plusone_share"></a>
-</li><li><a class="addthis_button_linkedin"></a>
-</li><li><a class="addthis_button_twitter"></a>
-</li></ul>
+<ul>
+<li>
+<a class="addthis_button_facebook"></a>
+</li>
+<li>
+<a class="addthis_button_google_plusone_share"></a>
+</li>
+<li>
+<a class="addthis_button_linkedin"></a>
+</li>
+<li>
+<a class="addthis_button_twitter"></a>
+</li>
+</ul>
 </div>
-<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-4f7088a56bb93798"></script>
+<script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-4f7088a56bb93798"></script>
 <!-- End of social buttons -->
 
 
-    <script type="text/javascript">jQuery("a.image-reference").colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});
-    $(window).on('hashchange', function(){
-        if (location.hash && $(location.hash)[0]) {
-            $('body').animate({scrollTop: $(location.hash).offset().top - $('#navbar').outerHeight(true)*1.2 }, 1);
-        }
-    });
-    $(document).ready(function(){$(window).trigger('hashchange')});
-    </script>
+    <script>jQuery("a.image-reference").colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script>
     
-    
+
+
 </body>
 </html>

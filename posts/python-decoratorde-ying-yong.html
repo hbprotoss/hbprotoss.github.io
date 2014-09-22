@@ -1,31 +1,58 @@
-<!DOCTYPE html><html lang="en">
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="en">
+    <head>
     <meta charset="utf-8">
-    <meta name="description" content="">
-    <meta name="author" content="hbprotoss">
+    <meta name="viewport" content="width=device-width">
     <title>Python decorator的应用 | hbprotoss的博客</title>
+
     
-            <link href="../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-            <link href="../assets/css/bootstrap-responsive.min.css" rel="stylesheet" type="text/css">
-        <link href="../assets/css/rst.css" rel="stylesheet" type="text/css">
-        <link href="../assets/css/code.css" rel="stylesheet" type="text/css">
-        <link href="../assets/css/colorbox.css" rel="stylesheet" type="text/css">
-        <link href="../assets/css/theme.css" rel="stylesheet" type="text/css">
-    <!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js" type="text/javascript"></script>
-    <![endif]-->
+            <link href="../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+
+    
             <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
 
+      <link rel="canonical" href="http://hbprotoss.github.io/posts/python-decoratorde-ying-yong.html">
+
+
+
+
+    
+        <!--[if lt IE 9]><script src="../assets/js/html5.js"></script><![endif]-->
+
+    
+
+
+    
+
+    <meta name="author" content="hbprotoss">
+        <link rel="prev" href="multipartform-datade-shi-xian.html" title="multipart/form-data的实现" type="text/html">
+        <link rel="next" href="tong-su-yan-yi-kmp.html" title="通俗演绎KMP" type="text/html">
+    
+    <meta name="og:title" content="Python decorator的应用">
+    <meta name="og:url" content="http://hbprotoss.github.io/posts/python-decoratorde-ying-yong.html">
+    <meta name="og:description" content="Decorator是23种设计模式之一，提出的目的是为了在不改变现有代码的前提下，通过在头部或尾部添加代码来扩展功能。
+Python语言内建支持decorator模式。由于语法不是本文重点，对语法不熟悉的童鞋可以参考以下几篇文章：  
+
+Stackoverflow上的神文：Understanding Python decorators
+[Python学习]decorator的使用
+PEP318
+
+">
+    <meta name="og:site_name" content="hbprotoss的博客">
+    <meta name="og:type" content="article">
+
+    
+
     
 
 
 
-    
 </head>
 <body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
 <!-- Menubar -->
+
 <div class="navbar navbar-fixed-top" id="navbar">
     <div class="navbar-inner">
         <div class="container">
@@ -37,18 +64,26 @@
             <span class="icon-bar"></span>
         </a>
 
-            <a class="brand" href="../">
-            hbprotoss的博客
+            <a class="brand" href="http://hbprotoss.github.io/">
+
+                <span id="blog-title">hbprotoss的博客</span>
             </a>
             <!-- Everything you want hidden at 940px or less, place within here -->
             <div class="nav-collapse collapse">
                 <ul class="nav">
                     
-                <li><a href="../archive.html">Archives</a>
-                </li><li><a href="../categories/index.html">Tags</a>
-                </li><li><a href="../rss.xml">RSS</a>
+                <li>
+<a href="../archive.html">Archives</a>
+                </li>
+<li>
+<a href="../categories/index.html">Tags</a>
+                </li>
+<li>
+<a href="../rss.xml">RSS</a>
 
-                </li></ul>
+                    
+                </li>
+</ul>
                     
 <!-- Custom search with google-->
 <form id="search" action="http://google.com/search" method="get" class="navbar-form pull-left">
@@ -61,42 +96,55 @@
                 
                 
                     <li>
-			<a href="python-decoratorde-ying-yong.md" id="sourcelink">Source</a>
-		</li>
+    </li>
+<li>
+    <a href="python-decoratorde-ying-yong.md" id="sourcelink">Source</a>
+    </li>
+
+                
                 </ul>
             </div>
         </div>
     </div>
 </div>
 <!-- End of Menubar -->
-<div class="container-fluid" id="container-fluid">
+<div class="container-fluid" id="content">
     <!--Body content-->
     <div class="row-fluid">
     <div class="span2"></div>
     <div class="span8">
     
-    <div class="postbox">
     
-    <h1>Python decorator的应用</h1>
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article">
+    
+    <header>
+        
+    <h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">Python decorator的应用</a></h1>
 
-    <hr>
-    <small>
-        Posted: <time class="published" datetime="2013-04-03T21:23:39+08:00">2013-04-03 21:23</time>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="#" rel="bookmark"><time class="published dt-published" datetime="2013-04-03T21:23:39+08:00" itemprop="datePublished" title="Publication date">2013-04-03 21:23</time></a></p>
+                <p class="commentline">
+        
+    <a href="python-decoratorde-ying-yong.html#disqus_thread" data-disqus-identifier="cache/posts/python-decoratorde-ying-yong.html">Comments</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="python-decoratorde-ying-yong.md" id="sourcelink">Source</a></p>
+
+        </div>
         
 
-		
-          |  More posts about
-            <a class="tag" href="../categories/python.html"><span class="badge badge-info">Python</span></a>
-            <a class="tag" href="../categories/design-pattern.html"><span class="badge badge-info">Design Pattern</span></a>
+    </header>
 
-          |  
-		
-    </small>
-    <hr>
-    <p>Decorator是23种设计模式之一，提出的目的是为了在不改变现有代码的前提下，通过在头部或尾部添加代码来扩展功能。<br>
+    <div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p>Decorator是23种设计模式之一，提出的目的是为了在不改变现有代码的前提下，通过在头部或尾部添加代码来扩展功能。<br>
 Python语言内建支持decorator模式。由于语法不是本文重点，对语法不熟悉的童鞋可以参考以下几篇文章：  </p>
 <ol>
-<li>Stackoverflow上的神文：<a href="http://stackoverflow.com/a/1594484/837187">Understanding Python decorators</a></li>
+<li>Stackoverflow上的神文：<a href="http://stackoverflow.com/a/1594484/837187">Understanding Python decorators</a>
+</li>
 <li><a href="http://blog.donews.com/limodou/archive/2004/12/19/207521.aspx">[Python学习]decorator的使用</a></li>
 <li><a href="http://www.python.org/dev/peps/pep-0318/">PEP318</a></li>
 </ol>
@@ -109,7 +157,7 @@ Python语言内建支持decorator模式。由于语法不是本文重点，对�
 </ul>
 <p>异常可能来自访问API过程中的网络问题，以及解析json发现服务器返回了错误代码（比如API访问过于频繁，access token有问题等）。在写头几个API的时候做法很自然，用try-except块包裹可能出异常的代码，将各种标准库的异常或者服务器返回的错误信息封装成自己的exception，raise一下告诉主程序有异常需要处理。<br>
 但是写了几个方法后发现，每个方法的异常处理流程几乎一模一样，特别是封装标准库的异常，唯一不同的就是解析服务器返回的错误信息。伪码如下：  </p>
-<div class="code"><pre><span class="n">def</span> <span class="n">method</span><span class="p">(</span><span class="n">xxx</span><span class="p">)</span><span class="o">:</span>
+<pre class="code literal-block"><span class="n">def</span> <span class="n">method</span><span class="p">(</span><span class="n">xxx</span><span class="p">)</span><span class="o">:</span>
     <span class="nl">try:</span>
         <span class="n">f</span> <span class="o">=</span> <span class="n">urllib</span><span class="p">.</span><span class="n">request</span><span class="p">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
         <span class="n">raw_data</span> <span class="o">=</span> <span class="n">f</span><span class="p">.</span><span class="n">read</span><span class="p">().</span><span class="n">decode</span><span class="p">(</span><span class="err">'</span><span class="n">utf</span><span class="o">-</span><span class="mi">8</span><span class="err">'</span><span class="p">)</span>
@@ -123,13 +171,13 @@ Python语言内建支持decorator模式。由于语法不是本文重点，对�
         <span class="n">xxx</span>
     <span class="nl">else:</span>
         <span class="k">return</span> <span class="n">rtn</span>
-</pre></div>
+</pre>
 
 
 <p>出于懒的原因（说得好听点，出于代码复用的目的:D)，得想个办法把这些重复性的工作提取出来。<br>
 仔细观察可以发现，这些方法在except处理完异常之后都没有额外的工作需要进行。换句话说，可以认为这些代码都位于核心处理代码之后，这是自然就想到了decorator模式，将异常处理放在decorator里，再decorate一下各个方法就可以了。<br>
 Decorator如下：  </p>
-<div class="code"><pre><span class="n">def</span> <span class="n">sinaMethod</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="o">:</span>
+<pre class="code literal-block"><span class="n">def</span> <span class="n">sinaMethod</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="o">:</span>
     <span class="n">def</span> <span class="n">func_wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">:</span>
         <span class="nl">try:</span>
             <span class="n">raw_rtn</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -148,7 +196,7 @@ Decorator如下：  </p>
         <span class="nl">else:</span>
             <span class="k">return</span> <span class="n">raw_rtn</span>
     <span class="k">return</span> <span class="n">func_wrapper</span>
-</pre></div>
+</pre>
 
 
 <p>其作用就是，尝试调用被装饰函数，如果顺利的话直接返回结果。如果有HTTPError异常发生，则解析之，并根据相应情况封装成自定义的异常抛出。<br>
@@ -158,40 +206,61 @@ Decorator如下：  </p>
 就这么简单~~  </p>
 <hr>
 <p>PS：附带说一句，编程语言对设计模式在语法上的支持会大大简化程序猿的编码量。如果是C++/Java，甚至C要用decorator模式就得协商老长一段了~~^_^</p>
+</div>
+    </div>
+    <aside class="postpromonav">
+    <nav>
     
-    <ul class="pager">
-        <li class="previous">
-            <a href="multipartform-datade-shi-xian.html">← Previous post</a>
-        </li>
-        <li class="next">
-            <a href="tong-su-yan-yi-kmp.html">Next post →</a>
-        </li>
-    </ul>
+        <ul itemprop="keywords" class="tags">
+           <li><a class="tag p-category" href="../categories/design-pattern.html" rel="tag">Design Pattern</a></li>
+           <li><a class="tag p-category" href="../categories/python.html" rel="tag">Python</a></li>
+        </ul>
 
+    
+        <ul class="pager">
+            <li class="previous">
+                <a href="multipartform-datade-shi-xian.html" rel="prev" title="multipart/form-data的实现">Previous post</a>
+            </li>
+            <li class="next">
+                <a href="tong-su-yan-yi-kmp.html" rel="next" title="通俗演绎KMP">Next post</a>
+            </li>
+        </ul>
+
+    </nav>
+    </aside>
+        <section class="comments">
+        <h2>Comments</h2>
         
         
         <div id="disqus_thread"></div>
-        <script type="text/javascript">
-        var disqus_shortname ="hbprotoss";
-            var disqus_url="http://hbprotoss.github.io/posts/python-decoratorde-ying-yong.html";
-        var disqus_title="Python decorator\u7684\u5e94\u7528";
-        var disqus_identifier="cache/posts/python-decoratorde-ying-yong.html";
-        var disqus_config = function () {
+        <script>
+        var disqus_shortname ="hbprotoss",
+            disqus_url="http://hbprotoss.github.io/posts/python-decoratorde-ying-yong.html",
+        disqus_title="Python decorator\u7684\u5e94\u7528",
+        disqus_identifier="cache/posts/python-decoratorde-ying-yong.html",
+        disqus_config = function () {
             this.language = "en";
         };
         (function() {
-            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
             (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
         })();
     </script>
-    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-    <a href="http://disqus.com" class="dsq-brlink">Comments powered by <span class="logo-disqus">Disqus</span></a>
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="//disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
 
 
+        </section>
     
 
-    </div>
+</article>
+
+        
+       <script>var disqus_shortname="hbprotoss";(function(){var a=document.createElement("script");a.async=true;a.src="//"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script>
+
+
 
     </div>
     </div>
@@ -200,37 +269,37 @@ Decorator如下：  </p>
 <div class="footerbox">
     
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png"></a><br>本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh">知识共享署名-非商业性使用-禁止演绎 3.0 未本地化版本许可协议</a>进行许可。
-<br>Contents © 2013 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
+<br>Contents © 2014 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
+    
 </div>
 
-            <script src="../assets/js/jquery-1.10.2.min.js" type="text/javascript"></script>
-            <script src="../assets/js/bootstrap.min.js" type="text/javascript"></script>
-        <script src="../assets/js/jquery.colorbox-min.js" type="text/javascript"></script>
-
-
-	
+            <script src="../assets/js/all-nocdn.js"></script>
+    
 <!-- Social buttons -->
 <div id="addthisbox" class="addthis_toolbox addthis_peekaboo_style addthis_default_style addthis_label_style addthis_32x32_style">
 <a class="addthis_button_more">Share</a>
-<ul><li><a class="addthis_button_facebook"></a>
-</li><li><a class="addthis_button_google_plusone_share"></a>
-</li><li><a class="addthis_button_linkedin"></a>
-</li><li><a class="addthis_button_twitter"></a>
-</li></ul>
+<ul>
+<li>
+<a class="addthis_button_facebook"></a>
+</li>
+<li>
+<a class="addthis_button_google_plusone_share"></a>
+</li>
+<li>
+<a class="addthis_button_linkedin"></a>
+</li>
+<li>
+<a class="addthis_button_twitter"></a>
+</li>
+</ul>
 </div>
-<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-4f7088a56bb93798"></script>
+<script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-4f7088a56bb93798"></script>
 <!-- End of social buttons -->
 
 
-    <script type="text/javascript">jQuery("a.image-reference").colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});
-    $(window).on('hashchange', function(){
-        if (location.hash && $(location.hash)[0]) {
-            $('body').animate({scrollTop: $(location.hash).offset().top - $('#navbar').outerHeight(true)*1.2 }, 1);
-        }
-    });
-    $(document).ready(function(){$(window).trigger('hashchange')});
-    </script>
+    <script>jQuery("a.image-reference").colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script>
     
-    
+
+
 </body>
 </html>

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>hbprotoss的博客 (算法)</title><link>http://hbprotoss.github.io/</link><description></description><atom:link href="http://hbprotoss.github.io/categories/suan-fa.xml" type="application/rss+xml" rel="self"></atom:link><language>en</language><lastBuildDate>Thu, 10 Oct 2013 11:57:07 GMT</lastBuildDate><generator>nikola</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Trie树的Python实现</title><link>http://hbprotoss.github.io/posts/trieshu-de-pythonshi-xian.html</link><description>&lt;p&gt;又是一个由需求驱动的算法学习的例子。&lt;/p&gt;
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>hbprotoss的博客 (算法)</title><link>http://hbprotoss.github.io/</link><description></description><language>en</language><lastBuildDate>Tue, 23 Sep 2014 07:51:51 GMT</lastBuildDate><generator>http://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Trie树的Python实现</title><link>http://hbprotoss.github.io/posts/trieshu-de-pythonshi-xian.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;p&gt;又是一个由需求驱动的算法学习的例子。&lt;/p&gt;
 &lt;p&gt;最近&lt;a href="https://github.com/hbprotoss/weibo"&gt;weii&lt;/a&gt;需要实现一个这样的功能：在发送AT好友的时候能给出自动补全的列表。&lt;/p&gt;
 &lt;p&gt;最先想到的是当我给出一个用户名的前几个字的时候能自动提示以这个字开头的所有用户名列表（虽然最后发现这是个很2的解决方案-_-），所以最理想的数据结构就是Trie树，也就是字典树。&lt;/p&gt;
 &lt;p&gt;以前只听过Trie树，现在实际要用了就得把他落到实处了。&lt;/p&gt;
 &lt;p&gt;首先是&lt;a href="http://zh.wikipedia.org/wiki/Trie"&gt;Trie树在维基百科上的定义&lt;/a&gt;：在计算机科学中，trie，又称前缀树，是一种有序树，用于保存关联数组，其中的键通常是字符串。与二叉查找树不同，键不是直接保存在节点中，而是由节点在树中的位置决定。一个节点的所有子孙都有相同的前缀，也就是这个节点对应的字符串，而根节点对应空字符串。一般情况下，不是所有的节点都有对应的值，只有叶子节点和部分内部节点所对应的键才有相关的值。&lt;/p&gt;
 &lt;p&gt;说白了就跟在字典里查单词一样：先拿第一个字母在根节点查找下一结点的位置，如果找到就拿第二个字母在刚刚找到的节点下继续往下查找；如果找不到就说明这个字符串在树中不存在。&lt;/p&gt;
 &lt;p&gt;C语言实现的代码也在维基百科上：&lt;a href="http://zh.wikipedia.org/wiki/Trie#.E5.AE.9E.E4.BE.8B"&gt;http://zh.wikipedia.org/wiki/Trie#.E5.AE.9E.E4.BE.8B&lt;/a&gt;&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre&gt;&lt;span class="cp"&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
 &lt;span class="cp"&gt;#include &amp;lt;stdlib.h&amp;gt;&lt;/span&gt;
 &lt;span class="cp"&gt;#include &amp;lt;string.h&amp;gt;&lt;/span&gt;
 
@@ -108,7 +108,7 @@
 
         &lt;span class="n"&gt;exit&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
 &lt;span class="p"&gt;}&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
+&lt;/pre&gt;
 
 
 &lt;p&gt;但这个版本的实现有两个问题：&lt;/p&gt;
@@ -123,7 +123,7 @@
 &lt;/ol&gt;
 &lt;p&gt;Python版的关键改造就是节点的next表用dict代替，维护的是&lt;code&gt;字符-&amp;gt;子节点&lt;/code&gt;的映射。查找时，若待查询字符是next里的一个键就说明该字符在Trie树里，以这个键得到值就能找到下一节点。插入时也只要插入&lt;code&gt;字符-&amp;gt;子节点&lt;/code&gt;的映射就可以了。&lt;/p&gt;
 &lt;p&gt;具体代码在：&lt;a href="https://github.com/hbprotoss/codejam/blob/master/trie.py"&gt;https://github.com/hbprotoss/codejam/blob/master/trie.py&lt;/a&gt;&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre&gt;&lt;span class="c"&gt;#!/usr/bin/env python3&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c"&gt;#!/usr/bin/env python3&lt;/span&gt;
 
 &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Trie&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
     &lt;span class="n"&gt;root&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;dict&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
@@ -185,10 +185,10 @@
         &lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
             &lt;span class="n"&gt;tree&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;insert&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;src&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
         &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tree&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
+&lt;/pre&gt;
 
 
-&lt;p&gt;全文完。&lt;/p&gt;</description><author></author><category>数据结构</category><category>算法</category><category>Python</category><guid>http://hbprotoss.github.io/posts/trieshu-de-pythonshi-xian.html</guid><pubDate>Tue, 21 May 2013 11:48:53 GMT</pubDate></item><item><title>通俗演绎KMP</title><link>http://hbprotoss.github.io/posts/tong-su-yan-yi-kmp.html</link><description>&lt;p&gt;最近要实现关键字过滤功能，小看了一些经典的字符串匹配算法。&lt;br&gt;
+&lt;p&gt;全文完。&lt;/p&gt;&lt;/div&gt;</description><category>Python</category><category>数据结构</category><category>算法</category><guid>http://hbprotoss.github.io/posts/trieshu-de-pythonshi-xian.html</guid><pubDate>Tue, 21 May 2013 11:48:53 GMT</pubDate></item><item><title>通俗演绎KMP</title><link>http://hbprotoss.github.io/posts/tong-su-yan-yi-kmp.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;p&gt;最近要实现关键字过滤功能，小看了一些经典的字符串匹配算法。&lt;br&gt;
 本文要介绍的是KMP算法（&lt;strong&gt;Knuth–Morris–Pratt Algorithm&lt;/strong&gt;）,那个Knuth应该再熟悉不过了。  &lt;/p&gt;
 &lt;p&gt;KMP算法是从朴素匹配算法改进而来。回忆一下朴素的匹配算法是怎么完成字符串的匹配的呢？&lt;br&gt;
 1. 将原串和模式串左对齐，然后一位一位比较，直到有一个字符不匹配&lt;br&gt;
@@ -222,4 +222,4 @@ ABCDABF的partial match table如下：&lt;br&gt;
 &lt;li&gt;ABCDABF前缀为A、AB、ABC、ABCD、ABCDA、ABCDAB，后缀为BCDABF、BCDAB、CDAB、DAB、AB、B，没有相同部分，长度为0&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;具体代码参考&lt;a href="https://github.com/hbprotoss/codejam/blob/master/kmp.py"&gt;https://github.com/hbprotoss/codejam/blob/master/kmp.py&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;全文完。&lt;/p&gt;</description><author></author><category>算法</category><category>字符串</category><guid>http://hbprotoss.github.io/posts/tong-su-yan-yi-kmp.html</guid><pubDate>Tue, 07 May 2013 12:09:38 GMT</pubDate></item></channel></rss>
+&lt;p&gt;全文完。&lt;/p&gt;&lt;/div&gt;</description><category>字符串</category><category>算法</category><guid>http://hbprotoss.github.io/posts/tong-su-yan-yi-kmp.html</guid><pubDate>Tue, 07 May 2013 12:09:38 GMT</pubDate></item></channel></rss>
