@@ -9,6 +9,10 @@
   <lastmod>2014-09-23</lastmod>
  </sitemap>
  <sitemap>
+  <loc>http://hbprotoss.github.io/categories/database.xml</loc>
+  <lastmod>2014-09-23</lastmod>
+ </sitemap>
+ <sitemap>
   <loc>http://hbprotoss.github.io/categories/design-pattern.xml</loc>
   <lastmod>2014-09-23</lastmod>
  </sitemap>
@@ -62,6 +66,10 @@
  </sitemap>
  <sitemap>
   <loc>http://hbprotoss.github.io/categories/zi-fu-chuan.xml</loc>
+  <lastmod>2014-09-23</lastmod>
+ </sitemap>
+ <sitemap>
+  <loc>http://hbprotoss.github.io/galleries/InnoDB/rss.xml</loc>
   <lastmod>2014-09-23</lastmod>
  </sitemap>
  <sitemap>

@@ -15,9 +15,8 @@
 
 
 
-
     
-        <!--[if lt IE 9]><script src="../assets/js/html5.js"></script><![endif]-->
+        <!--[if lt IE 9]><script src="/assets/js/html5.js"></script><![endif]-->
 
     
 
@@ -25,8 +24,6 @@
     
 
     <meta name="author" content="hbprotoss">
-        <link rel="prev" href="linuxxia-bian-yi-lian-jie-dong-tai-ku.html" title="Linux下编译链接动态库" type="text/html">
-        <link rel="next" href="pythonla-ji-hui-shou-ji-zhi.html" title="Python垃圾回收机制" type="text/html">
     
     <meta name="og:title" content="利用LD_PRELOAD进行hook">
     <meta name="og:url" content="http://hbprotoss.github.io/posts/li-yong-ld_preloadjin-xing-hook.html">
@@ -43,97 +40,50 @@ loader在进行动态链接的时候，会将有相同符号名的符号覆盖�
 
 </head>
 <body>
-<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
-
-<!-- Menubar -->
-
-<div class="navbar navbar-fixed-top" id="navbar">
-    <div class="navbar-inner">
-        <div class="container">
-
-        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
-        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-        </a>
-
-            <a class="brand" href="http://hbprotoss.github.io/">
-
-                <span id="blog-title">hbprotoss的博客</span>
-            </a>
-            <!-- Everything you want hidden at 940px or less, place within here -->
-            <div class="nav-collapse collapse">
-                <ul class="nav">
-                    
-                <li>
-<a href="../archive.html">Archives</a>
-                </li>
-<li>
-<a href="../categories/index.html">Tags</a>
-                </li>
-<li>
-<a href="../rss.xml">RSS</a>
-
-                    
-                </li>
-</ul>
-                    
-<!-- Custom search with google-->
-<form id="search" action="http://google.com/search" method="get" class="navbar-form pull-left">
-<input type="hidden" name="q" value="site:http://hbprotoss.github.io/">
-<input type="text" name="q" maxlength="255" results="0" placeholder="Search">
-</form>
-<!-- End of custom search -->
-
-                <ul class="nav pull-right">
-                
-                
-                    <li>
-    </li>
-<li>
-    <a href="li-yong-ld_preloadjin-xing-hook.md" id="sourcelink">Source</a>
-    </li>
-
-                
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- End of Menubar -->
-<div class="container-fluid" id="content">
-    <!--Body content-->
-    <div class="row-fluid">
-    <div class="span2"></div>
-    <div class="span8">
-    
-    
-<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article">
-    
-    <header>
+    <section class="social">
+        <ul>
         
-    <h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">利用LD_PRELOAD进行hook</a></h1>
+            <li><a href="../index.html" title="Home"><i class="icon-home"></i></a></li>
+            <li><a href="../archive.html" title="Archives"><i class="icon-folder-open-alt"></i></a></li>
+            <li><a href="../categories/index.html" title="Tags"><i class="icon-tags"></i></a></li>
+            <li><a href="../rss.xml" title="RSS"><i class="icon-rss"></i></a></li>
+            <li><a href="https://twitter.com/hbprotoss" title="My Twitter"><i class="icon-twitter"></i></a></li>
+            <li><a href="https://github.com/hbprotoss" title="My Github"><i class="icon-github"></i></a></li>
+            <li><a href="http://getnikola.com" title="About me"><i class="icon-user"></i></a></li>
 
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
-            <p class="dateline"><a href="#" rel="bookmark"><time class="published dt-published" datetime="2013-10-09T11:44:50+08:00" itemprop="datePublished" title="Publication date">2013-10-09 11:44</time></a></p>
-                <p class="commentline">
-        
-    <a href="li-yong-ld_preloadjin-xing-hook.html#disqus_thread" data-disqus-identifier="cache/posts/li-yong-ld_preloadjin-xing-hook.html">Comments</a>
+        </ul>
+    </section>
+    <section class="page-content">
+        <div class="content" rel="main">
+            
+    <div class="post">
+    
+    <h1 class="p-name entry-title" itemprop="headline name">利用LD_PRELOAD进行hook</h1>
 
+        <div class="meta">
+            <div class="authordate">
+                <time class="timeago" datetime="2013-10-09T11:44:50+08:00">2013-10-09 11:44</time>
+            
 
             
-        </p>
-<p class="sourceline"><a href="li-yong-ld_preloadjin-xing-hook.md" id="sourcelink">Source</a></p>
+          |  
+        <a href="li-yong-ld_preloadjin-xing-hook.md" id="sourcelink">Source</a>
+
+            </div>
+            
+        <div itemprop="keywords" class="tags">
+        <ul>
+        Tags : 
+           <li><a class="tag p-category" href="../categories/c.html" rel="tag">C</a></li>
+           <li><a class="tag p-category" href="../categories/hook.html" rel="tag">Hook</a></li>
+           <li><a class="tag p-category" href="../categories/linux.html" rel="tag">Linux</a></li>
+           <li><a class="tag p-category" href="../categories/security.html" rel="tag">Security</a></li>
+        </ul>
+        </div>
 
         </div>
-        
-
-    </header>
-
-    <div class="e-content entry-content" itemprop="articleBody text">
-    <div>
+        <div class="body">
+            <div>
 <p>好久没玩hook这种猥琐的东西里，今天在Linux下体验了一把。</p>
 <p>loader在进行动态链接的时候，会将有相同符号名的符号覆盖成LD_PRELOAD指定的so文件中的符号。换句话说，可以用我们自己的so库中的函数替换原来库里有的函数，从而达到hook的目的。这和Windows下通过修改import table来hook API很类似。相比较之下，LD_PRELOAD更方便了，都不用自己写代码了，系统的loader会帮我们搞定。但是LD_PRELOAD有个限制：只能hook动态链接的库，对静态链接的库无效，因为静态链接的代码都写到可执行文件里了嘛，没有坑让你填。</p>
 <p>上代码</p>
@@ -205,18 +155,8 @@ Correct password
 <p>参考资料：</p>
 <p><a href="http://www.exploit-db.com/papers/13233/">Reverse Engineering with LD_PRELOAD</a></p>
 </div>
-    </div>
-    <aside class="postpromonav">
-    <nav>
-    
-        <ul itemprop="keywords" class="tags">
-           <li><a class="tag p-category" href="../categories/c.html" rel="tag">C</a></li>
-           <li><a class="tag p-category" href="../categories/hook.html" rel="tag">Hook</a></li>
-           <li><a class="tag p-category" href="../categories/linux.html" rel="tag">Linux</a></li>
-           <li><a class="tag p-category" href="../categories/security.html" rel="tag">Security</a></li>
-        </ul>
-
-    
+        </div>
+        
         <ul class="pager">
             <li class="previous">
                 <a href="linuxxia-bian-yi-lian-jie-dong-tai-ku.html" rel="prev" title="Linux下编译链接动态库">Previous post</a>
@@ -226,11 +166,7 @@ Correct password
             </li>
         </ul>
 
-    </nav>
-    </aside>
-        <section class="comments">
-        <h2>Comments</h2>
-        
+            
         
         <div id="disqus_thread"></div>
         <script>
@@ -252,28 +188,29 @@ Correct password
     <a href="//disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
 
 
-        </section>
-    
+        
 
-</article>
+    </div>
 
         
        <script>var disqus_shortname="hbprotoss";(function(){var a=document.createElement("script");a.async=true;a.src="//"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script>
 
 
 
-    </div>
-    </div>
-    <!--End of body content-->
-</div>
-<div class="footerbox">
-    
+             
+        <footer id="footer" role="contentinfo">
+            <p>
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png"></a><br>本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh">知识共享署名-非商业性使用-禁止演绎 3.0 未本地化版本许可协议</a>进行许可。
-<br>Contents © 2014 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
-    
-</div>
+<br>Contents © 2014 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a></p>
+            
+        </footer>
 
-            <script src="../assets/js/all-nocdn.js"></script>
+        </div>
+    </section>
+    
+    
+    
+            <script src="../assets/js/all-nocdn.js" type="text/javascript"></script>
     
 <!-- Social buttons -->
 <div id="addthisbox" class="addthis_toolbox addthis_peekaboo_style addthis_default_style addthis_label_style addthis_32x32_style">
@@ -297,9 +234,12 @@ Correct password
 <!-- End of social buttons -->
 
 
-    <script>jQuery("a.image-reference").colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script>
     
-
-
+        <script type="text/javascript">
+            $(function(){
+                $('.timeago').timeago();
+            });
+        </script>
+    
 </body>
 </html>
