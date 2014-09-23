@@ -2,8 +2,9 @@
 <html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="en">
     <head>
     <meta charset="utf-8">
+    <meta name="description" content="Tags">
     <meta name="viewport" content="width=device-width">
-    <title>galleries | hbprotoss的博客</title>
+    <title>Tags | hbprotoss的博客</title>
 
     
             <link href="../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
@@ -11,7 +12,7 @@
     
             <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
 
-      <link rel="canonical" href="http://hbprotoss.github.io/galleries/index.html">
+      <link rel="canonical" href="http://hbprotoss.github.io/categories/index.html">
 
 
 
@@ -22,16 +23,6 @@
     
 
 
-
-
-<style type="text/css">
-    .image-block {
-        display: inline-block;
-    }
-    .flowr_row {
-        width: 100%;
-    }
-    </style>
 
 
 </head>
@@ -62,8 +53,8 @@
                 <li>
 <a href="../archive.html">Archives</a>
                 </li>
-<li>
-<a href="../categories/index.html">Tags</a>
+<li class="active">
+<a href="#">Tags</a>
                 </li>
 <li>
 <a href="../rss.xml">RSS</a>
@@ -96,21 +87,48 @@
     <div class="span2"></div>
     <div class="span8">
     
+<<<<<<< HEAD
     
-    
-<nav class="breadcrumbs">
-<ul class="breadcrumb">
-        <li><a href="#">galleries</a></li>
-</ul>
-</nav>
-
-    <h1>galleries</h1>
-    <ul>
-        <li><a href="InnoDB"><i class="icon-folder-open"></i> InnoDB</a></li>
-        <li><a href="KMP"><i class="icon-folder-open"></i> KMP</a></li>
+<h1>Tags</h1>
+    <ul class="list-inline">
+        <li><a class="reference badge" href="c.html">C</a></li>
+        <li><a class="reference badge" href="database.html">Database</a></li>
+        <li><a class="reference badge" href="design-pattern.html">Design Pattern</a></li>
+        <li><a class="reference badge" href="github.html">github</a></li>
+        <li><a class="reference badge" href="hook.html">Hook</a></li>
+        <li><a class="reference badge" href="linux.html">Linux</a></li>
+        <li><a class="reference badge" href="macro.html">Macro</a></li>
+        <li><a class="reference badge" href="nikola.html">nikola</a></li>
+        <li><a class="reference badge" href="programming.html">Programming</a></li>
+        <li><a class="reference badge" href="python.html">Python</a></li>
+        <li><a class="reference badge" href="qt.html">Qt</a></li>
+        <li><a class="reference badge" href="security.html">Security</a></li>
+        <li><a class="reference badge" href="zi-fu-chuan.html">字符串</a></li>
+        <li><a class="reference badge" href="shu-ju-jie-gou.html">数据结构</a></li>
+        <li><a class="reference badge" href="suan-fa.html">算法</a></li>
+        <li><a class="reference badge" href="xian-cheng-chi.html">线程池</a></li>
     </ul>
-
-<div id="gallery_container"></div>
+=======
+    <h1>Tags</h1>
+        <ul class="unstyled bricks">
+            <li><a class="reference" href="c.html">C</a></li>
+            <li><a class="reference" href="database.html">Database</a></li>
+            <li><a class="reference" href="design-pattern.html">Design Pattern</a></li>
+            <li><a class="reference" href="github.html">github</a></li>
+            <li><a class="reference" href="hook.html">Hook</a></li>
+            <li><a class="reference" href="linux.html">Linux</a></li>
+            <li><a class="reference" href="macro.html">Macro</a></li>
+            <li><a class="reference" href="nikola.html">nikola</a></li>
+            <li><a class="reference" href="programming.html">Programming</a></li>
+            <li><a class="reference" href="python.html">Python</a></li>
+            <li><a class="reference" href="qt.html">Qt</a></li>
+            <li><a class="reference" href="security.html">Security</a></li>
+            <li><a class="reference" href="zi-fu-chuan.html">字符串</a></li>
+            <li><a class="reference" href="shu-ju-jie-gou.html">数据结构</a></li>
+            <li><a class="reference" href="suan-fa.html">算法</a></li>
+            <li><a class="reference" href="xian-cheng-chi.html">线程池</a></li>
+        </ul>
+>>>>>>> 3507079223707b9da64691c552beb47cab6e1426
 
     </div>
     </div>
@@ -149,45 +167,6 @@
 
     <script>jQuery("a.image-reference").colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script>
     
-<script src="../assets/js/flowr.plugin.js"></script>
-<script>
-jsonContent = [];
-$("#gallery_container").flowr({
-        data : jsonContent,
-        height : 180*.6,
-        padding: 5,
-        rows: -1,
-        render : function(params) {
-            // Just return a div, string or a dom object, anything works fine
-            img = $("<img />").attr({
-                'src': params.itemData.url_thumb,
-                'width' : params.width,
-                'height' : params.height
-            }).css('max-width', '100%');
-            link = $( "<a></a>").attr({
-                'href': params.itemData.url,
-                'class': 'image-reference'
-            });
-            div = $("<div />").addClass('image-block').attr({
-                'title': params.itemData.title,
-                'data-toggle': "tooltip",
-            });
-            link.append(img);
-            div.append(link);
-            div.hover(div.tooltip());
-            return div;
-        },
-        itemWidth : function(data) { return data.size.w; },
-        itemHeight : function(data) { return data.size.h; },
-        complete : function(params) {
-            if( jsonContent.length > params.renderedItems ) {
-                nextRenderList = jsonContent.slice( params.renderedItems );
-            }
-        }
-    });
-$("a.image-reference").colorbox({rel:"gal", maxWidth:"100%",maxHeight:"100%",scalePhotos:true});
-</script>
-
 
 
 </body>

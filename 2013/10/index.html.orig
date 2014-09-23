@@ -3,15 +3,15 @@
     <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
-    <title>galleries | hbprotoss的博客</title>
+    <title>Posts for October 2013 | hbprotoss的博客</title>
 
     
-            <link href="../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+            <link href="../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
 
     
-            <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+            <link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
 
-      <link rel="canonical" href="http://hbprotoss.github.io/galleries/index.html">
+      <link rel="canonical" href="http://hbprotoss.github.io/2013/index.html">
 
 
 
@@ -22,16 +22,6 @@
     
 
 
-
-
-<style type="text/css">
-    .image-block {
-        display: inline-block;
-    }
-    .flowr_row {
-        width: 100%;
-    }
-    </style>
 
 
 </head>
@@ -60,13 +50,13 @@
                 <ul class="nav">
                     
                 <li>
-<a href="../archive.html">Archives</a>
+<a href="../../archive.html">Archives</a>
                 </li>
 <li>
-<a href="../categories/index.html">Tags</a>
+<a href="../../categories/index.html">Tags</a>
                 </li>
 <li>
-<a href="../rss.xml">RSS</a>
+<a href="../../rss.xml">RSS</a>
 
                     
                 </li>
@@ -97,20 +87,32 @@
     <div class="span8">
     
     
-    
-<nav class="breadcrumbs">
-<ul class="breadcrumb">
-        <li><a href="#">galleries</a></li>
-</ul>
-</nav>
-
-    <h1>galleries</h1>
-    <ul>
-        <li><a href="InnoDB"><i class="icon-folder-open"></i> InnoDB</a></li>
-        <li><a href="KMP"><i class="icon-folder-open"></i> KMP</a></li>
+<article class="listpage">
+    <header>
+        <h1>Posts for October 2013</h1>
+<<<<<<< HEAD
+    </header>
+    <ul class="postlist">
+        <li>
+<a href="../../posts/pythonla-ji-hui-shou-ji-zhi.html" class="listtitle">Python垃圾回收机制</a> <time class="listdate" datetime="2013-10-24T10:44:52+08:00" title="Publication date">2013-10-24 10:44</time>
+</li>
+        <li>
+<a href="../../posts/li-yong-ld_preloadjin-xing-hook.html" class="listtitle">利用LD_PRELOAD进行hook</a> <time class="listdate" datetime="2013-10-09T11:44:50+08:00" title="Publication date">2013-10-09 11:44</time>
+</li>
+        <li>
+<a href="../../posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html" class="listtitle">Linux下编译链接动态库</a> <time class="listdate" datetime="2013-10-08T09:18:31+08:00" title="Publication date">2013-10-08 09:18</time>
+</li>
     </ul>
-
-<div id="gallery_container"></div>
+</article>
+=======
+        <ul class="unstyled">
+            <li><a href="../../posts/pythonla-ji-hui-shou-ji-zhi.html">[2013-10-24 10:44] Python垃圾回收机制</a>
+            </li><li><a href="../../posts/li-yong-ld_preloadjin-xing-hook.html">[2013-10-09 11:44] 利用LD_PRELOAD进行hook</a>
+            </li><li><a href="../../posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html">[2013-10-08 09:18] Linux下编译链接动态库</a>
+        </li></ul>
+        </div>
+        <!--End of body content-->
+>>>>>>> 3507079223707b9da64691c552beb47cab6e1426
 
     </div>
     </div>
@@ -123,7 +125,7 @@
     
 </div>
 
-            <script src="../assets/js/all-nocdn.js"></script>
+            <script src="../../assets/js/all-nocdn.js"></script>
     
 <!-- Social buttons -->
 <div id="addthisbox" class="addthis_toolbox addthis_peekaboo_style addthis_default_style addthis_label_style addthis_32x32_style">
@@ -149,45 +151,6 @@
 
     <script>jQuery("a.image-reference").colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script>
     
-<script src="../assets/js/flowr.plugin.js"></script>
-<script>
-jsonContent = [];
-$("#gallery_container").flowr({
-        data : jsonContent,
-        height : 180*.6,
-        padding: 5,
-        rows: -1,
-        render : function(params) {
-            // Just return a div, string or a dom object, anything works fine
-            img = $("<img />").attr({
-                'src': params.itemData.url_thumb,
-                'width' : params.width,
-                'height' : params.height
-            }).css('max-width', '100%');
-            link = $( "<a></a>").attr({
-                'href': params.itemData.url,
-                'class': 'image-reference'
-            });
-            div = $("<div />").addClass('image-block').attr({
-                'title': params.itemData.title,
-                'data-toggle': "tooltip",
-            });
-            link.append(img);
-            div.append(link);
-            div.hover(div.tooltip());
-            return div;
-        },
-        itemWidth : function(data) { return data.size.w; },
-        itemHeight : function(data) { return data.size.h; },
-        complete : function(params) {
-            if( jsonContent.length > params.renderedItems ) {
-                nextRenderList = jsonContent.slice( params.renderedItems );
-            }
-        }
-    });
-$("a.image-reference").colorbox({rel:"gal", maxWidth:"100%",maxHeight:"100%",scalePhotos:true});
-</script>
-
 
 
 </body>
