@@ -42,6 +42,163 @@
         <div class="content" rel="main">
             
         <div class="post">
+            <h1 class="title"><a href="posts/multipartform-datade-shi-xian.html">multipart/form-data的实现</a></h1>
+            <div class="meta">
+                <div class="authordate">
+                    <time class="timeago" datetime="2013-03-29T09:19:39+08:00">2013-03-29 09:19</time>
+                </div>
+                <div class="stats">
+                    
+        
+    <a href="posts/multipartform-datade-shi-xian.html#disqus_thread" data-disqus-identifier="cache/posts/multipartform-datade-shi-xian.html">Comments</a>
+
+
+                </div>
+            
+        <div itemprop="keywords" class="tags">
+        <ul>
+        Tags : 
+           <li><a class="tag p-category" href="categories/python.html" rel="tag">Python</a></li>
+        </ul>
+        </div>
+
+            </div>
+            <div class="body">
+                <div>
+<p>写之前先吐槽几句：Python社区太懒了，Python3都推出多少年了，那么多第三方库还不port到Python3。不能安于现状啊！  </p>
+<hr>
+<p>下面是正题：</p>
+<p>最近写微博客户端，上传图片需要multipart/form-data编码图片和参数，由于前面说的原因，没有第三方库可用，所以就自己实现一下。</p>
+<p>先贴一下multipart/form-data的RFC文档地址：<a href="http://www.ietf.org/rfc/rfc2388.txt">点这里</a></p>
+<p>multipart/form-data主要由三部分组成：  </p>
+<ol>
+<li>HTTP Header。需要添加头"Content-Type: multipart/form-data; boundary=%s"，这个boundary就是分隔符，见第二条。</li>
+<li>分隔符boundary。分隔符是一串和正文内容不冲突的字符串，用以分割多个参数。一般都是N个减号+随机字符串，比如"----------当前时间"。<br>
+   正文需要加header：<br>
+   Content-Disposition: form-data; name="%s"，%s为需要传递的变量名。<br>
+   Content-Type: 指定正文MIME类型，默认是纯文本text/plain，未知类型可以填application/octet-stream。  </li>
+<li>数据。要注意的是数据的编码，文档上说"7BIT encoding"，ISO-8859-1即可。</li>
+</ol>
+<p>下面贴一段上传新浪微博图片的代码：  </p>
+<table class="codehilitetable"><tr>
+<td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54</pre></div></td>
+<td class="code">
+<pre class="code literal-block"><span class="c">#!/usr/bin/env python3</span>
+
+<span class="kn">import</span> <span class="nn">urllib.request</span>
+<span class="kn">import</span> <span class="nn">urllib.parse</span>
+<span class="kn">import</span> <span class="nn">urllib.error</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">mimetypes</span>
+
+<span class="k">def</span> <span class="nf">_encode_multipart</span><span class="p">(</span><span class="n">params_dict</span><span class="p">):</span>
+    <span class="sd">'''</span>
+<span class="sd">    Build a multipart/form-data body with generated random boundary.</span>
+<span class="sd">    '''</span>
+    <span class="n">boundary</span> <span class="o">=</span> <span class="s">'----------%s'</span> <span class="o">%</span> <span class="nb">hex</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">))</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">params_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">'--%s'</span> <span class="o">%</span> <span class="n">boundary</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s">'read'</span><span class="p">):</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s">'name'</span><span class="p">,</span> <span class="s">''</span><span class="p">)</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="n">decoded_content</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">'ISO-8859-1'</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">'Content-Disposition: form-data; name="%s"; filename="hidden"'</span> <span class="o">%</span> <span class="n">k</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">'Content-Type: application/octet-stream</span><span class="se">\r\n</span><span class="s">'</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">decoded_content</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">'Content-Disposition: form-data; name="%s"</span><span class="se">\r\n</span><span class="s">'</span> <span class="o">%</span> <span class="n">k</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">'utf-8'</span><span class="p">))</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">'--%s--</span><span class="se">\r\n</span><span class="s">'</span> <span class="o">%</span> <span class="n">boundary</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s">'</span><span class="se">\r\n</span><span class="s">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">boundary</span>
+
+<span class="c">#############################################################</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s">'https://upload.api.weibo.com/2/statuses/upload.json'</span>
+<span class="n">access_token</span> <span class="o">=</span> <span class="s">'xxx'</span>
+<span class="n">file_name</span> <span class="o">=</span> <span class="s">'big.png'</span>
+<span class="n">path</span> <span class="o">=</span> <span class="s">'/home/xxx/Downloads/'</span> <span class="o">+</span> <span class="n">file_name</span>
+<span class="n">status</span> <span class="o">=</span> <span class="s">'1234567'</span>
+
+<span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'access_token'</span><span class="p">:</span> <span class="n">access_token</span><span class="p">,</span>
+    <span class="s">'status'</span><span class="p">:</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">quote</span><span class="p">(</span><span class="n">status</span><span class="p">),</span>
+    <span class="s">'pic'</span><span class="p">:</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">'rb'</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="n">coded_params</span><span class="p">,</span> <span class="n">boundary</span> <span class="o">=</span> <span class="n">_encode_multipart</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+
+<span class="c">#############################################################</span>
+<span class="n">req</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">coded_params</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">'ISO-8859-1'</span><span class="p">))</span>
+<span class="n">req</span><span class="o">.</span><span class="n">add_header</span><span class="p">(</span><span class="s">'Content-Type'</span><span class="p">,</span> <span class="s">'multipart/form-data; boundary=%s'</span> <span class="o">%</span> <span class="n">boundary</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+    <span class="n">body</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">'utf-8'</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">urllib</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">HTTPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+</pre>
+</td>
+</tr></table>
+
+<p><strong>其中尤其要注意的是，POST上去的data部分要encode成ISO-8859-1。一开始一直encode成UTF-8，死活报的都是格式错误。</strong></p>
+</div>
+            </div>
+        </div>
+        <div class="post">
             <h1 class="title"><a href="posts/nikolagitpageda-jian-bo-ke.html">nikola+gitpage搭建博客</a></h1>
             <div class="meta">
                 <div class="authordate">

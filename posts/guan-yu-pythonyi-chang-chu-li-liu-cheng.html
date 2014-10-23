@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="en">
+    <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>关于Python异常处理流程 | hbprotoss的博客</title>
+
+    
+            <link href="../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+
+    
+            <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+
+      <link rel="canonical" href="http://hbprotoss.github.io/posts/guan-yu-pythonyi-chang-chu-li-liu-cheng.html">
+
+
+
+    
+        <!--[if lt IE 9]><script src="/assets/js/html5.js"></script><![endif]-->
+
+    
+
+
+    
+
+    <meta name="author" content="hbprotoss">
+    
+    <meta name="og:title" content="关于Python异常处理流程">
+    <meta name="og:url" content="http://hbprotoss.github.io/posts/guan-yu-pythonyi-chang-chu-li-liu-cheng.html">
+    <meta name="og:description" content="def f():
+    try:
+        print 'try'
+        raise NameError
+    except Exception, e:
+        print 'except'
+        raise KeyError
+    else:
+        print 'else'
+        raise IOError
+    finally:
+ ">
+    <meta name="og:site_name" content="hbprotoss的博客">
+    <meta name="og:type" content="article">
+
+    
+
+    
+
+
+
+</head>
+<body>
+    <section class="social">
+        <ul>
+        
+            <li><a href="../index.html" title="Home"><i class="icon-home"></i></a></li>
+            <li><a href="../archive.html" title="Archives"><i class="icon-folder-open-alt"></i></a></li>
+            <li><a href="../categories/index.html" title="Tags"><i class="icon-tags"></i></a></li>
+            <li><a href="../rss.xml" title="RSS"><i class="icon-rss"></i></a></li>
+            <li><a href="https://twitter.com/hbprotoss" title="My Twitter"><i class="icon-twitter"></i></a></li>
+            <li><a href="https://github.com/hbprotoss" title="My Github"><i class="icon-github"></i></a></li>
+            <li><a href="http://getnikola.com" title="About me"><i class="icon-user"></i></a></li>
+
+        </ul>
+    </section>
+    <section class="page-content">
+        <div class="content" rel="main">
+            
+    <div class="post">
+    
+    <h1 class="p-name entry-title" itemprop="headline name">关于Python异常处理流程</h1>
+
+        <div class="meta">
+            <div class="authordate">
+                <time class="timeago" datetime="2014-10-23T12:27:56+08:00">2014-10-23 12:27</time>
+            
+
+            
+          |  
+        <a href="guan-yu-pythonyi-chang-chu-li-liu-cheng.md" id="sourcelink">Source</a>
+
+            </div>
+            
+
+        </div>
+        <div class="body">
+            <div>
+<pre class="code literal-block"><span class="k">def</span> <span class="nf">f</span><span class="p">():</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">'try'</span>
+        <span class="k">raise</span> <span class="ne">NameError</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">'except'</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">'else'</span>
+        <span class="k">raise</span> <span class="ne">IOError</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">'finally'</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span>
+</pre>
+
+
+<p>在以上代码中，无论try里有没有异常，走得是except还是else，最终抛出的都是finally中的ValueError。为此小记一下Python里的异常处理流程。</p>
+<p>Python当前状态的异常信息存储在线程状态PyThreadState中，包括type, value, traceback。无论是主动raise还是bug触发，异常信息最终都会通过PyErr_Restore(Python/errors.c)被修改。</p>
+<p>异常处理的主要流程在PyEval_EvalFrameEx(Python/ceval.c)里，也是Python虚拟机的核心处理流程。</p>
+<p>先说明几个概念以便理解：</p>
+<ol>
+<li>Python虚拟机里PyEval_EvalFrameEx干的活就是物理机里CPU干的活，根据指令作出相应动作</li>
+<li>frame：一个函数的执行环境，可以理解为物理机上EBP, ESP等寄存器确定的函数调用栈，外加一点别的状态信息</li>
+<li>blockstack：也是一个栈，隶属于一个frame。每当遇到循环或者try异常处理块都会压入一个block对象，块流程完了弹出</li>
+<li>traceback：一个链表，记录发生异常时候的调用栈信息</li>
+</ol>
+<pre class="code literal-block"><span class="n">PyObject</span> <span class="o">*</span>
+<span class="nf">PyEval_EvalFrameEx</span><span class="p">(</span><span class="n">PyFrameObject</span> <span class="o">*</span><span class="n">f</span><span class="p">,</span> <span class="kt">int</span> <span class="n">throwflag</span><span class="p">)</span>
+<span class="p">{</span>
+
+     <span class="k">register</span> <span class="k">enum</span> <span class="n">why_code</span> <span class="n">why</span><span class="p">;</span> <span class="c1">// 每一条指令处理完之后的状态，用来标记是否有异常</span>
+
+     <span class="k">switch</span><span class="p">(</span><span class="n">opcode</span><span class="p">){}</span> <span class="c1">// 一个处理字节码指令的巨大switch</span>
+     <span class="p">...</span>
+
+     <span class="c1">// 记录traceback，用来在异常最终没有处理时打印调用栈信息</span>
+     <span class="c1">// 这个why ==WHY_EXCEPTION条件很重要，如果在finally中发生异常，则why的值是WHY_RERAISE，因此不会进入这个条件记录新的traceback，而是直接覆盖当前的traceback，所以在最终的调用栈里，finally异常之前try/except/else中的异常信息也就被覆盖了</span>
+       <span class="k">if</span> <span class="p">(</span><span class="n">why</span> <span class="o">==</span> <span class="n">WHY_EXCEPTION</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">PyTraceBack_Here</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="n">tstate</span><span class="o">-&gt;</span><span class="n">c_tracefunc</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span>
+                <span class="n">call_exc_trace</span><span class="p">(</span><span class="n">tstate</span><span class="o">-&gt;</span><span class="n">c_tracefunc</span><span class="p">,</span>
+                               <span class="n">tstate</span><span class="o">-&gt;</span><span class="n">c_traceobj</span><span class="p">,</span> <span class="n">f</span><span class="p">);</span>
+        <span class="p">}</span>
+
+     <span class="c1">// 这种是finally中有异常的状态，reraise</span>
+       <span class="k">if</span> <span class="p">(</span><span class="n">why</span> <span class="o">==</span> <span class="n">WHY_RERAISE</span><span class="p">)</span>
+            <span class="n">why</span> <span class="o">=</span> <span class="n">WHY_EXCEPTION</span><span class="p">;</span>
+
+     <span class="c1">// 栈帧展开，主要为了在当前frame，沿着block栈向上寻找有没有try/except来接住异常</span>
+
+<span class="nl">fast_block_end:</span>
+        <span class="k">while</span> <span class="p">(</span><span class="n">why</span> <span class="o">!=</span> <span class="n">WHY_NOT</span> <span class="o">&amp;&amp;</span> <span class="n">f</span><span class="o">-&gt;</span><span class="n">f_iblock</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="cm">/* Peek at the current block. */</span>
+            <span class="n">PyTryBlock</span> <span class="o">*</span><span class="n">b</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">f</span><span class="o">-&gt;</span><span class="n">f_blockstack</span><span class="p">[</span><span class="n">f</span><span class="o">-&gt;</span><span class="n">f_iblock</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+
+           <span class="p">......</span>
+
+            <span class="cm">/* Now we have to pop the block. */</span>
+            <span class="n">f</span><span class="o">-&gt;</span><span class="n">f_iblock</span><span class="o">--</span><span class="p">;</span>
+
+           <span class="p">......</span>
+
+          <span class="c1">// 在finally块中</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">b_type</span> <span class="o">==</span> <span class="n">SETUP_FINALLY</span> <span class="o">||</span>
+                <span class="p">......</span>
+                <span class="p">)</span> <span class="p">{</span>
+
+               <span class="c1">// 有异常(raise xxxError或bug触发的情况)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">why</span> <span class="o">==</span> <span class="n">WHY_EXCEPTION</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="n">PyObject</span> <span class="o">*</span><span class="n">exc</span><span class="p">,</span> <span class="o">*</span><span class="n">val</span><span class="p">,</span> <span class="o">*</span><span class="n">tb</span><span class="p">;</span>
+
+                    <span class="c1">// 取出异常信息，压入执行栈</span>
+                    <span class="n">PyErr_Fetch</span><span class="p">(</span><span class="o">&amp;</span><span class="n">exc</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">val</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">tb</span><span class="p">);</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">tb</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="n">Py_INCREF</span><span class="p">(</span><span class="n">Py_None</span><span class="p">);</span>
+                        <span class="n">PUSH</span><span class="p">(</span><span class="n">Py_None</span><span class="p">);</span>
+                    <span class="p">}</span> <span class="k">else</span>
+                        <span class="n">PUSH</span><span class="p">(</span><span class="n">tb</span><span class="p">);</span>
+                    <span class="n">PUSH</span><span class="p">(</span><span class="n">val</span><span class="p">);</span>
+                    <span class="n">PUSH</span><span class="p">(</span><span class="n">exc</span><span class="p">);</span>
+                <span class="p">}</span>
+                <span class="k">else</span> <span class="p">{</span>
+                    <span class="c1">// return或者continue语句</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">why</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">WHY_RETURN</span> <span class="o">|</span> <span class="n">WHY_CONTINUE</span><span class="p">))</span>
+                        <span class="n">PUSH</span><span class="p">(</span><span class="n">retval</span><span class="p">);</span>
+                    <span class="n">v</span> <span class="o">=</span> <span class="n">PyInt_FromLong</span><span class="p">((</span><span class="kt">long</span><span class="p">)</span><span class="n">why</span><span class="p">);</span>
+                    <span class="n">PUSH</span><span class="p">(</span><span class="n">v</span><span class="p">);</span>
+                <span class="p">}</span>
+               <span class="c1">// 跳转到END_FINALLY指令进行扫尾工作</span>
+                <span class="n">why</span> <span class="o">=</span> <span class="n">WHY_NOT</span><span class="p">;</span>
+                <span class="n">JUMPTO</span><span class="p">(</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">b_handler</span><span class="p">);</span>
+                <span class="k">break</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span> <span class="cm">/* unwind stack */</span>
+
+     <span class="c1">// 函数返回值为null说明函数中发生异常未处理</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">why</span> <span class="o">!=</span> <span class="n">WHY_RETURN</span><span class="p">)</span>
+        <span class="n">retval</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+
+     <span class="c1">// 栈帧回退，取回上一层函数执行信息</span>
+
+    <span class="n">tstate</span><span class="o">-&gt;</span><span class="n">frame</span> <span class="o">=</span> <span class="n">f</span><span class="o">-&gt;</span><span class="n">f_back</span><span class="p">;</span>
+
+    <span class="k">return</span> <span class="n">retval</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+
+
+<p>补充一点：</p>
+<p>dis模块可以“反汇编”Python字节码变成“Python汇编语言”，下面就是示例代码的反汇编结果：</p>
+<pre class="code literal-block">  <span class="mi">6</span>           <span class="mi">0</span> <span class="n">SETUP_FINALLY</span>           <span class="mi">63</span> <span class="p">(</span><span class="n">to</span> <span class="mi">66</span><span class="p">)</span>
+              <span class="mi">3</span> <span class="n">SETUP_EXCEPT</span>            <span class="mi">15</span> <span class="p">(</span><span class="n">to</span> <span class="mi">21</span><span class="p">)</span>
+
+  <span class="mi">7</span>           <span class="mi">6</span> <span class="n">LOAD_CONST</span>               <span class="mi">1</span> <span class="p">(</span><span class="err">'</span><span class="n">try</span><span class="err">'</span><span class="p">)</span>
+              <span class="mi">9</span> <span class="n">PRINT_ITEM</span>
+             <span class="mi">10</span> <span class="n">PRINT_NEWLINE</span>
+
+  <span class="mi">8</span>          <span class="mi">11</span> <span class="n">LOAD_GLOBAL</span>              <span class="mi">0</span> <span class="p">(</span><span class="n">NameError</span><span class="p">)</span>
+             <span class="mi">14</span> <span class="n">RAISE_VARARGS</span>            <span class="mi">1</span>
+             <span class="mi">17</span> <span class="n">POP_BLOCK</span>
+             <span class="mi">18</span> <span class="n">JUMP_FORWARD</span>            <span class="mi">30</span> <span class="p">(</span><span class="n">to</span> <span class="mi">51</span><span class="p">)</span>
+
+  <span class="mi">9</span>     <span class="o">&gt;&gt;</span>   <span class="mi">21</span> <span class="n">DUP_TOP</span>
+             <span class="mi">22</span> <span class="n">LOAD_GLOBAL</span>              <span class="mi">1</span> <span class="p">(</span><span class="n">Exception</span><span class="p">)</span>
+             <span class="mi">25</span> <span class="n">COMPARE_OP</span>              <span class="mi">10</span> <span class="p">(</span><span class="n">exception</span> <span class="n">match</span><span class="p">)</span>
+             <span class="mi">28</span> <span class="n">POP_JUMP_IF_FALSE</span>       <span class="mi">50</span>
+             <span class="mi">31</span> <span class="n">POP_TOP</span>
+             <span class="mi">32</span> <span class="n">STORE_FAST</span>               <span class="mi">0</span> <span class="p">(</span><span class="n">e</span><span class="p">)</span>
+             <span class="mi">35</span> <span class="n">POP_TOP</span>
+
+ <span class="mi">10</span>          <span class="mi">36</span> <span class="n">LOAD_CONST</span>               <span class="mi">2</span> <span class="p">(</span><span class="err">'</span><span class="n">except</span><span class="err">'</span><span class="p">)</span>
+             <span class="mi">39</span> <span class="n">PRINT_ITEM</span>
+             <span class="mi">40</span> <span class="n">PRINT_NEWLINE</span>
+
+ <span class="mi">11</span>          <span class="mi">41</span> <span class="n">LOAD_GLOBAL</span>              <span class="mi">2</span> <span class="p">(</span><span class="n">KeyError</span><span class="p">)</span>
+             <span class="mi">44</span> <span class="n">RAISE_VARARGS</span>            <span class="mi">1</span>
+             <span class="mi">47</span> <span class="n">JUMP_FORWARD</span>            <span class="mi">12</span> <span class="p">(</span><span class="n">to</span> <span class="mi">62</span><span class="p">)</span>
+        <span class="o">&gt;&gt;</span>   <span class="mi">50</span> <span class="n">END_FINALLY</span>
+
+ <span class="mi">13</span>     <span class="o">&gt;&gt;</span>   <span class="mi">51</span> <span class="n">LOAD_CONST</span>               <span class="mi">3</span> <span class="p">(</span><span class="err">'</span><span class="k">else</span><span class="err">'</span><span class="p">)</span>
+             <span class="mi">54</span> <span class="n">PRINT_ITEM</span>
+             <span class="mi">55</span> <span class="n">PRINT_NEWLINE</span>
+
+ <span class="mi">14</span>          <span class="mi">56</span> <span class="n">LOAD_GLOBAL</span>              <span class="mi">3</span> <span class="p">(</span><span class="n">IOError</span><span class="p">)</span>
+             <span class="mi">59</span> <span class="n">RAISE_VARARGS</span>            <span class="mi">1</span>
+        <span class="o">&gt;&gt;</span>   <span class="mi">62</span> <span class="n">POP_BLOCK</span>
+             <span class="mi">63</span> <span class="n">LOAD_CONST</span>               <span class="mi">0</span> <span class="p">(</span><span class="n">None</span><span class="p">)</span>
+
+ <span class="mi">16</span>     <span class="o">&gt;&gt;</span>   <span class="mi">66</span> <span class="n">LOAD_CONST</span>               <span class="mi">4</span> <span class="p">(</span><span class="err">'</span><span class="n">finally</span><span class="err">'</span><span class="p">)</span>
+             <span class="mi">69</span> <span class="n">PRINT_ITEM</span>
+             <span class="mi">70</span> <span class="n">PRINT_NEWLINE</span>
+
+ <span class="mi">17</span>          <span class="mi">71</span> <span class="n">LOAD_GLOBAL</span>              <span class="mi">4</span> <span class="p">(</span><span class="n">ValueError</span><span class="p">)</span>
+             <span class="mi">74</span> <span class="n">RAISE_VARARGS</span>            <span class="mi">1</span>
+             <span class="mi">77</span> <span class="n">END_FINALLY</span>
+             <span class="mi">78</span> <span class="n">LOAD_CONST</span>               <span class="mi">0</span> <span class="p">(</span><span class="n">None</span><span class="p">)</span>
+             <span class="mi">81</span> <span class="n">RETURN_VALUE</span>
+</pre>
+</div>
+        </div>
+        
+        <ul class="pager">
+            <li class="previous">
+                <a href="innodbyin-qing-suo-yin-xue-xi-bi-ji.html" rel="prev" title="InnoDB引擎索引学习笔记">Previous post</a>
+            </li>
+        </ul>
+
+            
+        
+        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="hbprotoss",
+            disqus_url="http://hbprotoss.github.io/posts/guan-yu-pythonyi-chang-chu-li-liu-cheng.html",
+        disqus_title="\u5173\u4e8ePython\u5f02\u5e38\u5904\u7406\u6d41\u7a0b",
+        disqus_identifier="cache/posts/guan-yu-pythonyi-chang-chu-li-liu-cheng.html",
+        disqus_config = function () {
+            this.language = "en";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="//disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+        
+
+    </div>
+
+        
+       <script>var disqus_shortname="hbprotoss";(function(){var a=document.createElement("script");a.async=true;a.src="//"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script>
+
+
+
+             
+        <footer id="footer" role="contentinfo">
+            <p>
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png"></a><br>本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh">知识共享署名-非商业性使用-禁止演绎 3.0 未本地化版本许可协议</a>进行许可。
+<br>Contents © 2014 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a></p>
+            
+        </footer>
+
+        </div>
+    </section>
+    
+    
+    
+            <script src="../assets/js/all-nocdn.js" type="text/javascript"></script>
+    
+<!-- Social buttons -->
+<div id="addthisbox" class="addthis_toolbox addthis_peekaboo_style addthis_default_style addthis_label_style addthis_32x32_style">
+<a class="addthis_button_more">Share</a>
+<ul>
+<li>
+<a class="addthis_button_facebook"></a>
+</li>
+<li>
+<a class="addthis_button_google_plusone_share"></a>
+</li>
+<li>
+<a class="addthis_button_linkedin"></a>
+</li>
+<li>
+<a class="addthis_button_twitter"></a>
+</li>
+</ul>
+</div>
+<script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-4f7088a56bb93798"></script>
+<!-- End of social buttons -->
+
+
+    
+        <script type="text/javascript">
+            $(function(){
+                $('.timeago').timeago();
+            });
+        </script>
+    
+</body>
+</html>
