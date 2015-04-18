@@ -6,7 +6,10 @@
     <title>hbprotoss的博客 (old posts, page 1) | hbprotoss的博客</title>
 
     
-            <link href="assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+            <link href="assets/css/bitter.css" rel="stylesheet" type="text/css">
+        <link href="assets/css/main.css" rel="stylesheet" type="text/css">
+        <link href="assets/css/rst.css" rel="stylesheet" type="text/css">
+        <link href="assets/css/code.css" rel="stylesheet" type="text/css">
 
     
             <link rel="alternate" type="application/rss+xml" title="RSS" href="rss.xml">
@@ -41,6 +44,100 @@
     <section class="page-content">
         <div class="content" rel="main">
             
+        <div class="post">
+            <h1 class="title"><a href="posts/python-decoratorde-ying-yong.html">Python decorator的应用</a></h1>
+            <div class="meta">
+                <div class="authordate">
+                    <time class="timeago" datetime="2013-04-03T21:23:39+08:00">2013-04-03 21:23</time>
+                </div>
+                <div class="stats">
+                    
+        
+    <a href="posts/python-decoratorde-ying-yong.html#disqus_thread" data-disqus-identifier="cache/posts/python-decoratorde-ying-yong.html">Comments</a>
+
+
+                </div>
+            
+        <div itemprop="keywords" class="tags">
+        <ul>
+        Tags : 
+           <li><a class="tag p-category" href="categories/design-pattern.html" rel="tag">Design Pattern</a></li>
+           <li><a class="tag p-category" href="categories/python.html" rel="tag">Python</a></li>
+        </ul>
+        </div>
+
+            </div>
+            <div class="body">
+                <div>
+<p>Decorator是23种设计模式之一，提出的目的是为了在不改变现有代码的前提下，通过在头部或尾部添加代码来扩展功能。<br>
+Python语言内建支持decorator模式。由于语法不是本文重点，对语法不熟悉的童鞋可以参考以下几篇文章：  </p>
+<ol>
+<li>Stackoverflow上的神文：<a href="http://stackoverflow.com/a/1594484/837187">Understanding Python decorators</a>
+</li>
+<li><a href="http://blog.donews.com/limodou/archive/2004/12/19/207521.aspx">[Python学习]decorator的使用</a></li>
+<li><a href="http://www.python.org/dev/peps/pep-0318/">PEP318</a></li>
+</ol>
+<p>下面说一下最近在写SNS客户端插件时Python decorator的应用。<br>
+插件的方法完成的任务是：  </p>
+<ul>
+<li>根据OAuth协议，设置好参数，访问HTTP API</li>
+<li>读取服务器返回的json</li>
+<li>解析json</li>
+</ul>
+<p>异常可能来自访问API过程中的网络问题，以及解析json发现服务器返回了错误代码（比如API访问过于频繁，access token有问题等）。在写头几个API的时候做法很自然，用try-except块包裹可能出异常的代码，将各种标准库的异常或者服务器返回的错误信息封装成自己的exception，raise一下告诉主程序有异常需要处理。<br>
+但是写了几个方法后发现，每个方法的异常处理流程几乎一模一样，特别是封装标准库的异常，唯一不同的就是解析服务器返回的错误信息。伪码如下：  </p>
+<pre class="code literal-block">def method(xxx):
+    try:
+        f = urllib.request.urlopen(url, data, headers)
+        raw_data = f.read().decode('utf-8')
+        rtn = json.loads(raw_data)
+    except Exception1 as e:
+        log.error(e)
+        raise CustomException1()
+    except Exception2 as e:
+        log.error(e)
+        raise CustomException2()
+        xxx
+    else:
+        return rtn
+</pre>
+
+
+<p>出于懒的原因（说得好听点，出于代码复用的目的:D)，得想个办法把这些重复性的工作提取出来。<br>
+仔细观察可以发现，这些方法在except处理完异常之后都没有额外的工作需要进行。换句话说，可以认为这些代码都位于核心处理代码之后，这是自然就想到了decorator模式，将异常处理放在decorator里，再decorate一下各个方法就可以了。<br>
+Decorator如下：  </p>
+<pre class="code literal-block">def sinaMethod(func):
+    def func_wrapper(*args, **kwargs):
+        try:
+            raw_rtn = func(*args, **kwargs)
+        except urllib.error.HTTPError as e:
+            if e.fp:
+                # Sina app error
+                error_msg = json.loads(e.fp.read().decode('utf-8'))
+                error_code = str(error_msg['error_code'])
+                if error_code in exception_dict:
+                    raise exception_dict[error_code](error_msg['error'])
+                else:
+                    raise weiUnknownError(str(e))
+            else:
+                # Network error
+                raise weiNetworkError(str(e))
+        else:
+            return raw_rtn
+    return func_wrapper
+</pre>
+
+
+<p>其作用就是，尝试调用被装饰函数，如果顺利的话直接返回结果。如果有HTTPError异常发生，则解析之，并根据相应情况封装成自定义的异常抛出。<br>
+这里使得代码比较简短的一个关键就是这个exception_dict，里面维护了新浪错误代码和需要抛出的异常类之间的映射。根据返回的error_code查找这个字典，如果有则说明这是我们需要关心的异常，那么就用错误消息构造异常对象抛出。如果没有，就不是需要关心的异常，以weiUnknownError异常抛出。<br>
+由于新浪在出错时除了返回HTTP报头，还有一段附加data，所以如果e.fp为None则说明不是应用层的异常，可能是网络层及以下出了问题，抛出weiNetworkError。  </p>
+<p>使用就很简单了，在被装饰的函数前一行加<code>@sinaMethod</code>就可以了。<br>
+就这么简单~~  </p>
+<hr>
+<p>PS：附带说一句，编程语言对设计模式在语法上的支持会大大简化程序猿的编码量。如果是C++/Java，甚至C要用decorator模式就得协商老长一段了~~^_^</p>
+</div>
+            </div>
+        </div>
         <div class="post">
             <h1 class="title"><a href="posts/multipartform-datade-shi-xian.html">multipart/form-data的实现</a></h1>
             <div class="meta">
@@ -237,42 +334,42 @@ nikola官网：<a href="http://nikola.ralsina.com.ar/">http://nikola.ralsina.com
 1.  官网上的<a href="http://nikola.ralsina.com.ar/handbook.html#installing-nikola">安装指导</a>中，如果你是Ubuntu用户的话，<a href="http://makotemplates.org/">Mako</a>一定要用pip安装或自己去下，Ubuntu官方源上的版本太旧，运行会出问题。<br>
 2.  喜欢用markdown的童鞋除了更改nikola生成的站点根目录下的从conf.py之外，新建博文的时候要注意加上<code>-f markdown</code>参数：<code>nikola new_post -f markdown</code><br>
 3.  喜欢用markdown的童鞋还得<strong>注意</strong>一下(==!)，官方0.5.4有个bug。在<code>/usr/local/lib/python2.7/dist-packages/nikola/plugins/compile_markdown/__init__.py</code>文件中，在73~81行的字符串前加个字母u。  </p>
-<pre class="code literal-block">    <span class="n">with</span> <span class="n">codecs</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">"wb+"</span><span class="p">,</span> <span class="s">"utf8"</span><span class="p">)</span> <span class="n">as</span> <span class="n">fd</span><span class="o">:</span>
-        <span class="k">if</span> <span class="n">onefile</span><span class="o">:</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="err">'</span><span class="o">&lt;!--</span> <span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">)</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="err">'</span><span class="p">..</span> <span class="n">title</span><span class="o">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span><span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">.</span><span class="n">format</span><span class="p">(</span><span class="n">title</span><span class="p">))</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="err">'</span><span class="p">..</span> <span class="n">slug</span><span class="o">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span><span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">.</span><span class="n">format</span><span class="p">(</span><span class="n">slug</span><span class="p">))</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="err">'</span><span class="p">..</span> <span class="n">date</span><span class="o">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span><span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">.</span><span class="n">format</span><span class="p">(</span><span class="n">date</span><span class="p">))</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="err">'</span><span class="p">..</span> <span class="n">tags</span><span class="o">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span><span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">.</span><span class="n">format</span><span class="p">(</span><span class="n">tags</span><span class="p">))</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="err">'</span><span class="p">..</span> <span class="n">link</span><span class="o">:</span> <span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">)</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="err">'</span><span class="p">..</span> <span class="n">description</span><span class="o">:</span> <span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">)</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="err">'</span><span class="o">--&gt;</span><span class="err">\</span><span class="n">n</span><span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">)</span>
-        <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">Write your post here."</span><span class="p">)</span>
+<pre class="code literal-block">    with codecs.open(path, "wb+", "utf8") as fd:
+        if onefile:
+            fd.write('&lt;!-- \n')
+            fd.write('.. title: {0}\n'.format(title))
+            fd.write('.. slug: {0}\n'.format(slug))
+            fd.write('.. date: {0}\n'.format(date))
+            fd.write('.. tags: {0}\n'.format(tags))
+            fd.write('.. link: \n')
+            fd.write('.. description: \n')
+            fd.write('--&gt;\n\n')
+        fd.write("\nWrite your post here.")
 </pre>
 
 
 <p>改成  </p>
-<pre class="code literal-block">    <span class="n">with</span> <span class="n">codecs</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">"wb+"</span><span class="p">,</span> <span class="s">"utf8"</span><span class="p">)</span> <span class="n">as</span> <span class="n">fd</span><span class="o">:</span>
-        <span class="k">if</span> <span class="n">onefile</span><span class="o">:</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">u</span><span class="err">'</span><span class="o">&lt;!--</span> <span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">)</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">u</span><span class="err">'</span><span class="p">..</span> <span class="n">title</span><span class="o">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span><span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">.</span><span class="n">format</span><span class="p">(</span><span class="n">title</span><span class="p">))</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">u</span><span class="err">'</span><span class="p">..</span> <span class="n">slug</span><span class="o">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span><span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">.</span><span class="n">format</span><span class="p">(</span><span class="n">slug</span><span class="p">))</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">u</span><span class="err">'</span><span class="p">..</span> <span class="n">date</span><span class="o">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span><span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">.</span><span class="n">format</span><span class="p">(</span><span class="n">date</span><span class="p">))</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">u</span><span class="err">'</span><span class="p">..</span> <span class="n">tags</span><span class="o">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span><span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">.</span><span class="n">format</span><span class="p">(</span><span class="n">tags</span><span class="p">))</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">u</span><span class="err">'</span><span class="p">..</span> <span class="n">link</span><span class="o">:</span> <span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">)</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">u</span><span class="err">'</span><span class="p">..</span> <span class="n">description</span><span class="o">:</span> <span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">)</span>
-            <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">u</span><span class="err">'</span><span class="o">--&gt;</span><span class="err">\</span><span class="n">n</span><span class="err">\</span><span class="n">n</span><span class="err">'</span><span class="p">)</span>
-        <span class="n">fd</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">u</span><span class="s">"</span><span class="se">\n</span><span class="s">Write your post here."</span><span class="p">)</span>
+<pre class="code literal-block">    with codecs.open(path, "wb+", "utf8") as fd:
+        if onefile:
+            fd.write(u'&lt;!-- \n')
+            fd.write(u'.. title: {0}\n'.format(title))
+            fd.write(u'.. slug: {0}\n'.format(slug))
+            fd.write(u'.. date: {0}\n'.format(date))
+            fd.write(u'.. tags: {0}\n'.format(tags))
+            fd.write(u'.. link: \n')
+            fd.write(u'.. description: \n')
+            fd.write(u'--&gt;\n\n')
+        fd.write(u"\nWrite your post here.")
 </pre>
 
 
 <p>因为不加u就是str对象，写入的是utf-8编码的文件，当title等参数里出现非英文字母的时候会出先解码异常。（马上提交个pull request去）<br>
 4. 要快速部署到gitpage，在站点conf.py里添加：</p>
-<pre class="code literal-block"><span class="nt">DEPLOY_COMMANDS</span> <span class="o">=</span> <span class="cp">[</span>
-<span class="s1">'git --git-dir=output/.git --work-tree=output add -A '</span><span class="p">,</span>
-<span class="s1">'git --git-dir=output/.git --work-tree=output commit -m "latest auto deploy build"'</span><span class="p">,</span>
-<span class="s1">'git --git-dir=output/.git --work-tree=output push origin master'</span>
-<span class="cp">]</span>
+<pre class="code literal-block">DEPLOY_COMMANDS = [
+'git --git-dir=output/.git --work-tree=output add -A ',
+'git --git-dir=output/.git --work-tree=output commit -m "latest auto deploy build"',
+'git --git-dir=output/.git --work-tree=output push origin master'
+]
 </pre>
 </div>
             </div>
@@ -310,24 +407,24 @@ nikola官网：<a href="http://nikola.ralsina.com.ar/">http://nikola.ralsina.com
         A.py  </p>
 </blockquote>
 <hr>
-<pre class="code literal-block"><span class="cp"># A.py</span>
-<span class="n">a</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="n">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-<span class="n">a</span> <span class="o">+=</span> <span class="mi">1</span>
+<pre class="code literal-block"># A.py
+a = 1
+print(a)
+a += 1
 </pre>
 
 
 <hr>
-<pre class="code literal-block"><span class="cp"># test.py</span>
-<span class="cp">#!/usr/bin/env python3</span>
-<span class="n">import</span> <span class="n">os</span>
-<span class="n">import</span> <span class="n">sys</span>
-<span class="n">import</span> <span class="n">mo</span><span class="p">.</span><span class="n">A</span>
-<span class="n">import</span> <span class="n">mo</span><span class="p">.</span><span class="n">A</span>
-<span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">abspath</span><span class="p">(</span><span class="err">'</span><span class="p">.</span><span class="o">/</span><span class="n">mo</span><span class="err">'</span><span class="p">)</span>
-<span class="n">print</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-<span class="n">sys</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-<span class="n">import</span> <span class="n">A</span>
+<pre class="code literal-block"><span class="c"># test.py</span>
+<span class="c">#!/usr/bin/env python3</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">mo.A</span>
+<span class="kn">import</span> <span class="nn">mo.A</span>
+<span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s">'./mo'</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">A</span>
 </pre>
 
 
@@ -580,7 +677,7 @@ startTask，先将task入队，然后看是否有空闲线程，如果有则在�
         <footer id="footer" role="contentinfo">
             <p>
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png"></a><br>本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh">知识共享署名-非商业性使用-禁止演绎 3.0 未本地化版本许可协议</a>进行许可。
-<br>Contents © 2014 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a></p>
+<br>Contents © 2015 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a></p>
             
         </footer>
 
@@ -589,7 +686,8 @@ startTask，先将task入队，然后看是否有空闲线程，如果有则在�
     
     
     
-            <script src="assets/js/all-nocdn.js" type="text/javascript"></script>
+            <script src="assets/js/jquery-1.10.2.min.js" type="text/javascript"></script>
+            <script src="assets/js/jquery.timeago.js" type="text/javascript"></script>
     
 <!-- Social buttons -->
 <div id="addthisbox" class="addthis_toolbox addthis_peekaboo_style addthis_default_style addthis_label_style addthis_32x32_style">

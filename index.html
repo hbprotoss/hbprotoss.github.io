@@ -6,7 +6,10 @@
     <title>hbprotoss的博客 | hbprotoss的博客</title>
 
     
-            <link href="assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+            <link href="assets/css/bitter.css" rel="stylesheet" type="text/css">
+        <link href="assets/css/main.css" rel="stylesheet" type="text/css">
+        <link href="assets/css/rst.css" rel="stylesheet" type="text/css">
+        <link href="assets/css/code.css" rel="stylesheet" type="text/css">
 
     
             <link rel="alternate" type="application/rss+xml" title="RSS" href="rss.xml">
@@ -41,6 +44,112 @@
     <section class="page-content">
         <div class="content" rel="main">
             
+        <div class="post">
+            <h1 class="title"><a href="posts/da-jian-zhi-neng-fan-qiang-lu-you-qi.html">搭建智能翻墙路由器</a></h1>
+            <div class="meta">
+                <div class="authordate">
+                    <time class="timeago" datetime="2015-04-16T08:49:13+08:00">2015-04-16 08:49</time>
+                </div>
+                <div class="stats">
+                    
+        
+    <a href="posts/da-jian-zhi-neng-fan-qiang-lu-you-qi.html#disqus_thread" data-disqus-identifier="cache/posts/da-jian-zhi-neng-fan-qiang-lu-you-qi.html">Comments</a>
+
+
+                </div>
+            
+        <div itemprop="keywords" class="tags">
+        <ul>
+        Tags : 
+           <li><a class="tag p-category" href="categories/dns.html" rel="tag">DNS</a></li>
+           <li><a class="tag p-category" href="categories/openwrt.html" rel="tag">OpenWRT</a></li>
+           <li><a class="tag p-category" href="categories/shadowsocks.html" rel="tag">ShadowSocks</a></li>
+           <li><a class="tag p-category" href="categories/fan-qiang.html" rel="tag">翻墙</a></li>
+        </ul>
+        </div>
+
+            </div>
+            <div class="body">
+                <div>
+<p>本文着重介绍如何搭建智能翻墙路由器，实现避免DNS污染，并且自动根据是否是国内IP来决定是否翻墙，从而使任何连接路由器的设备无障碍穿墙出去。</p>
+<p>思路是，用shadowsocks建立起翻墙代理服务，用shadowsocks的udp relay模式转发DNS请求，解决DNS污染，再配置iptables根据IP决定是否走shadowsocks来翻墙。</p>
+<h2>准备材料</h2>
+<ul>
+<li>能刷OpenWrt的智能路由器。我用的是小米路由器MINI，16MB ROM，128MB DDR2内存，MT7620A处理器，运行毫无压力（真的不是广告。。。）</li>
+<li>OpenWrt。这里选的是<a href="http://downloads.openwrt.org.cn/PandoraBox/">PandoraBox</a>版</li>
+<li>shadowsocks client，PandoraBox自带</li>
+<li>ChinaDNS，PandoraBox自带</li>
+<li>VPS一台</li>
+<li>shadowsocks server，选用C实现：shadowsocks-libev，go和Python版没有UDP relay功能，不能实现DNS请求转发</li>
+</ul>
+<h2>步骤</h2>
+<h3>shadowsocks server</h3>
+<p>shadowsocks-libev的安装参考<a href="http://shadowsocks.org/en/download/servers.html">http://shadowsocks.org/en/download/servers.html</a>中的“C with libev”一节</p>
+<p>安装完成之后将如下配置写入config.json</p>
+<pre class="code literal-block">{
+    "server":"0.0.0.0",
+    "server_port":8025,
+    "password":"123456",
+    "timeout":300,
+    "method":"aes-256-cfb"
+}
+</pre>
+
+
+<p>分别指定了服务器的binding address，端口，密码，超时时间和加密方式。按需更改</p>
+<p>在远程VPS上启动shadowsocks server: <code>ss-server -c config.json -u</code></p>
+<p>注意得加上<code>-u</code>选项，enable udprelay mode。用作DNS请求转发，避免DNS污染。</p>
+<h3>shadowsocks client</h3>
+<p>在本地路由器上起shadowsocks client</p>
+<h4>ss-redir</h4>
+<p>ss-redir用于将客户端的原始数据封装成shadowsocks协议内容，转发给server，实现透明转发。</p>
+<p>在本地路由器启动ss-redir: <code>ss-redir -s "your_server_ip" -p "your_server_port" -l "local_service_port" -m "encryption_method" -k "server_password" -f "pid_file_path"</code>
+注意这里不需要<code>-u</code>选项，转发的是TCP包，ss-redir也不支持这个选项。</p>
+<h4>ss-tunnel</h4>
+<p>ss-tunnel用于实现本地port forward，和ssh的port forward一样，只是加密方式用了shadowsocks协议，用于在本地起服务，转发DNS请求</p>
+<p>在本地路由器启动ss-tunnel: <code>ss-redir -s "your_server_ip" -p "your_server_port" -l "local_service_port" -m "encryption_method" -k "server_password" -L "server_ip:server_port" -f "pid_file_path" -u</code></p>
+<p>这个<code>-L</code>选项理论上可以填国外DNS的IP/PORT，比如<code>8.8.8.8:53</code>，我在我的VPS起了一个DNS转发服务，填了自己的IP/PORT，效果应该一样。<code>-u</code>是开启udp relay，DNS是UDP包嘛</p>
+<h3>ChinaDNS</h3>
+<p>如果所有DNS请求都走国外DNS server，国内有些网站（如微博）在海外有服务器，就会比较慢。ChinaDNS保证的就是国内域名能解析成国内IP，国外域名解析成国外IP。</p>
+<p>在本地路由器启动ChinaDNS: <code>chinadns -l /etc/chinadns_iplist.txt -c /etc/chinadns_chnroute.txt -d -p "local_dns_port" -s 114.114.114.114,127.0.0.1:8026</code></p>
+<p><code>-s</code>选项后加以逗号分隔的DNS服务器列表，最好国内、国外各有一个。由于前面通过ss-tunnel在本地起了一个端口转发到我的DNS服务，所以填的是<code>127.0.0.1:8026</code>。</p>
+<p>ChinaDNS原理是，向所有列表中的DNS server发DNS请求，判断结果可信任条件是：国内DNS解析出的是国内IP，国外DNS解析出的是国外IP，<code>/etc/chinadns_chnroute.txt</code>里包含了国内IP网段，<code>/etc/chinadns_iplist.txt</code>里包含的是常见的被污染后的DNS解析结果IP。这样只要通过<code>dnsmasq</code>之类的把本地DNS请求转发到ChinaDNS的端口上，就能解决DNS污染的问题。</p>
+<h3>iptables</h3>
+<p>前面的准备工作完成之后，只要配置一下iptables，将国内TCP流量直接放行，国外TCP流量转发到ss-redir起的端口就行，判断依据是IP。</p>
+<p>在nat表中新建一个SHADOWSOCKS链</p>
+<pre class="code literal-block">iptables -t nat -N SHADOWSOCKS
+</pre>
+
+
+<p>远程VPS流量直接放行</p>
+<pre class="code literal-block">iptables -t nat -A SHADOWSOCKS -d xxx.xxx.xx.xxx -j RETURN
+</pre>
+
+
+<p>内网流量直接放行</p>
+<pre class="code literal-block">iptables -t nat -A SHADOWSOCKS -d 0.0.0.0/8 -j RETURN
+iptables -t nat -A SHADOWSOCKS -d 10.0.0.0/8 -j RETURN
+iptables -t nat -A SHADOWSOCKS -d 127.0.0.0/8 -j RETURN
+iptables -t nat -A SHADOWSOCKS -d 169.254.0.0/16 -j RETURN
+iptables -t nat -A SHADOWSOCKS -d 172.16.0.0/12 -j RETURN
+iptables -t nat -A SHADOWSOCKS -d 192.168.0.0/16 -j RETURN
+iptables -t nat -A SHADOWSOCKS -d 224.0.0.0/4 -j RETURN
+iptables -t nat -A SHADOWSOCKS -d 240.0.0.0/4 -j RETURN
+</pre>
+
+
+<p>国内IP流量直接放行(列表较长，这里不列举了，网上随便搜搜就有)</p>
+<p>剩下的TCP流量转发到ss-redir端口</p>
+<pre class="code literal-block">iptables -t nat -A SHADOWSOCKS -p tcp -j REDIRECT --to-ports xxx
+</pre>
+
+
+<h2>完工</h2>
+<p>搞定之后，任何连接这个路由器的设备都能实现透明翻墙了。</p>
+<p>以上</p>
+</div>
+            </div>
+        </div>
         <div class="post">
             <h1 class="title"><a href="posts/guan-yu-pythonyi-chang-chu-li-liu-cheng.html">关于Python异常处理流程</a></h1>
             <div class="meta">
@@ -110,7 +219,7 @@
 
      <span class="c1">// 栈帧展开，主要为了在当前frame，沿着block栈向上寻找有没有try/except来接住异常</span>
 
-<span class="nl">fast_block_end:</span>
+<span class="nl">fast_block_end</span><span class="p">:</span>
         <span class="k">while</span> <span class="p">(</span><span class="n">why</span> <span class="o">!=</span> <span class="n">WHY_NOT</span> <span class="o">&amp;&amp;</span> <span class="n">f</span><span class="o">-&gt;</span><span class="n">f_iblock</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
             <span class="cm">/* Peek at the current block. */</span>
             <span class="n">PyTryBlock</span> <span class="o">*</span><span class="n">b</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">f</span><span class="o">-&gt;</span><span class="n">f_blockstack</span><span class="p">[</span><span class="n">f</span><span class="o">-&gt;</span><span class="n">f_iblock</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
@@ -171,53 +280,53 @@
 
 <p>补充一点：</p>
 <p>dis模块可以“反汇编”Python字节码变成“Python汇编语言”，下面就是示例代码的反汇编结果：</p>
-<pre class="code literal-block">  <span class="mi">6</span>           <span class="mi">0</span> <span class="n">SETUP_FINALLY</span>           <span class="mi">63</span> <span class="p">(</span><span class="n">to</span> <span class="mi">66</span><span class="p">)</span>
-              <span class="mi">3</span> <span class="n">SETUP_EXCEPT</span>            <span class="mi">15</span> <span class="p">(</span><span class="n">to</span> <span class="mi">21</span><span class="p">)</span>
+<pre class="code literal-block">  6           0 SETUP_FINALLY           63 (to 66)
+              3 SETUP_EXCEPT            15 (to 21)
 
-  <span class="mi">7</span>           <span class="mi">6</span> <span class="n">LOAD_CONST</span>               <span class="mi">1</span> <span class="p">(</span><span class="err">'</span><span class="n">try</span><span class="err">'</span><span class="p">)</span>
-              <span class="mi">9</span> <span class="n">PRINT_ITEM</span>
-             <span class="mi">10</span> <span class="n">PRINT_NEWLINE</span>
+  7           6 LOAD_CONST               1 ('try')
+              9 PRINT_ITEM
+             10 PRINT_NEWLINE
 
-  <span class="mi">8</span>          <span class="mi">11</span> <span class="n">LOAD_GLOBAL</span>              <span class="mi">0</span> <span class="p">(</span><span class="n">NameError</span><span class="p">)</span>
-             <span class="mi">14</span> <span class="n">RAISE_VARARGS</span>            <span class="mi">1</span>
-             <span class="mi">17</span> <span class="n">POP_BLOCK</span>
-             <span class="mi">18</span> <span class="n">JUMP_FORWARD</span>            <span class="mi">30</span> <span class="p">(</span><span class="n">to</span> <span class="mi">51</span><span class="p">)</span>
+  8          11 LOAD_GLOBAL              0 (NameError)
+             14 RAISE_VARARGS            1
+             17 POP_BLOCK
+             18 JUMP_FORWARD            30 (to 51)
 
-  <span class="mi">9</span>     <span class="o">&gt;&gt;</span>   <span class="mi">21</span> <span class="n">DUP_TOP</span>
-             <span class="mi">22</span> <span class="n">LOAD_GLOBAL</span>              <span class="mi">1</span> <span class="p">(</span><span class="n">Exception</span><span class="p">)</span>
-             <span class="mi">25</span> <span class="n">COMPARE_OP</span>              <span class="mi">10</span> <span class="p">(</span><span class="n">exception</span> <span class="n">match</span><span class="p">)</span>
-             <span class="mi">28</span> <span class="n">POP_JUMP_IF_FALSE</span>       <span class="mi">50</span>
-             <span class="mi">31</span> <span class="n">POP_TOP</span>
-             <span class="mi">32</span> <span class="n">STORE_FAST</span>               <span class="mi">0</span> <span class="p">(</span><span class="n">e</span><span class="p">)</span>
-             <span class="mi">35</span> <span class="n">POP_TOP</span>
+  9     &gt;&gt;   21 DUP_TOP
+             22 LOAD_GLOBAL              1 (Exception)
+             25 COMPARE_OP              10 (exception match)
+             28 POP_JUMP_IF_FALSE       50
+             31 POP_TOP
+             32 STORE_FAST               0 (e)
+             35 POP_TOP
 
- <span class="mi">10</span>          <span class="mi">36</span> <span class="n">LOAD_CONST</span>               <span class="mi">2</span> <span class="p">(</span><span class="err">'</span><span class="n">except</span><span class="err">'</span><span class="p">)</span>
-             <span class="mi">39</span> <span class="n">PRINT_ITEM</span>
-             <span class="mi">40</span> <span class="n">PRINT_NEWLINE</span>
+ 10          36 LOAD_CONST               2 ('except')
+             39 PRINT_ITEM
+             40 PRINT_NEWLINE
 
- <span class="mi">11</span>          <span class="mi">41</span> <span class="n">LOAD_GLOBAL</span>              <span class="mi">2</span> <span class="p">(</span><span class="n">KeyError</span><span class="p">)</span>
-             <span class="mi">44</span> <span class="n">RAISE_VARARGS</span>            <span class="mi">1</span>
-             <span class="mi">47</span> <span class="n">JUMP_FORWARD</span>            <span class="mi">12</span> <span class="p">(</span><span class="n">to</span> <span class="mi">62</span><span class="p">)</span>
-        <span class="o">&gt;&gt;</span>   <span class="mi">50</span> <span class="n">END_FINALLY</span>
+ 11          41 LOAD_GLOBAL              2 (KeyError)
+             44 RAISE_VARARGS            1
+             47 JUMP_FORWARD            12 (to 62)
+        &gt;&gt;   50 END_FINALLY
 
- <span class="mi">13</span>     <span class="o">&gt;&gt;</span>   <span class="mi">51</span> <span class="n">LOAD_CONST</span>               <span class="mi">3</span> <span class="p">(</span><span class="err">'</span><span class="k">else</span><span class="err">'</span><span class="p">)</span>
-             <span class="mi">54</span> <span class="n">PRINT_ITEM</span>
-             <span class="mi">55</span> <span class="n">PRINT_NEWLINE</span>
+ 13     &gt;&gt;   51 LOAD_CONST               3 ('else')
+             54 PRINT_ITEM
+             55 PRINT_NEWLINE
 
- <span class="mi">14</span>          <span class="mi">56</span> <span class="n">LOAD_GLOBAL</span>              <span class="mi">3</span> <span class="p">(</span><span class="n">IOError</span><span class="p">)</span>
-             <span class="mi">59</span> <span class="n">RAISE_VARARGS</span>            <span class="mi">1</span>
-        <span class="o">&gt;&gt;</span>   <span class="mi">62</span> <span class="n">POP_BLOCK</span>
-             <span class="mi">63</span> <span class="n">LOAD_CONST</span>               <span class="mi">0</span> <span class="p">(</span><span class="n">None</span><span class="p">)</span>
+ 14          56 LOAD_GLOBAL              3 (IOError)
+             59 RAISE_VARARGS            1
+        &gt;&gt;   62 POP_BLOCK
+             63 LOAD_CONST               0 (None)
 
- <span class="mi">16</span>     <span class="o">&gt;&gt;</span>   <span class="mi">66</span> <span class="n">LOAD_CONST</span>               <span class="mi">4</span> <span class="p">(</span><span class="err">'</span><span class="n">finally</span><span class="err">'</span><span class="p">)</span>
-             <span class="mi">69</span> <span class="n">PRINT_ITEM</span>
-             <span class="mi">70</span> <span class="n">PRINT_NEWLINE</span>
+ 16     &gt;&gt;   66 LOAD_CONST               4 ('finally')
+             69 PRINT_ITEM
+             70 PRINT_NEWLINE
 
- <span class="mi">17</span>          <span class="mi">71</span> <span class="n">LOAD_GLOBAL</span>              <span class="mi">4</span> <span class="p">(</span><span class="n">ValueError</span><span class="p">)</span>
-             <span class="mi">74</span> <span class="n">RAISE_VARARGS</span>            <span class="mi">1</span>
-             <span class="mi">77</span> <span class="n">END_FINALLY</span>
-             <span class="mi">78</span> <span class="n">LOAD_CONST</span>               <span class="mi">0</span> <span class="p">(</span><span class="n">None</span><span class="p">)</span>
-             <span class="mi">81</span> <span class="n">RETURN_VALUE</span>
+ 17          71 LOAD_GLOBAL              4 (ValueError)
+             74 RAISE_VARARGS            1
+             77 END_FINALLY
+             78 LOAD_CONST               0 (None)
+             81 RETURN_VALUE
 </pre>
 </div>
             </div>
@@ -276,66 +385,66 @@
 <p>数据项为(a,b,c)在0~200之间的所有组合项，共计8000000行记录。为了消除几次实验中以query cache为代表的各种server cache对实验数据的影响，每次实验后均重启mysql服务。</p>
 <h4>索引对查询效率的影响</h4>
 <p>首先是建立KEY(a,b,c)索引前后的性能对比，能很明显地看到索引大幅提升查询速度。没有索引的时候需要做全表扫描，建立索引之后通过B-Tree搜索。</p>
-<pre class="code literal-block"><span class="err">没有索引（除主键，下同）</span>
-<span class="p">[</span><span class="n">SQL</span><span class="p">]</span><span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">test</span> <span class="n">where</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">and</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-<span class="n">Affected</span> <span class="n">rows</span><span class="o">:</span> <span class="mi">0</span>
-<span class="nl">Time:</span> <span class="mf">0.324</span><span class="n">s</span>
+<pre class="code literal-block">没有索引（除主键，下同）
+[SQL]select * from test where a = 0 and b = 1;
+Affected rows: 0
+Time: 0.324s
 
-<span class="err">建立</span><span class="n">KEY</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">)</span>
-<span class="p">[</span><span class="n">SQL</span><span class="p">]</span><span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">test</span> <span class="n">where</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">and</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-<span class="n">Affected</span> <span class="n">rows</span><span class="o">:</span> <span class="mi">0</span>
-<span class="nl">Time:</span> <span class="mf">0.004</span><span class="n">s</span>
+建立KEY(a,b,c)
+[SQL]select * from test where a = 0 and b = 1;
+Affected rows: 0
+Time: 0.004s
 </pre>
 
 
 <p>由于MySQL优化器的优化，where条件中的各个子条件顺序对索引的使用没有影响。</p>
-<pre class="code literal-block"><span class="p">[</span><span class="n">SQL</span><span class="p">]</span><span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">test</span> <span class="n">where</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">1</span> <span class="n">and</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-<span class="n">Affected</span> <span class="n">rows</span><span class="o">:</span> <span class="mi">0</span>
-<span class="nl">Time:</span> <span class="mf">0.002</span><span class="n">s</span>
+<pre class="code literal-block">[SQL]select * from test where b = 1 and a = 0;
+Affected rows: 0
+Time: 0.002s
 </pre>
 
 
 <p>当使用的列非严格的索引最左前缀时，可以想象，只有a加速了索引搜索，找到所有符合a条件的记录的之后只能顺序扫描检查c是否符合条件。所以相比没有索引时要快，但是慢于使用严格索引最左前缀时的速度。</p>
-<pre class="code literal-block"><span class="p">[</span><span class="n">SQL</span><span class="p">]</span><span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">test</span> <span class="n">where</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">and</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-<span class="n">Affected</span> <span class="n">rows</span><span class="o">:</span> <span class="mi">0</span>
-<span class="nl">Time:</span> <span class="mf">0.043</span><span class="n">s</span>
+<pre class="code literal-block">[SQL]select * from test where a = 0 and c = 1;
+Affected rows: 0
+Time: 0.043s
 </pre>
 
 
 <p>当没有使用到a列作为条件时完全没法使用索引，甚至比没有索引时还要慢。因为建表的时候a在前，b、c在后，并且数据节点有序。在没有索引的测试中，InnoDB引擎到a不为0时自动停止搜索。而在这个例子中需要扫描全表找出满足符合条件的b、c，达到完全没法忍受的16秒。</p>
-<pre class="code literal-block"><span class="p">[</span><span class="n">SQL</span><span class="p">]</span><span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">test</span> <span class="n">where</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">and</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-<span class="n">Affected</span> <span class="n">rows</span><span class="o">:</span> <span class="mi">0</span>
-<span class="nl">Time:</span> <span class="mf">16.023</span><span class="n">s</span>
+<pre class="code literal-block">[SQL]select * from test where b = 0 and c = 1;
+Affected rows: 0
+Time: 16.023s
 </pre>
 
 
 <h4>索引对排序效率的影响</h4>
 <p>只要能用到索引，并且ORDER BY后面的列在索引中，则顺序还是倒序排序对性能无影响。因为叶子节点是个双向链表，倒序可以从后向前遍历，与顺序的代价相同。</p>
-<pre class="code literal-block"><span class="p">[</span><span class="n">SQL</span><span class="p">]</span><span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">test</span> <span class="n">where</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">ORDER</span> <span class="n">BY</span> <span class="n">b</span><span class="p">;</span>
-<span class="n">Affected</span> <span class="n">rows</span><span class="o">:</span> <span class="mi">0</span>
-<span class="nl">Time:</span> <span class="mf">0.085</span><span class="n">s</span>
+<pre class="code literal-block">[SQL]select * from test where a = 0 ORDER BY b;
+Affected rows: 0
+Time: 0.085s
 
-<span class="p">[</span><span class="n">SQL</span><span class="p">]</span><span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">test</span> <span class="n">where</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">ORDER</span> <span class="n">BY</span> <span class="n">b</span> <span class="n">DESC</span><span class="p">;</span>
-<span class="n">Affected</span> <span class="n">rows</span><span class="o">:</span> <span class="mi">0</span>
-<span class="nl">Time:</span> <span class="mf">0.089</span><span class="n">s</span>
+[SQL]select * from test where a = 0 ORDER BY b DESC;
+Affected rows: 0
+Time: 0.089s
 </pre>
 
 
 <p>但是，当有两个字段排序的顺序不同时，叶子节点的有序性就无法用在排序中，必须读出所有叶子节点之后再按指定的字段进行一趟排序，所以速度就慢了下来。</p>
-<pre class="code literal-block"><span class="p">[</span><span class="n">SQL</span><span class="p">]</span><span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">test</span> <span class="n">where</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">ORDER</span> <span class="n">BY</span> <span class="n">b</span> <span class="n">DESC</span><span class="p">,</span> <span class="n">c</span> <span class="n">DESC</span><span class="p">;</span>
-<span class="n">Affected</span> <span class="n">rows</span><span class="o">:</span> <span class="mi">0</span>
-<span class="nl">Time:</span> <span class="mf">0.089</span><span class="n">s</span>
+<pre class="code literal-block">[SQL]select * from test where a = 0 ORDER BY b DESC, c DESC;
+Affected rows: 0
+Time: 0.089s
 
-<span class="p">[</span><span class="n">SQL</span><span class="p">]</span><span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">test</span> <span class="n">where</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">ORDER</span> <span class="n">BY</span> <span class="n">b</span> <span class="n">ASC</span><span class="p">,</span> <span class="n">c</span> <span class="n">DESC</span><span class="p">;</span>
-<span class="n">Affected</span> <span class="n">rows</span><span class="o">:</span> <span class="mi">0</span>
-<span class="nl">Time:</span> <span class="mf">0.184</span><span class="n">s</span>
+[SQL]select * from test where a = 0 ORDER BY b ASC, c DESC;
+Affected rows: 0
+Time: 0.184s
 </pre>
 
 
 <p>同样，下面的例子中对索引左边的字段a进行范围选择的时候也没法运用索引，因为多个取值的a无法保证b和c字段有序，必须重新排序</p>
-<pre class="code literal-block"><span class="p">[</span><span class="n">SQL</span><span class="p">]</span><span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">test</span> <span class="n">where</span> <span class="n">a</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="n">ORDER</span> <span class="n">BY</span> <span class="n">b</span><span class="p">;</span>
-<span class="n">Affected</span> <span class="n">rows</span><span class="o">:</span> <span class="mi">0</span>
-<span class="nl">Time:</span> <span class="mf">0.103</span><span class="n">s</span>
+<pre class="code literal-block">[SQL]select * from test where a &lt;= 0 ORDER BY b;
+Affected rows: 0
+Time: 0.103s
 </pre>
 
 
@@ -670,11 +779,11 @@ hook.so: hook.c
 
 <p>执行：</p>
 <pre class="code literal-block"><span class="nv">$ LD_PRELOAD</span><span class="o">=</span>./hook.so ./test 123
-hack <span class="k">function </span>invoked. <span class="nv">s1</span><span class="o">=</span>&lt;123&gt; <span class="nv">s2</span><span class="o">=</span>&lt;<span class="nb">test</span>&gt;
+hack <span class="k">function</span> invoked. <span class="nv">s1</span><span class="o">=</span>&lt;123&gt; <span class="nv">s2</span><span class="o">=</span>&lt;<span class="nb">test</span>&gt;
 Incorrect password
 
 <span class="nv">$ LD_PRELOAD</span><span class="o">=</span>./hook.so ./test <span class="nb">test</span>
-hack <span class="k">function </span>invoked. <span class="nv">s1</span><span class="o">=</span>&lt;<span class="nb">test</span>&gt; <span class="nv">s2</span><span class="o">=</span>&lt;<span class="nb">test</span>&gt;
+hack <span class="k">function</span> invoked. <span class="nv">s1</span><span class="o">=</span>&lt;<span class="nb">test</span>&gt; <span class="nv">s2</span><span class="o">=</span>&lt;<span class="nb">test</span>&gt;
 Correct password
 </pre>
 
@@ -747,14 +856,14 @@ Correct password
 </ol>
 <p>通过<code>nm -g libtest.so</code>可以看到，导出符号表中已经有<code>add</code>这个符号了：</p>
 <pre class="code literal-block"><span class="nv">$ </span>nm -g libtest.so 
-0000000000000670 T add
-0000000000201030 B __bss_start
+<span class="m">0000000000000670</span> T add
+<span class="m">0000000000201030</span> B __bss_start
                  w __cxa_finalize@@GLIBC_2.2.5
-0000000000201030 D _edata
-0000000000201038 B _end
-0000000000000684 T _fini
+<span class="m">0000000000201030</span> D _edata
+<span class="m">0000000000201038</span> B _end
+<span class="m">0000000000000684</span> T _fini
                  w __gmon_start__
-0000000000000540 T _init
+<span class="m">0000000000000540</span> T _init
                  w _ITM_deregisterTMCloneTable
                  w _ITM_registerTMCloneTable
                  w _Jv_RegisterClasses
@@ -783,7 +892,7 @@ Correct password
 <p>此时通过<code>readelf test -d</code>已经能看到生成的可执行文件test的Dynamic section里依赖libtest.so了</p>
 <pre class="code literal-block"><span class="nv">$ </span>readelf <span class="nb">test</span> -d
 
-Dynamic section at offset 0xe18 contains 25 entries:
+Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
   Tag        Type                         Name/Value
  0x0000000000000001 <span class="o">(</span>NEEDED<span class="o">)</span>             Shared library: <span class="o">[</span>libtest.so<span class="o">]</span>
  0x0000000000000001 <span class="o">(</span>NEEDED<span class="o">)</span>             Shared library: <span class="o">[</span>libc.so.6<span class="o">]</span>
@@ -794,12 +903,12 @@ Dynamic section at offset 0xe18 contains 25 entries:
 <p>dynamic symbols中也有一个undefined symbol(add)</p>
 <pre class="code literal-block"><span class="nv">$ </span>nm -D <span class="nb">test </span>
 <span class="nb">                 </span>U add
-0000000000601048 B __bss_start
-0000000000601048 D _edata
-0000000000601050 B _end
+<span class="m">0000000000601048</span> B __bss_start
+<span class="m">0000000000601048</span> D _edata
+<span class="m">0000000000601050</span> B _end
 00000000004007b4 T _fini
                  w __gmon_start__
-0000000000400578 T _init
+<span class="m">0000000000400578</span> T _init
                  w _ITM_deregisterTMCloneTable
                  w _ITM_registerTMCloneTable
                  w _Jv_RegisterClasses
@@ -809,13 +918,13 @@ Dynamic section at offset 0xe18 contains 25 entries:
 
 
 <p>在执行隐式链接的程序之前要注意设置<code>LD_LIBRARY_PATH</code>环境变量，或者把前面生成的libtest.so复制到系统路径下，否则会找不到动态库。</p>
-<pre class="code literal-block"><span class="err">$</span> <span class="p">.</span><span class="o">/</span><span class="n">test</span> 
-<span class="p">.</span><span class="o">/</span><span class="n">test</span><span class="o">:</span> <span class="n">error</span> <span class="k">while</span> <span class="n">loading</span> <span class="n">shared</span> <span class="n">libraries</span><span class="o">:</span> <span class="n">libtest</span><span class="p">.</span><span class="n">so</span><span class="o">:</span> <span class="n">cannot</span> <span class="n">open</span> <span class="n">shared</span> <span class="n">object</span> <span class="n">file</span><span class="o">:</span> <span class="n">No</span> <span class="n">such</span> <span class="n">file</span> <span class="n">or</span> <span class="n">directory</span>
+<pre class="code literal-block"><span class="nv">$ </span>./test 
+./test: error <span class="k">while</span> loading shared libraries: libtest.so: cannot open shared object file: No such file or directory
 
-<span class="err">$</span> <span class="n">export</span> <span class="n">LD_LIBRARY_PATH</span><span class="o">=</span><span class="p">.</span>
+<span class="nv">$ </span><span class="nb">export </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>.
 
-<span class="err">$</span> <span class="p">.</span><span class="o">/</span><span class="n">test</span> 
-<span class="mi">3</span>
+<span class="nv">$ </span>./test 
+3
 </pre>
 
 
@@ -848,28 +957,28 @@ Dynamic section at offset 0xe18 contains 25 entries:
 
 <p>使用<code>gcc dyn_main.c -ldl -o dyn_test</code>编译。</p>
 <p>这时通过<code>readelf dyn_test -d</code>可以发现，dyn_test不依赖libtest.so：</p>
-<pre class="code literal-block"><span class="err">$</span> <span class="n">readelf</span> <span class="n">dyn_test</span> <span class="o">-</span><span class="n">d</span>
+<pre class="code literal-block"><span class="nv">$ </span>readelf dyn_test -d
 
-<span class="n">Dynamic</span> <span class="n">section</span> <span class="n">at</span> <span class="n">offset</span> <span class="mh">0xe18</span> <span class="n">contains</span> <span class="mi">25</span> <span class="n">entries</span><span class="o">:</span>
-  <span class="n">Tag</span>        <span class="n">Type</span>                         <span class="n">Name</span><span class="o">/</span><span class="n">Value</span>
- <span class="mh">0x0000000000000001</span> <span class="p">(</span><span class="n">NEEDED</span><span class="p">)</span>             <span class="n">Shared</span> <span class="n">library</span><span class="o">:</span> <span class="p">[</span><span class="n">libdl</span><span class="p">.</span><span class="n">so</span><span class="mf">.2</span><span class="p">]</span>
- <span class="mh">0x0000000000000001</span> <span class="p">(</span><span class="n">NEEDED</span><span class="p">)</span>             <span class="n">Shared</span> <span class="n">library</span><span class="o">:</span> <span class="p">[</span><span class="n">libc</span><span class="p">.</span><span class="n">so</span><span class="mf">.6</span><span class="p">]</span>
-<span class="p">......</span>
+Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
+  Tag        Type                         Name/Value
+ 0x0000000000000001 <span class="o">(</span>NEEDED<span class="o">)</span>             Shared library: <span class="o">[</span>libdl.so.2<span class="o">]</span>
+ 0x0000000000000001 <span class="o">(</span>NEEDED<span class="o">)</span>             Shared library: <span class="o">[</span>libc.so.6<span class="o">]</span>
+......
 </pre>
 
 
 <p>dyn_test的dynamic symbols中也没有add：</p>
-<pre class="code literal-block"><span class="err">$</span> <span class="n">nm</span> <span class="o">-</span><span class="n">D</span> <span class="n">dyn_test</span> 
-                 <span class="n">U</span> <span class="n">dlerror</span>
-                 <span class="n">U</span> <span class="n">dlopen</span>
-                 <span class="n">U</span> <span class="n">dlsym</span>
-                 <span class="n">w</span> <span class="n">__gmon_start__</span>
-                 <span class="n">w</span> <span class="n">_ITM_deregisterTMCloneTable</span>
-                 <span class="n">w</span> <span class="n">_ITM_registerTMCloneTable</span>
-                 <span class="n">w</span> <span class="n">_Jv_RegisterClasses</span>
-                 <span class="n">U</span> <span class="n">__libc_start_main</span>
-                 <span class="n">U</span> <span class="n">printf</span>
-                 <span class="n">U</span> <span class="n">puts</span>
+<pre class="code literal-block"><span class="nv">$ </span>nm -D dyn_test 
+                 U dlerror
+                 U dlopen
+                 U dlsym
+                 w __gmon_start__
+                 w _ITM_deregisterTMCloneTable
+                 w _ITM_registerTMCloneTable
+                 w _Jv_RegisterClasses
+                 U __libc_start_main
+                 U <span class="nb">printf</span>
+<span class="nb">                 </span>U puts
 </pre>
 
 
@@ -1551,100 +1660,6 @@ ABCDABF的partial match table如下：<br>
 </div>
             </div>
         </div>
-        <div class="post">
-            <h1 class="title"><a href="posts/python-decoratorde-ying-yong.html">Python decorator的应用</a></h1>
-            <div class="meta">
-                <div class="authordate">
-                    <time class="timeago" datetime="2013-04-03T21:23:39+08:00">2013-04-03 21:23</time>
-                </div>
-                <div class="stats">
-                    
-        
-    <a href="posts/python-decoratorde-ying-yong.html#disqus_thread" data-disqus-identifier="cache/posts/python-decoratorde-ying-yong.html">Comments</a>
-
-
-                </div>
-            
-        <div itemprop="keywords" class="tags">
-        <ul>
-        Tags : 
-           <li><a class="tag p-category" href="categories/design-pattern.html" rel="tag">Design Pattern</a></li>
-           <li><a class="tag p-category" href="categories/python.html" rel="tag">Python</a></li>
-        </ul>
-        </div>
-
-            </div>
-            <div class="body">
-                <div>
-<p>Decorator是23种设计模式之一，提出的目的是为了在不改变现有代码的前提下，通过在头部或尾部添加代码来扩展功能。<br>
-Python语言内建支持decorator模式。由于语法不是本文重点，对语法不熟悉的童鞋可以参考以下几篇文章：  </p>
-<ol>
-<li>Stackoverflow上的神文：<a href="http://stackoverflow.com/a/1594484/837187">Understanding Python decorators</a>
-</li>
-<li><a href="http://blog.donews.com/limodou/archive/2004/12/19/207521.aspx">[Python学习]decorator的使用</a></li>
-<li><a href="http://www.python.org/dev/peps/pep-0318/">PEP318</a></li>
-</ol>
-<p>下面说一下最近在写SNS客户端插件时Python decorator的应用。<br>
-插件的方法完成的任务是：  </p>
-<ul>
-<li>根据OAuth协议，设置好参数，访问HTTP API</li>
-<li>读取服务器返回的json</li>
-<li>解析json</li>
-</ul>
-<p>异常可能来自访问API过程中的网络问题，以及解析json发现服务器返回了错误代码（比如API访问过于频繁，access token有问题等）。在写头几个API的时候做法很自然，用try-except块包裹可能出异常的代码，将各种标准库的异常或者服务器返回的错误信息封装成自己的exception，raise一下告诉主程序有异常需要处理。<br>
-但是写了几个方法后发现，每个方法的异常处理流程几乎一模一样，特别是封装标准库的异常，唯一不同的就是解析服务器返回的错误信息。伪码如下：  </p>
-<pre class="code literal-block"><span class="n">def</span> <span class="n">method</span><span class="p">(</span><span class="n">xxx</span><span class="p">)</span><span class="o">:</span>
-    <span class="nl">try:</span>
-        <span class="n">f</span> <span class="o">=</span> <span class="n">urllib</span><span class="p">.</span><span class="n">request</span><span class="p">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
-        <span class="n">raw_data</span> <span class="o">=</span> <span class="n">f</span><span class="p">.</span><span class="n">read</span><span class="p">().</span><span class="n">decode</span><span class="p">(</span><span class="err">'</span><span class="n">utf</span><span class="o">-</span><span class="mi">8</span><span class="err">'</span><span class="p">)</span>
-        <span class="n">rtn</span> <span class="o">=</span> <span class="n">json</span><span class="p">.</span><span class="n">loads</span><span class="p">(</span><span class="n">raw_data</span><span class="p">)</span>
-    <span class="n">except</span> <span class="n">Exception1</span> <span class="n">as</span> <span class="n">e</span><span class="o">:</span>
-        <span class="n">log</span><span class="p">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-        <span class="n">raise</span> <span class="n">CustomException1</span><span class="p">()</span>
-    <span class="n">except</span> <span class="n">Exception2</span> <span class="n">as</span> <span class="n">e</span><span class="o">:</span>
-        <span class="n">log</span><span class="p">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-        <span class="n">raise</span> <span class="n">CustomException2</span><span class="p">()</span>
-        <span class="n">xxx</span>
-    <span class="nl">else:</span>
-        <span class="k">return</span> <span class="n">rtn</span>
-</pre>
-
-
-<p>出于懒的原因（说得好听点，出于代码复用的目的:D)，得想个办法把这些重复性的工作提取出来。<br>
-仔细观察可以发现，这些方法在except处理完异常之后都没有额外的工作需要进行。换句话说，可以认为这些代码都位于核心处理代码之后，这是自然就想到了decorator模式，将异常处理放在decorator里，再decorate一下各个方法就可以了。<br>
-Decorator如下：  </p>
-<pre class="code literal-block"><span class="n">def</span> <span class="n">sinaMethod</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="o">:</span>
-    <span class="n">def</span> <span class="n">func_wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">:</span>
-        <span class="nl">try:</span>
-            <span class="n">raw_rtn</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">except</span> <span class="n">urllib</span><span class="p">.</span><span class="n">error</span><span class="p">.</span><span class="n">HTTPError</span> <span class="n">as</span> <span class="n">e</span><span class="o">:</span>
-            <span class="k">if</span> <span class="n">e</span><span class="p">.</span><span class="n">fp</span><span class="o">:</span>
-                <span class="err">#</span> <span class="n">Sina</span> <span class="n">app</span> <span class="n">error</span>
-                <span class="n">error_msg</span> <span class="o">=</span> <span class="n">json</span><span class="p">.</span><span class="n">loads</span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">fp</span><span class="p">.</span><span class="n">read</span><span class="p">().</span><span class="n">decode</span><span class="p">(</span><span class="err">'</span><span class="n">utf</span><span class="o">-</span><span class="mi">8</span><span class="err">'</span><span class="p">))</span>
-                <span class="n">error_code</span> <span class="o">=</span> <span class="n">str</span><span class="p">(</span><span class="n">error_msg</span><span class="p">[</span><span class="err">'</span><span class="n">error_code</span><span class="err">'</span><span class="p">])</span>
-                <span class="k">if</span> <span class="n">error_code</span> <span class="n">in</span> <span class="n">exception_dict</span><span class="o">:</span>
-                    <span class="n">raise</span> <span class="n">exception_dict</span><span class="p">[</span><span class="n">error_code</span><span class="p">](</span><span class="n">error_msg</span><span class="p">[</span><span class="err">'</span><span class="n">error</span><span class="err">'</span><span class="p">])</span>
-                <span class="nl">else:</span>
-                    <span class="n">raise</span> <span class="n">weiUnknownError</span><span class="p">(</span><span class="n">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
-            <span class="nl">else:</span>
-                <span class="err">#</span> <span class="n">Network</span> <span class="n">error</span>
-                <span class="n">raise</span> <span class="n">weiNetworkError</span><span class="p">(</span><span class="n">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
-        <span class="nl">else:</span>
-            <span class="k">return</span> <span class="n">raw_rtn</span>
-    <span class="k">return</span> <span class="n">func_wrapper</span>
-</pre>
-
-
-<p>其作用就是，尝试调用被装饰函数，如果顺利的话直接返回结果。如果有HTTPError异常发生，则解析之，并根据相应情况封装成自定义的异常抛出。<br>
-这里使得代码比较简短的一个关键就是这个exception_dict，里面维护了新浪错误代码和需要抛出的异常类之间的映射。根据返回的error_code查找这个字典，如果有则说明这是我们需要关心的异常，那么就用错误消息构造异常对象抛出。如果没有，就不是需要关心的异常，以weiUnknownError异常抛出。<br>
-由于新浪在出错时除了返回HTTP报头，还有一段附加data，所以如果e.fp为None则说明不是应用层的异常，可能是网络层及以下出了问题，抛出weiNetworkError。  </p>
-<p>使用就很简单了，在被装饰的函数前一行加<code>@sinaMethod</code>就可以了。<br>
-就这么简单~~  </p>
-<hr>
-<p>PS：附带说一句，编程语言对设计模式在语法上的支持会大大简化程序猿的编码量。如果是C++/Java，甚至C要用decorator模式就得协商老长一段了~~^_^</p>
-</div>
-            </div>
-        </div>
     
         <nav class="postindexpager">
         <ul class="pager">
@@ -1666,7 +1681,7 @@ Decorator如下：  </p>
         <footer id="footer" role="contentinfo">
             <p>
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png"></a><br>本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh">知识共享署名-非商业性使用-禁止演绎 3.0 未本地化版本许可协议</a>进行许可。
-<br>Contents © 2014 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a></p>
+<br>Contents © 2015 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a></p>
             
         </footer>
 
@@ -1675,7 +1690,8 @@ Decorator如下：  </p>
     
     
     
-            <script src="assets/js/all-nocdn.js" type="text/javascript"></script>
+            <script src="assets/js/jquery-1.10.2.min.js" type="text/javascript"></script>
+            <script src="assets/js/jquery.timeago.js" type="text/javascript"></script>
     
 <!-- Social buttons -->
 <div id="addthisbox" class="addthis_toolbox addthis_peekaboo_style addthis_default_style addthis_label_style addthis_32x32_style">

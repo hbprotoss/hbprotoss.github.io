@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>hbprotoss的博客 (Linux)</title><link>http://hbprotoss.github.io/</link><description></description><language>en</language><lastBuildDate>Tue, 23 Sep 2014 08:43:27 GMT</lastBuildDate><generator>http://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>利用LD_PRELOAD进行hook</title><link>http://hbprotoss.github.io/posts/li-yong-ld_preloadjin-xing-hook.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;p&gt;好久没玩hook这种猥琐的东西里，今天在Linux下体验了一把。&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>hbprotoss的博客 (Linux)</title><link>http://hbprotoss.github.io/</link><description></description><atom:link href="http://hbprotoss.github.io/categories/linux.xml" type="application/rss+xml" rel="self"></atom:link><language>en</language><lastBuildDate>Sat, 18 Apr 2015 08:24:32 GMT</lastBuildDate><generator>http://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>利用LD_PRELOAD进行hook</title><link>http://hbprotoss.github.io/posts/li-yong-ld_preloadjin-xing-hook.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;p&gt;好久没玩hook这种猥琐的东西里，今天在Linux下体验了一把。&lt;/p&gt;
 &lt;p&gt;loader在进行动态链接的时候，会将有相同符号名的符号覆盖成LD_PRELOAD指定的so文件中的符号。换句话说，可以用我们自己的so库中的函数替换原来库里有的函数，从而达到hook的目的。这和Windows下通过修改import table来hook API很类似。相比较之下，LD_PRELOAD更方便了，都不用自己写代码了，系统的loader会帮我们搞定。但是LD_PRELOAD有个限制：只能hook动态链接的库，对静态链接的库无效，因为静态链接的代码都写到可执行文件里了嘛，没有坑让你填。&lt;/p&gt;
 &lt;p&gt;上代码&lt;/p&gt;
 &lt;p&gt;先是受害者，我们的主程序main.c，通过strcmp比较字符串是否相等：&lt;/p&gt;
@@ -56,11 +56,11 @@ hook.so: hook.c
 
 &lt;p&gt;执行：&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$ LD_PRELOAD&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;./hook.so ./test 123
-hack &lt;span class="k"&gt;function &lt;/span&gt;invoked. &lt;span class="nv"&gt;s1&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;123&amp;gt; &lt;span class="nv"&gt;s2&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;&lt;span class="nb"&gt;test&lt;/span&gt;&amp;gt;
+hack &lt;span class="k"&gt;function&lt;/span&gt; invoked. &lt;span class="nv"&gt;s1&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;123&amp;gt; &lt;span class="nv"&gt;s2&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;&lt;span class="nb"&gt;test&lt;/span&gt;&amp;gt;
 Incorrect password
 
 &lt;span class="nv"&gt;$ LD_PRELOAD&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;./hook.so ./test &lt;span class="nb"&gt;test&lt;/span&gt;
-hack &lt;span class="k"&gt;function &lt;/span&gt;invoked. &lt;span class="nv"&gt;s1&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;&lt;span class="nb"&gt;test&lt;/span&gt;&amp;gt; &lt;span class="nv"&gt;s2&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;&lt;span class="nb"&gt;test&lt;/span&gt;&amp;gt;
+hack &lt;span class="k"&gt;function&lt;/span&gt; invoked. &lt;span class="nv"&gt;s1&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;&lt;span class="nb"&gt;test&lt;/span&gt;&amp;gt; &lt;span class="nv"&gt;s2&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;&lt;span class="nb"&gt;test&lt;/span&gt;&amp;gt;
 Correct password
 &lt;/pre&gt;
 
@@ -103,14 +103,14 @@ Correct password
 &lt;/ol&gt;
 &lt;p&gt;通过&lt;code&gt;nm -g libtest.so&lt;/code&gt;可以看到，导出符号表中已经有&lt;code&gt;add&lt;/code&gt;这个符号了：&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;nm -g libtest.so 
-0000000000000670 T add
-0000000000201030 B __bss_start
+&lt;span class="m"&gt;0000000000000670&lt;/span&gt; T add
+&lt;span class="m"&gt;0000000000201030&lt;/span&gt; B __bss_start
                  w __cxa_finalize@@GLIBC_2.2.5
-0000000000201030 D _edata
-0000000000201038 B _end
-0000000000000684 T _fini
+&lt;span class="m"&gt;0000000000201030&lt;/span&gt; D _edata
+&lt;span class="m"&gt;0000000000201038&lt;/span&gt; B _end
+&lt;span class="m"&gt;0000000000000684&lt;/span&gt; T _fini
                  w __gmon_start__
-0000000000000540 T _init
+&lt;span class="m"&gt;0000000000000540&lt;/span&gt; T _init
                  w _ITM_deregisterTMCloneTable
                  w _ITM_registerTMCloneTable
                  w _Jv_RegisterClasses
@@ -139,7 +139,7 @@ Correct password
 &lt;p&gt;此时通过&lt;code&gt;readelf test -d&lt;/code&gt;已经能看到生成的可执行文件test的Dynamic section里依赖libtest.so了&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;readelf &lt;span class="nb"&gt;test&lt;/span&gt; -d
 
-Dynamic section at offset 0xe18 contains 25 entries:
+Dynamic section at offset 0xe18 contains &lt;span class="m"&gt;25&lt;/span&gt; entries:
   Tag        Type                         Name/Value
  0x0000000000000001 &lt;span class="o"&gt;(&lt;/span&gt;NEEDED&lt;span class="o"&gt;)&lt;/span&gt;             Shared library: &lt;span class="o"&gt;[&lt;/span&gt;libtest.so&lt;span class="o"&gt;]&lt;/span&gt;
  0x0000000000000001 &lt;span class="o"&gt;(&lt;/span&gt;NEEDED&lt;span class="o"&gt;)&lt;/span&gt;             Shared library: &lt;span class="o"&gt;[&lt;/span&gt;libc.so.6&lt;span class="o"&gt;]&lt;/span&gt;
@@ -150,12 +150,12 @@ Dynamic section at offset 0xe18 contains 25 entries:
 &lt;p&gt;dynamic symbols中也有一个undefined symbol(add)&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;nm -D &lt;span class="nb"&gt;test &lt;/span&gt;
 &lt;span class="nb"&gt;                 &lt;/span&gt;U add
-0000000000601048 B __bss_start
-0000000000601048 D _edata
-0000000000601050 B _end
+&lt;span class="m"&gt;0000000000601048&lt;/span&gt; B __bss_start
+&lt;span class="m"&gt;0000000000601048&lt;/span&gt; D _edata
+&lt;span class="m"&gt;0000000000601050&lt;/span&gt; B _end
 00000000004007b4 T _fini
                  w __gmon_start__
-0000000000400578 T _init
+&lt;span class="m"&gt;0000000000400578&lt;/span&gt; T _init
                  w _ITM_deregisterTMCloneTable
                  w _ITM_registerTMCloneTable
                  w _Jv_RegisterClasses
@@ -165,13 +165,13 @@ Dynamic section at offset 0xe18 contains 25 entries:
 
 
 &lt;p&gt;在执行隐式链接的程序之前要注意设置&lt;code&gt;LD_LIBRARY_PATH&lt;/code&gt;环境变量，或者把前面生成的libtest.so复制到系统路径下，否则会找不到动态库。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="err"&gt;$&lt;/span&gt; &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;test&lt;/span&gt; 
-&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;test&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;error&lt;/span&gt; &lt;span class="k"&gt;while&lt;/span&gt; &lt;span class="n"&gt;loading&lt;/span&gt; &lt;span class="n"&gt;shared&lt;/span&gt; &lt;span class="n"&gt;libraries&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;libtest&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;so&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;cannot&lt;/span&gt; &lt;span class="n"&gt;open&lt;/span&gt; &lt;span class="n"&gt;shared&lt;/span&gt; &lt;span class="n"&gt;object&lt;/span&gt; &lt;span class="n"&gt;file&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;No&lt;/span&gt; &lt;span class="n"&gt;such&lt;/span&gt; &lt;span class="n"&gt;file&lt;/span&gt; &lt;span class="n"&gt;or&lt;/span&gt; &lt;span class="n"&gt;directory&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;./test 
+./test: error &lt;span class="k"&gt;while&lt;/span&gt; loading shared libraries: libtest.so: cannot open shared object file: No such file or directory
 
-&lt;span class="err"&gt;$&lt;/span&gt; &lt;span class="n"&gt;export&lt;/span&gt; &lt;span class="n"&gt;LD_LIBRARY_PATH&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;
+&lt;span class="nv"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;export &lt;/span&gt;&lt;span class="nv"&gt;LD_LIBRARY_PATH&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;.
 
-&lt;span class="err"&gt;$&lt;/span&gt; &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;test&lt;/span&gt; 
-&lt;span class="mi"&gt;3&lt;/span&gt;
+&lt;span class="nv"&gt;$ &lt;/span&gt;./test 
+3
 &lt;/pre&gt;
 
 
@@ -204,28 +204,28 @@ Dynamic section at offset 0xe18 contains 25 entries:
 
 &lt;p&gt;使用&lt;code&gt;gcc dyn_main.c -ldl -o dyn_test&lt;/code&gt;编译。&lt;/p&gt;
 &lt;p&gt;这时通过&lt;code&gt;readelf dyn_test -d&lt;/code&gt;可以发现，dyn_test不依赖libtest.so：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="err"&gt;$&lt;/span&gt; &lt;span class="n"&gt;readelf&lt;/span&gt; &lt;span class="n"&gt;dyn_test&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;d&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;readelf dyn_test -d
 
-&lt;span class="n"&gt;Dynamic&lt;/span&gt; &lt;span class="n"&gt;section&lt;/span&gt; &lt;span class="n"&gt;at&lt;/span&gt; &lt;span class="n"&gt;offset&lt;/span&gt; &lt;span class="mh"&gt;0xe18&lt;/span&gt; &lt;span class="n"&gt;contains&lt;/span&gt; &lt;span class="mi"&gt;25&lt;/span&gt; &lt;span class="n"&gt;entries&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-  &lt;span class="n"&gt;Tag&lt;/span&gt;        &lt;span class="n"&gt;Type&lt;/span&gt;                         &lt;span class="n"&gt;Name&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;Value&lt;/span&gt;
- &lt;span class="mh"&gt;0x0000000000000001&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;NEEDED&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;             &lt;span class="n"&gt;Shared&lt;/span&gt; &lt;span class="n"&gt;library&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;libdl&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;so&lt;/span&gt;&lt;span class="mf"&gt;.2&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
- &lt;span class="mh"&gt;0x0000000000000001&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;NEEDED&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;             &lt;span class="n"&gt;Shared&lt;/span&gt; &lt;span class="n"&gt;library&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;libc&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;so&lt;/span&gt;&lt;span class="mf"&gt;.6&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="p"&gt;......&lt;/span&gt;
+Dynamic section at offset 0xe18 contains &lt;span class="m"&gt;25&lt;/span&gt; entries:
+  Tag        Type                         Name/Value
+ 0x0000000000000001 &lt;span class="o"&gt;(&lt;/span&gt;NEEDED&lt;span class="o"&gt;)&lt;/span&gt;             Shared library: &lt;span class="o"&gt;[&lt;/span&gt;libdl.so.2&lt;span class="o"&gt;]&lt;/span&gt;
+ 0x0000000000000001 &lt;span class="o"&gt;(&lt;/span&gt;NEEDED&lt;span class="o"&gt;)&lt;/span&gt;             Shared library: &lt;span class="o"&gt;[&lt;/span&gt;libc.so.6&lt;span class="o"&gt;]&lt;/span&gt;
+......
 &lt;/pre&gt;
 
 
 &lt;p&gt;dyn_test的dynamic symbols中也没有add：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="err"&gt;$&lt;/span&gt; &lt;span class="n"&gt;nm&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;D&lt;/span&gt; &lt;span class="n"&gt;dyn_test&lt;/span&gt; 
-                 &lt;span class="n"&gt;U&lt;/span&gt; &lt;span class="n"&gt;dlerror&lt;/span&gt;
-                 &lt;span class="n"&gt;U&lt;/span&gt; &lt;span class="n"&gt;dlopen&lt;/span&gt;
-                 &lt;span class="n"&gt;U&lt;/span&gt; &lt;span class="n"&gt;dlsym&lt;/span&gt;
-                 &lt;span class="n"&gt;w&lt;/span&gt; &lt;span class="n"&gt;__gmon_start__&lt;/span&gt;
-                 &lt;span class="n"&gt;w&lt;/span&gt; &lt;span class="n"&gt;_ITM_deregisterTMCloneTable&lt;/span&gt;
-                 &lt;span class="n"&gt;w&lt;/span&gt; &lt;span class="n"&gt;_ITM_registerTMCloneTable&lt;/span&gt;
-                 &lt;span class="n"&gt;w&lt;/span&gt; &lt;span class="n"&gt;_Jv_RegisterClasses&lt;/span&gt;
-                 &lt;span class="n"&gt;U&lt;/span&gt; &lt;span class="n"&gt;__libc_start_main&lt;/span&gt;
-                 &lt;span class="n"&gt;U&lt;/span&gt; &lt;span class="n"&gt;printf&lt;/span&gt;
-                 &lt;span class="n"&gt;U&lt;/span&gt; &lt;span class="n"&gt;puts&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;nm -D dyn_test 
+                 U dlerror
+                 U dlopen
+                 U dlsym
+                 w __gmon_start__
+                 w _ITM_deregisterTMCloneTable
+                 w _ITM_registerTMCloneTable
+                 w _Jv_RegisterClasses
+                 U __libc_start_main
+                 U &lt;span class="nb"&gt;printf&lt;/span&gt;
+&lt;span class="nb"&gt;                 &lt;/span&gt;U puts
 &lt;/pre&gt;
 
 

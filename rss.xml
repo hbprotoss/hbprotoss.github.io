@@ -1,5 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>hbprotoss的博客</title><link>http://hbprotoss.github.io/</link><description></description><language>en</language><lastBuildDate>Thu, 23 Oct 2014 13:39:21 GMT</lastBuildDate><generator>http://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>关于Python异常处理流程</title><link>http://hbprotoss.github.io/posts/guan-yu-pythonyi-chang-chu-li-liu-cheng.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;f&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>hbprotoss的博客</title><link>http://hbprotoss.github.io/</link><description></description><atom:link href="http://hbprotoss.github.io/rss.xml" type="application/rss+xml" rel="self"></atom:link><language>en</language><lastBuildDate>Sat, 18 Apr 2015 08:24:32 GMT</lastBuildDate><generator>http://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>搭建智能翻墙路由器</title><link>http://hbprotoss.github.io/posts/da-jian-zhi-neng-fan-qiang-lu-you-qi.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;p&gt;本文着重介绍如何搭建智能翻墙路由器，实现避免DNS污染，并且自动根据是否是国内IP来决定是否翻墙，从而使任何连接路由器的设备无障碍穿墙出去。&lt;/p&gt;
+&lt;p&gt;思路是，用shadowsocks建立起翻墙代理服务，用shadowsocks的udp relay模式转发DNS请求，解决DNS污染，再配置iptables根据IP决定是否走shadowsocks来翻墙。&lt;/p&gt;
+&lt;h2&gt;准备材料&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;能刷OpenWrt的智能路由器。我用的是小米路由器MINI，16MB ROM，128MB DDR2内存，MT7620A处理器，运行毫无压力（真的不是广告。。。）&lt;/li&gt;
+&lt;li&gt;OpenWrt。这里选的是&lt;a href="http://downloads.openwrt.org.cn/PandoraBox/"&gt;PandoraBox&lt;/a&gt;版&lt;/li&gt;
+&lt;li&gt;shadowsocks client，PandoraBox自带&lt;/li&gt;
+&lt;li&gt;ChinaDNS，PandoraBox自带&lt;/li&gt;
+&lt;li&gt;VPS一台&lt;/li&gt;
+&lt;li&gt;shadowsocks server，选用C实现：shadowsocks-libev，go和Python版没有UDP relay功能，不能实现DNS请求转发&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;步骤&lt;/h2&gt;
+&lt;h3&gt;shadowsocks server&lt;/h3&gt;
+&lt;p&gt;shadowsocks-libev的安装参考&lt;a href="http://shadowsocks.org/en/download/servers.html"&gt;http://shadowsocks.org/en/download/servers.html&lt;/a&gt;中的“C with libev”一节&lt;/p&gt;
+&lt;p&gt;安装完成之后将如下配置写入config.json&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;{
+    "server":"0.0.0.0",
+    "server_port":8025,
+    "password":"123456",
+    "timeout":300,
+    "method":"aes-256-cfb"
+}
+&lt;/pre&gt;
+
+
+&lt;p&gt;分别指定了服务器的binding address，端口，密码，超时时间和加密方式。按需更改&lt;/p&gt;
+&lt;p&gt;在远程VPS上启动shadowsocks server: &lt;code&gt;ss-server -c config.json -u&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;注意得加上&lt;code&gt;-u&lt;/code&gt;选项，enable udprelay mode。用作DNS请求转发，避免DNS污染。&lt;/p&gt;
+&lt;h3&gt;shadowsocks client&lt;/h3&gt;
+&lt;p&gt;在本地路由器上起shadowsocks client&lt;/p&gt;
+&lt;h4&gt;ss-redir&lt;/h4&gt;
+&lt;p&gt;ss-redir用于将客户端的原始数据封装成shadowsocks协议内容，转发给server，实现透明转发。&lt;/p&gt;
+&lt;p&gt;在本地路由器启动ss-redir: &lt;code&gt;ss-redir -s "your_server_ip" -p "your_server_port" -l "local_service_port" -m "encryption_method" -k "server_password" -f "pid_file_path"&lt;/code&gt;
+注意这里不需要&lt;code&gt;-u&lt;/code&gt;选项，转发的是TCP包，ss-redir也不支持这个选项。&lt;/p&gt;
+&lt;h4&gt;ss-tunnel&lt;/h4&gt;
+&lt;p&gt;ss-tunnel用于实现本地port forward，和ssh的port forward一样，只是加密方式用了shadowsocks协议，用于在本地起服务，转发DNS请求&lt;/p&gt;
+&lt;p&gt;在本地路由器启动ss-tunnel: &lt;code&gt;ss-redir -s "your_server_ip" -p "your_server_port" -l "local_service_port" -m "encryption_method" -k "server_password" -L "server_ip:server_port" -f "pid_file_path" -u&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;这个&lt;code&gt;-L&lt;/code&gt;选项理论上可以填国外DNS的IP/PORT，比如&lt;code&gt;8.8.8.8:53&lt;/code&gt;，我在我的VPS起了一个DNS转发服务，填了自己的IP/PORT，效果应该一样。&lt;code&gt;-u&lt;/code&gt;是开启udp relay，DNS是UDP包嘛&lt;/p&gt;
+&lt;h3&gt;ChinaDNS&lt;/h3&gt;
+&lt;p&gt;如果所有DNS请求都走国外DNS server，国内有些网站（如微博）在海外有服务器，就会比较慢。ChinaDNS保证的就是国内域名能解析成国内IP，国外域名解析成国外IP。&lt;/p&gt;
+&lt;p&gt;在本地路由器启动ChinaDNS: &lt;code&gt;chinadns -l /etc/chinadns_iplist.txt -c /etc/chinadns_chnroute.txt -d -p "local_dns_port" -s 114.114.114.114,127.0.0.1:8026&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;-s&lt;/code&gt;选项后加以逗号分隔的DNS服务器列表，最好国内、国外各有一个。由于前面通过ss-tunnel在本地起了一个端口转发到我的DNS服务，所以填的是&lt;code&gt;127.0.0.1:8026&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;ChinaDNS原理是，向所有列表中的DNS server发DNS请求，判断结果可信任条件是：国内DNS解析出的是国内IP，国外DNS解析出的是国外IP，&lt;code&gt;/etc/chinadns_chnroute.txt&lt;/code&gt;里包含了国内IP网段，&lt;code&gt;/etc/chinadns_iplist.txt&lt;/code&gt;里包含的是常见的被污染后的DNS解析结果IP。这样只要通过&lt;code&gt;dnsmasq&lt;/code&gt;之类的把本地DNS请求转发到ChinaDNS的端口上，就能解决DNS污染的问题。&lt;/p&gt;
+&lt;h3&gt;iptables&lt;/h3&gt;
+&lt;p&gt;前面的准备工作完成之后，只要配置一下iptables，将国内TCP流量直接放行，国外TCP流量转发到ss-redir起的端口就行，判断依据是IP。&lt;/p&gt;
+&lt;p&gt;在nat表中新建一个SHADOWSOCKS链&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;iptables -t nat -N SHADOWSOCKS
+&lt;/pre&gt;
+
+
+&lt;p&gt;远程VPS流量直接放行&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;iptables -t nat -A SHADOWSOCKS -d xxx.xxx.xx.xxx -j RETURN
+&lt;/pre&gt;
+
+
+&lt;p&gt;内网流量直接放行&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;iptables -t nat -A SHADOWSOCKS -d 0.0.0.0/8 -j RETURN
+iptables -t nat -A SHADOWSOCKS -d 10.0.0.0/8 -j RETURN
+iptables -t nat -A SHADOWSOCKS -d 127.0.0.0/8 -j RETURN
+iptables -t nat -A SHADOWSOCKS -d 169.254.0.0/16 -j RETURN
+iptables -t nat -A SHADOWSOCKS -d 172.16.0.0/12 -j RETURN
+iptables -t nat -A SHADOWSOCKS -d 192.168.0.0/16 -j RETURN
+iptables -t nat -A SHADOWSOCKS -d 224.0.0.0/4 -j RETURN
+iptables -t nat -A SHADOWSOCKS -d 240.0.0.0/4 -j RETURN
+&lt;/pre&gt;
+
+
+&lt;p&gt;国内IP流量直接放行(列表较长，这里不列举了，网上随便搜搜就有)&lt;/p&gt;
+&lt;p&gt;剩下的TCP流量转发到ss-redir端口&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;iptables -t nat -A SHADOWSOCKS -p tcp -j REDIRECT --to-ports xxx
+&lt;/pre&gt;
+
+
+&lt;h2&gt;完工&lt;/h2&gt;
+&lt;p&gt;搞定之后，任何连接这个路由器的设备都能实现透明翻墙了。&lt;/p&gt;
+&lt;p&gt;以上&lt;/p&gt;&lt;/div&gt;</description><category>DNS</category><category>OpenWRT</category><category>ShadowSocks</category><category>翻墙</category><guid>http://hbprotoss.github.io/posts/da-jian-zhi-neng-fan-qiang-lu-you-qi.html</guid><pubDate>Thu, 16 Apr 2015 00:49:13 GMT</pubDate></item><item><title>关于Python异常处理流程</title><link>http://hbprotoss.github.io/posts/guan-yu-pythonyi-chang-chu-li-liu-cheng.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;f&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
     &lt;span class="k"&gt;try&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
         &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;'try'&lt;/span&gt;
         &lt;span class="k"&gt;raise&lt;/span&gt; &lt;span class="ne"&gt;NameError&lt;/span&gt;
@@ -50,7 +125,7 @@
 
      &lt;span class="c1"&gt;// 栈帧展开，主要为了在当前frame，沿着block栈向上寻找有没有try/except来接住异常&lt;/span&gt;
 
-&lt;span class="nl"&gt;fast_block_end:&lt;/span&gt;
+&lt;span class="nl"&gt;fast_block_end&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
         &lt;span class="k"&gt;while&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;why&lt;/span&gt; &lt;span class="o"&gt;!=&lt;/span&gt; &lt;span class="n"&gt;WHY_NOT&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;f_iblock&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
             &lt;span class="cm"&gt;/* Peek at the current block. */&lt;/span&gt;
             &lt;span class="n"&gt;PyTryBlock&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;b&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;f_blockstack&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;f_iblock&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;];&lt;/span&gt;
@@ -111,53 +186,53 @@
 
 &lt;p&gt;补充一点：&lt;/p&gt;
 &lt;p&gt;dis模块可以“反汇编”Python字节码变成“Python汇编语言”，下面就是示例代码的反汇编结果：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;  &lt;span class="mi"&gt;6&lt;/span&gt;           &lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="n"&gt;SETUP_FINALLY&lt;/span&gt;           &lt;span class="mi"&gt;63&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;to&lt;/span&gt; &lt;span class="mi"&gt;66&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-              &lt;span class="mi"&gt;3&lt;/span&gt; &lt;span class="n"&gt;SETUP_EXCEPT&lt;/span&gt;            &lt;span class="mi"&gt;15&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;to&lt;/span&gt; &lt;span class="mi"&gt;21&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;  6           0 SETUP_FINALLY           63 (to 66)
+              3 SETUP_EXCEPT            15 (to 21)
 
-  &lt;span class="mi"&gt;7&lt;/span&gt;           &lt;span class="mi"&gt;6&lt;/span&gt; &lt;span class="n"&gt;LOAD_CONST&lt;/span&gt;               &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="err"&gt;'&lt;/span&gt;&lt;span class="n"&gt;try&lt;/span&gt;&lt;span class="err"&gt;'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-              &lt;span class="mi"&gt;9&lt;/span&gt; &lt;span class="n"&gt;PRINT_ITEM&lt;/span&gt;
-             &lt;span class="mi"&gt;10&lt;/span&gt; &lt;span class="n"&gt;PRINT_NEWLINE&lt;/span&gt;
+  7           6 LOAD_CONST               1 ('try')
+              9 PRINT_ITEM
+             10 PRINT_NEWLINE
 
-  &lt;span class="mi"&gt;8&lt;/span&gt;          &lt;span class="mi"&gt;11&lt;/span&gt; &lt;span class="n"&gt;LOAD_GLOBAL&lt;/span&gt;              &lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;NameError&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-             &lt;span class="mi"&gt;14&lt;/span&gt; &lt;span class="n"&gt;RAISE_VARARGS&lt;/span&gt;            &lt;span class="mi"&gt;1&lt;/span&gt;
-             &lt;span class="mi"&gt;17&lt;/span&gt; &lt;span class="n"&gt;POP_BLOCK&lt;/span&gt;
-             &lt;span class="mi"&gt;18&lt;/span&gt; &lt;span class="n"&gt;JUMP_FORWARD&lt;/span&gt;            &lt;span class="mi"&gt;30&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;to&lt;/span&gt; &lt;span class="mi"&gt;51&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+  8          11 LOAD_GLOBAL              0 (NameError)
+             14 RAISE_VARARGS            1
+             17 POP_BLOCK
+             18 JUMP_FORWARD            30 (to 51)
 
-  &lt;span class="mi"&gt;9&lt;/span&gt;     &lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt;   &lt;span class="mi"&gt;21&lt;/span&gt; &lt;span class="n"&gt;DUP_TOP&lt;/span&gt;
-             &lt;span class="mi"&gt;22&lt;/span&gt; &lt;span class="n"&gt;LOAD_GLOBAL&lt;/span&gt;              &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Exception&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-             &lt;span class="mi"&gt;25&lt;/span&gt; &lt;span class="n"&gt;COMPARE_OP&lt;/span&gt;              &lt;span class="mi"&gt;10&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;exception&lt;/span&gt; &lt;span class="n"&gt;match&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-             &lt;span class="mi"&gt;28&lt;/span&gt; &lt;span class="n"&gt;POP_JUMP_IF_FALSE&lt;/span&gt;       &lt;span class="mi"&gt;50&lt;/span&gt;
-             &lt;span class="mi"&gt;31&lt;/span&gt; &lt;span class="n"&gt;POP_TOP&lt;/span&gt;
-             &lt;span class="mi"&gt;32&lt;/span&gt; &lt;span class="n"&gt;STORE_FAST&lt;/span&gt;               &lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-             &lt;span class="mi"&gt;35&lt;/span&gt; &lt;span class="n"&gt;POP_TOP&lt;/span&gt;
+  9     &amp;gt;&amp;gt;   21 DUP_TOP
+             22 LOAD_GLOBAL              1 (Exception)
+             25 COMPARE_OP              10 (exception match)
+             28 POP_JUMP_IF_FALSE       50
+             31 POP_TOP
+             32 STORE_FAST               0 (e)
+             35 POP_TOP
 
- &lt;span class="mi"&gt;10&lt;/span&gt;          &lt;span class="mi"&gt;36&lt;/span&gt; &lt;span class="n"&gt;LOAD_CONST&lt;/span&gt;               &lt;span class="mi"&gt;2&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="err"&gt;'&lt;/span&gt;&lt;span class="n"&gt;except&lt;/span&gt;&lt;span class="err"&gt;'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-             &lt;span class="mi"&gt;39&lt;/span&gt; &lt;span class="n"&gt;PRINT_ITEM&lt;/span&gt;
-             &lt;span class="mi"&gt;40&lt;/span&gt; &lt;span class="n"&gt;PRINT_NEWLINE&lt;/span&gt;
+ 10          36 LOAD_CONST               2 ('except')
+             39 PRINT_ITEM
+             40 PRINT_NEWLINE
 
- &lt;span class="mi"&gt;11&lt;/span&gt;          &lt;span class="mi"&gt;41&lt;/span&gt; &lt;span class="n"&gt;LOAD_GLOBAL&lt;/span&gt;              &lt;span class="mi"&gt;2&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;KeyError&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-             &lt;span class="mi"&gt;44&lt;/span&gt; &lt;span class="n"&gt;RAISE_VARARGS&lt;/span&gt;            &lt;span class="mi"&gt;1&lt;/span&gt;
-             &lt;span class="mi"&gt;47&lt;/span&gt; &lt;span class="n"&gt;JUMP_FORWARD&lt;/span&gt;            &lt;span class="mi"&gt;12&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;to&lt;/span&gt; &lt;span class="mi"&gt;62&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        &lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt;   &lt;span class="mi"&gt;50&lt;/span&gt; &lt;span class="n"&gt;END_FINALLY&lt;/span&gt;
+ 11          41 LOAD_GLOBAL              2 (KeyError)
+             44 RAISE_VARARGS            1
+             47 JUMP_FORWARD            12 (to 62)
+        &amp;gt;&amp;gt;   50 END_FINALLY
 
- &lt;span class="mi"&gt;13&lt;/span&gt;     &lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt;   &lt;span class="mi"&gt;51&lt;/span&gt; &lt;span class="n"&gt;LOAD_CONST&lt;/span&gt;               &lt;span class="mi"&gt;3&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="err"&gt;'&lt;/span&gt;&lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="err"&gt;'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-             &lt;span class="mi"&gt;54&lt;/span&gt; &lt;span class="n"&gt;PRINT_ITEM&lt;/span&gt;
-             &lt;span class="mi"&gt;55&lt;/span&gt; &lt;span class="n"&gt;PRINT_NEWLINE&lt;/span&gt;
+ 13     &amp;gt;&amp;gt;   51 LOAD_CONST               3 ('else')
+             54 PRINT_ITEM
+             55 PRINT_NEWLINE
 
- &lt;span class="mi"&gt;14&lt;/span&gt;          &lt;span class="mi"&gt;56&lt;/span&gt; &lt;span class="n"&gt;LOAD_GLOBAL&lt;/span&gt;              &lt;span class="mi"&gt;3&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;IOError&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-             &lt;span class="mi"&gt;59&lt;/span&gt; &lt;span class="n"&gt;RAISE_VARARGS&lt;/span&gt;            &lt;span class="mi"&gt;1&lt;/span&gt;
-        &lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt;   &lt;span class="mi"&gt;62&lt;/span&gt; &lt;span class="n"&gt;POP_BLOCK&lt;/span&gt;
-             &lt;span class="mi"&gt;63&lt;/span&gt; &lt;span class="n"&gt;LOAD_CONST&lt;/span&gt;               &lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;None&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+ 14          56 LOAD_GLOBAL              3 (IOError)
+             59 RAISE_VARARGS            1
+        &amp;gt;&amp;gt;   62 POP_BLOCK
+             63 LOAD_CONST               0 (None)
 
- &lt;span class="mi"&gt;16&lt;/span&gt;     &lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt;   &lt;span class="mi"&gt;66&lt;/span&gt; &lt;span class="n"&gt;LOAD_CONST&lt;/span&gt;               &lt;span class="mi"&gt;4&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="err"&gt;'&lt;/span&gt;&lt;span class="n"&gt;finally&lt;/span&gt;&lt;span class="err"&gt;'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-             &lt;span class="mi"&gt;69&lt;/span&gt; &lt;span class="n"&gt;PRINT_ITEM&lt;/span&gt;
-             &lt;span class="mi"&gt;70&lt;/span&gt; &lt;span class="n"&gt;PRINT_NEWLINE&lt;/span&gt;
+ 16     &amp;gt;&amp;gt;   66 LOAD_CONST               4 ('finally')
+             69 PRINT_ITEM
+             70 PRINT_NEWLINE
 
- &lt;span class="mi"&gt;17&lt;/span&gt;          &lt;span class="mi"&gt;71&lt;/span&gt; &lt;span class="n"&gt;LOAD_GLOBAL&lt;/span&gt;              &lt;span class="mi"&gt;4&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ValueError&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-             &lt;span class="mi"&gt;74&lt;/span&gt; &lt;span class="n"&gt;RAISE_VARARGS&lt;/span&gt;            &lt;span class="mi"&gt;1&lt;/span&gt;
-             &lt;span class="mi"&gt;77&lt;/span&gt; &lt;span class="n"&gt;END_FINALLY&lt;/span&gt;
-             &lt;span class="mi"&gt;78&lt;/span&gt; &lt;span class="n"&gt;LOAD_CONST&lt;/span&gt;               &lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;None&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-             &lt;span class="mi"&gt;81&lt;/span&gt; &lt;span class="n"&gt;RETURN_VALUE&lt;/span&gt;
+ 17          71 LOAD_GLOBAL              4 (ValueError)
+             74 RAISE_VARARGS            1
+             77 END_FINALLY
+             78 LOAD_CONST               0 (None)
+             81 RETURN_VALUE
 &lt;/pre&gt;&lt;/div&gt;</description><guid>http://hbprotoss.github.io/posts/guan-yu-pythonyi-chang-chu-li-liu-cheng.html</guid><pubDate>Thu, 23 Oct 2014 04:27:56 GMT</pubDate></item><item><title>InnoDB引擎索引学习笔记</title><link>http://hbprotoss.github.io/posts/innodbyin-qing-suo-yin-xue-xi-bi-ji.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;p&gt;最近在研究学习MySQL，本文记录下索引相关（主要B-Tree索引）的特性。&lt;/p&gt;
 &lt;hr&gt;
 &lt;h3&gt;索引是什么&lt;/h3&gt;
@@ -188,66 +263,66 @@
 &lt;p&gt;数据项为(a,b,c)在0~200之间的所有组合项，共计8000000行记录。为了消除几次实验中以query cache为代表的各种server cache对实验数据的影响，每次实验后均重启mysql服务。&lt;/p&gt;
 &lt;h4&gt;索引对查询效率的影响&lt;/h4&gt;
 &lt;p&gt;首先是建立KEY(a,b,c)索引前后的性能对比，能很明显地看到索引大幅提升查询速度。没有索引的时候需要做全表扫描，建立索引之后通过B-Tree搜索。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="err"&gt;没有索引（除主键，下同）&lt;/span&gt;
-&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;SQL&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="n"&gt;select&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;from&lt;/span&gt; &lt;span class="n"&gt;test&lt;/span&gt; &lt;span class="n"&gt;where&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="n"&gt;and&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="n"&gt;Affected&lt;/span&gt; &lt;span class="n"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
-&lt;span class="nl"&gt;Time:&lt;/span&gt; &lt;span class="mf"&gt;0.324&lt;/span&gt;&lt;span class="n"&gt;s&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;没有索引（除主键，下同）
+[SQL]select * from test where a = 0 and b = 1;
+Affected rows: 0
+Time: 0.324s
 
-&lt;span class="err"&gt;建立&lt;/span&gt;&lt;span class="n"&gt;KEY&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;SQL&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="n"&gt;select&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;from&lt;/span&gt; &lt;span class="n"&gt;test&lt;/span&gt; &lt;span class="n"&gt;where&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="n"&gt;and&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="n"&gt;Affected&lt;/span&gt; &lt;span class="n"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
-&lt;span class="nl"&gt;Time:&lt;/span&gt; &lt;span class="mf"&gt;0.004&lt;/span&gt;&lt;span class="n"&gt;s&lt;/span&gt;
+建立KEY(a,b,c)
+[SQL]select * from test where a = 0 and b = 1;
+Affected rows: 0
+Time: 0.004s
 &lt;/pre&gt;
 
 
 &lt;p&gt;由于MySQL优化器的优化，where条件中的各个子条件顺序对索引的使用没有影响。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;SQL&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="n"&gt;select&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;from&lt;/span&gt; &lt;span class="n"&gt;test&lt;/span&gt; &lt;span class="n"&gt;where&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;and&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="n"&gt;Affected&lt;/span&gt; &lt;span class="n"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
-&lt;span class="nl"&gt;Time:&lt;/span&gt; &lt;span class="mf"&gt;0.002&lt;/span&gt;&lt;span class="n"&gt;s&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;[SQL]select * from test where b = 1 and a = 0;
+Affected rows: 0
+Time: 0.002s
 &lt;/pre&gt;
 
 
 &lt;p&gt;当使用的列非严格的索引最左前缀时，可以想象，只有a加速了索引搜索，找到所有符合a条件的记录的之后只能顺序扫描检查c是否符合条件。所以相比没有索引时要快，但是慢于使用严格索引最左前缀时的速度。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;SQL&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="n"&gt;select&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;from&lt;/span&gt; &lt;span class="n"&gt;test&lt;/span&gt; &lt;span class="n"&gt;where&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="n"&gt;and&lt;/span&gt; &lt;span class="n"&gt;c&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="n"&gt;Affected&lt;/span&gt; &lt;span class="n"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
-&lt;span class="nl"&gt;Time:&lt;/span&gt; &lt;span class="mf"&gt;0.043&lt;/span&gt;&lt;span class="n"&gt;s&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;[SQL]select * from test where a = 0 and c = 1;
+Affected rows: 0
+Time: 0.043s
 &lt;/pre&gt;
 
 
 &lt;p&gt;当没有使用到a列作为条件时完全没法使用索引，甚至比没有索引时还要慢。因为建表的时候a在前，b、c在后，并且数据节点有序。在没有索引的测试中，InnoDB引擎到a不为0时自动停止搜索。而在这个例子中需要扫描全表找出满足符合条件的b、c，达到完全没法忍受的16秒。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;SQL&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="n"&gt;select&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;from&lt;/span&gt; &lt;span class="n"&gt;test&lt;/span&gt; &lt;span class="n"&gt;where&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="n"&gt;and&lt;/span&gt; &lt;span class="n"&gt;c&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="n"&gt;Affected&lt;/span&gt; &lt;span class="n"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
-&lt;span class="nl"&gt;Time:&lt;/span&gt; &lt;span class="mf"&gt;16.023&lt;/span&gt;&lt;span class="n"&gt;s&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;[SQL]select * from test where b = 0 and c = 1;
+Affected rows: 0
+Time: 16.023s
 &lt;/pre&gt;
 
 
 &lt;h4&gt;索引对排序效率的影响&lt;/h4&gt;
 &lt;p&gt;只要能用到索引，并且ORDER BY后面的列在索引中，则顺序还是倒序排序对性能无影响。因为叶子节点是个双向链表，倒序可以从后向前遍历，与顺序的代价相同。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;SQL&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="n"&gt;select&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;from&lt;/span&gt; &lt;span class="n"&gt;test&lt;/span&gt; &lt;span class="n"&gt;where&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="n"&gt;ORDER&lt;/span&gt; &lt;span class="n"&gt;BY&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="n"&gt;Affected&lt;/span&gt; &lt;span class="n"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
-&lt;span class="nl"&gt;Time:&lt;/span&gt; &lt;span class="mf"&gt;0.085&lt;/span&gt;&lt;span class="n"&gt;s&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;[SQL]select * from test where a = 0 ORDER BY b;
+Affected rows: 0
+Time: 0.085s
 
-&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;SQL&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="n"&gt;select&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;from&lt;/span&gt; &lt;span class="n"&gt;test&lt;/span&gt; &lt;span class="n"&gt;where&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="n"&gt;ORDER&lt;/span&gt; &lt;span class="n"&gt;BY&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt; &lt;span class="n"&gt;DESC&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="n"&gt;Affected&lt;/span&gt; &lt;span class="n"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
-&lt;span class="nl"&gt;Time:&lt;/span&gt; &lt;span class="mf"&gt;0.089&lt;/span&gt;&lt;span class="n"&gt;s&lt;/span&gt;
+[SQL]select * from test where a = 0 ORDER BY b DESC;
+Affected rows: 0
+Time: 0.089s
 &lt;/pre&gt;
 
 
 &lt;p&gt;但是，当有两个字段排序的顺序不同时，叶子节点的有序性就无法用在排序中，必须读出所有叶子节点之后再按指定的字段进行一趟排序，所以速度就慢了下来。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;SQL&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="n"&gt;select&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;from&lt;/span&gt; &lt;span class="n"&gt;test&lt;/span&gt; &lt;span class="n"&gt;where&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="n"&gt;ORDER&lt;/span&gt; &lt;span class="n"&gt;BY&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt; &lt;span class="n"&gt;DESC&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;c&lt;/span&gt; &lt;span class="n"&gt;DESC&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="n"&gt;Affected&lt;/span&gt; &lt;span class="n"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
-&lt;span class="nl"&gt;Time:&lt;/span&gt; &lt;span class="mf"&gt;0.089&lt;/span&gt;&lt;span class="n"&gt;s&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;[SQL]select * from test where a = 0 ORDER BY b DESC, c DESC;
+Affected rows: 0
+Time: 0.089s
 
-&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;SQL&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="n"&gt;select&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;from&lt;/span&gt; &lt;span class="n"&gt;test&lt;/span&gt; &lt;span class="n"&gt;where&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="n"&gt;ORDER&lt;/span&gt; &lt;span class="n"&gt;BY&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt; &lt;span class="n"&gt;ASC&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;c&lt;/span&gt; &lt;span class="n"&gt;DESC&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="n"&gt;Affected&lt;/span&gt; &lt;span class="n"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
-&lt;span class="nl"&gt;Time:&lt;/span&gt; &lt;span class="mf"&gt;0.184&lt;/span&gt;&lt;span class="n"&gt;s&lt;/span&gt;
+[SQL]select * from test where a = 0 ORDER BY b ASC, c DESC;
+Affected rows: 0
+Time: 0.184s
 &lt;/pre&gt;
 
 
 &lt;p&gt;同样，下面的例子中对索引左边的字段a进行范围选择的时候也没法运用索引，因为多个取值的a无法保证b和c字段有序，必须重新排序&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;SQL&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="n"&gt;select&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;from&lt;/span&gt; &lt;span class="n"&gt;test&lt;/span&gt; &lt;span class="n"&gt;where&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="n"&gt;ORDER&lt;/span&gt; &lt;span class="n"&gt;BY&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="n"&gt;Affected&lt;/span&gt; &lt;span class="n"&gt;rows&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
-&lt;span class="nl"&gt;Time:&lt;/span&gt; &lt;span class="mf"&gt;0.103&lt;/span&gt;&lt;span class="n"&gt;s&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;[SQL]select * from test where a &amp;lt;= 0 ORDER BY b;
+Affected rows: 0
+Time: 0.103s
 &lt;/pre&gt;
 
 
@@ -527,11 +602,11 @@ hook.so: hook.c
 
 &lt;p&gt;执行：&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$ LD_PRELOAD&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;./hook.so ./test 123
-hack &lt;span class="k"&gt;function &lt;/span&gt;invoked. &lt;span class="nv"&gt;s1&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;123&amp;gt; &lt;span class="nv"&gt;s2&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;&lt;span class="nb"&gt;test&lt;/span&gt;&amp;gt;
+hack &lt;span class="k"&gt;function&lt;/span&gt; invoked. &lt;span class="nv"&gt;s1&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;123&amp;gt; &lt;span class="nv"&gt;s2&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;&lt;span class="nb"&gt;test&lt;/span&gt;&amp;gt;
 Incorrect password
 
 &lt;span class="nv"&gt;$ LD_PRELOAD&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;./hook.so ./test &lt;span class="nb"&gt;test&lt;/span&gt;
-hack &lt;span class="k"&gt;function &lt;/span&gt;invoked. &lt;span class="nv"&gt;s1&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;&lt;span class="nb"&gt;test&lt;/span&gt;&amp;gt; &lt;span class="nv"&gt;s2&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;&lt;span class="nb"&gt;test&lt;/span&gt;&amp;gt;
+hack &lt;span class="k"&gt;function&lt;/span&gt; invoked. &lt;span class="nv"&gt;s1&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;&lt;span class="nb"&gt;test&lt;/span&gt;&amp;gt; &lt;span class="nv"&gt;s2&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;&lt;span class="nb"&gt;test&lt;/span&gt;&amp;gt;
 Correct password
 &lt;/pre&gt;
 
@@ -574,14 +649,14 @@ Correct password
 &lt;/ol&gt;
 &lt;p&gt;通过&lt;code&gt;nm -g libtest.so&lt;/code&gt;可以看到，导出符号表中已经有&lt;code&gt;add&lt;/code&gt;这个符号了：&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;nm -g libtest.so 
-0000000000000670 T add
-0000000000201030 B __bss_start
+&lt;span class="m"&gt;0000000000000670&lt;/span&gt; T add
+&lt;span class="m"&gt;0000000000201030&lt;/span&gt; B __bss_start
                  w __cxa_finalize@@GLIBC_2.2.5
-0000000000201030 D _edata
-0000000000201038 B _end
-0000000000000684 T _fini
+&lt;span class="m"&gt;0000000000201030&lt;/span&gt; D _edata
+&lt;span class="m"&gt;0000000000201038&lt;/span&gt; B _end
+&lt;span class="m"&gt;0000000000000684&lt;/span&gt; T _fini
                  w __gmon_start__
-0000000000000540 T _init
+&lt;span class="m"&gt;0000000000000540&lt;/span&gt; T _init
                  w _ITM_deregisterTMCloneTable
                  w _ITM_registerTMCloneTable
                  w _Jv_RegisterClasses
@@ -610,7 +685,7 @@ Correct password
 &lt;p&gt;此时通过&lt;code&gt;readelf test -d&lt;/code&gt;已经能看到生成的可执行文件test的Dynamic section里依赖libtest.so了&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;readelf &lt;span class="nb"&gt;test&lt;/span&gt; -d
 
-Dynamic section at offset 0xe18 contains 25 entries:
+Dynamic section at offset 0xe18 contains &lt;span class="m"&gt;25&lt;/span&gt; entries:
   Tag        Type                         Name/Value
  0x0000000000000001 &lt;span class="o"&gt;(&lt;/span&gt;NEEDED&lt;span class="o"&gt;)&lt;/span&gt;             Shared library: &lt;span class="o"&gt;[&lt;/span&gt;libtest.so&lt;span class="o"&gt;]&lt;/span&gt;
  0x0000000000000001 &lt;span class="o"&gt;(&lt;/span&gt;NEEDED&lt;span class="o"&gt;)&lt;/span&gt;             Shared library: &lt;span class="o"&gt;[&lt;/span&gt;libc.so.6&lt;span class="o"&gt;]&lt;/span&gt;
@@ -621,12 +696,12 @@ Dynamic section at offset 0xe18 contains 25 entries:
 &lt;p&gt;dynamic symbols中也有一个undefined symbol(add)&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;nm -D &lt;span class="nb"&gt;test &lt;/span&gt;
 &lt;span class="nb"&gt;                 &lt;/span&gt;U add
-0000000000601048 B __bss_start
-0000000000601048 D _edata
-0000000000601050 B _end
+&lt;span class="m"&gt;0000000000601048&lt;/span&gt; B __bss_start
+&lt;span class="m"&gt;0000000000601048&lt;/span&gt; D _edata
+&lt;span class="m"&gt;0000000000601050&lt;/span&gt; B _end
 00000000004007b4 T _fini
                  w __gmon_start__
-0000000000400578 T _init
+&lt;span class="m"&gt;0000000000400578&lt;/span&gt; T _init
                  w _ITM_deregisterTMCloneTable
                  w _ITM_registerTMCloneTable
                  w _Jv_RegisterClasses
@@ -636,13 +711,13 @@ Dynamic section at offset 0xe18 contains 25 entries:
 
 
 &lt;p&gt;在执行隐式链接的程序之前要注意设置&lt;code&gt;LD_LIBRARY_PATH&lt;/code&gt;环境变量，或者把前面生成的libtest.so复制到系统路径下，否则会找不到动态库。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="err"&gt;$&lt;/span&gt; &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;test&lt;/span&gt; 
-&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;test&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;error&lt;/span&gt; &lt;span class="k"&gt;while&lt;/span&gt; &lt;span class="n"&gt;loading&lt;/span&gt; &lt;span class="n"&gt;shared&lt;/span&gt; &lt;span class="n"&gt;libraries&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;libtest&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;so&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;cannot&lt;/span&gt; &lt;span class="n"&gt;open&lt;/span&gt; &lt;span class="n"&gt;shared&lt;/span&gt; &lt;span class="n"&gt;object&lt;/span&gt; &lt;span class="n"&gt;file&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;No&lt;/span&gt; &lt;span class="n"&gt;such&lt;/span&gt; &lt;span class="n"&gt;file&lt;/span&gt; &lt;span class="n"&gt;or&lt;/span&gt; &lt;span class="n"&gt;directory&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;./test 
+./test: error &lt;span class="k"&gt;while&lt;/span&gt; loading shared libraries: libtest.so: cannot open shared object file: No such file or directory
 
-&lt;span class="err"&gt;$&lt;/span&gt; &lt;span class="n"&gt;export&lt;/span&gt; &lt;span class="n"&gt;LD_LIBRARY_PATH&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;
+&lt;span class="nv"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;export &lt;/span&gt;&lt;span class="nv"&gt;LD_LIBRARY_PATH&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;.
 
-&lt;span class="err"&gt;$&lt;/span&gt; &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;test&lt;/span&gt; 
-&lt;span class="mi"&gt;3&lt;/span&gt;
+&lt;span class="nv"&gt;$ &lt;/span&gt;./test 
+3
 &lt;/pre&gt;
 
 
@@ -675,28 +750,28 @@ Dynamic section at offset 0xe18 contains 25 entries:
 
 &lt;p&gt;使用&lt;code&gt;gcc dyn_main.c -ldl -o dyn_test&lt;/code&gt;编译。&lt;/p&gt;
 &lt;p&gt;这时通过&lt;code&gt;readelf dyn_test -d&lt;/code&gt;可以发现，dyn_test不依赖libtest.so：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="err"&gt;$&lt;/span&gt; &lt;span class="n"&gt;readelf&lt;/span&gt; &lt;span class="n"&gt;dyn_test&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;d&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;readelf dyn_test -d
 
-&lt;span class="n"&gt;Dynamic&lt;/span&gt; &lt;span class="n"&gt;section&lt;/span&gt; &lt;span class="n"&gt;at&lt;/span&gt; &lt;span class="n"&gt;offset&lt;/span&gt; &lt;span class="mh"&gt;0xe18&lt;/span&gt; &lt;span class="n"&gt;contains&lt;/span&gt; &lt;span class="mi"&gt;25&lt;/span&gt; &lt;span class="n"&gt;entries&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-  &lt;span class="n"&gt;Tag&lt;/span&gt;        &lt;span class="n"&gt;Type&lt;/span&gt;                         &lt;span class="n"&gt;Name&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;Value&lt;/span&gt;
- &lt;span class="mh"&gt;0x0000000000000001&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;NEEDED&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;             &lt;span class="n"&gt;Shared&lt;/span&gt; &lt;span class="n"&gt;library&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;libdl&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;so&lt;/span&gt;&lt;span class="mf"&gt;.2&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
- &lt;span class="mh"&gt;0x0000000000000001&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;NEEDED&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;             &lt;span class="n"&gt;Shared&lt;/span&gt; &lt;span class="n"&gt;library&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;libc&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;so&lt;/span&gt;&lt;span class="mf"&gt;.6&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="p"&gt;......&lt;/span&gt;
+Dynamic section at offset 0xe18 contains &lt;span class="m"&gt;25&lt;/span&gt; entries:
+  Tag        Type                         Name/Value
+ 0x0000000000000001 &lt;span class="o"&gt;(&lt;/span&gt;NEEDED&lt;span class="o"&gt;)&lt;/span&gt;             Shared library: &lt;span class="o"&gt;[&lt;/span&gt;libdl.so.2&lt;span class="o"&gt;]&lt;/span&gt;
+ 0x0000000000000001 &lt;span class="o"&gt;(&lt;/span&gt;NEEDED&lt;span class="o"&gt;)&lt;/span&gt;             Shared library: &lt;span class="o"&gt;[&lt;/span&gt;libc.so.6&lt;span class="o"&gt;]&lt;/span&gt;
+......
 &lt;/pre&gt;
 
 
 &lt;p&gt;dyn_test的dynamic symbols中也没有add：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="err"&gt;$&lt;/span&gt; &lt;span class="n"&gt;nm&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;D&lt;/span&gt; &lt;span class="n"&gt;dyn_test&lt;/span&gt; 
-                 &lt;span class="n"&gt;U&lt;/span&gt; &lt;span class="n"&gt;dlerror&lt;/span&gt;
-                 &lt;span class="n"&gt;U&lt;/span&gt; &lt;span class="n"&gt;dlopen&lt;/span&gt;
-                 &lt;span class="n"&gt;U&lt;/span&gt; &lt;span class="n"&gt;dlsym&lt;/span&gt;
-                 &lt;span class="n"&gt;w&lt;/span&gt; &lt;span class="n"&gt;__gmon_start__&lt;/span&gt;
-                 &lt;span class="n"&gt;w&lt;/span&gt; &lt;span class="n"&gt;_ITM_deregisterTMCloneTable&lt;/span&gt;
-                 &lt;span class="n"&gt;w&lt;/span&gt; &lt;span class="n"&gt;_ITM_registerTMCloneTable&lt;/span&gt;
-                 &lt;span class="n"&gt;w&lt;/span&gt; &lt;span class="n"&gt;_Jv_RegisterClasses&lt;/span&gt;
-                 &lt;span class="n"&gt;U&lt;/span&gt; &lt;span class="n"&gt;__libc_start_main&lt;/span&gt;
-                 &lt;span class="n"&gt;U&lt;/span&gt; &lt;span class="n"&gt;printf&lt;/span&gt;
-                 &lt;span class="n"&gt;U&lt;/span&gt; &lt;span class="n"&gt;puts&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;nm -D dyn_test 
+                 U dlerror
+                 U dlopen
+                 U dlsym
+                 w __gmon_start__
+                 w _ITM_deregisterTMCloneTable
+                 w _ITM_registerTMCloneTable
+                 w _Jv_RegisterClasses
+                 U __libc_start_main
+                 U &lt;span class="nb"&gt;printf&lt;/span&gt;
+&lt;span class="nb"&gt;                 &lt;/span&gt;U puts
 &lt;/pre&gt;
 
 
@@ -1251,68 +1326,4 @@ ABCDABF的partial match table如下：&lt;br&gt;
 &lt;li&gt;ABCDABF前缀为A、AB、ABC、ABCD、ABCDA、ABCDAB，后缀为BCDABF、BCDAB、CDAB、DAB、AB、B，没有相同部分，长度为0&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;具体代码参考&lt;a href="https://github.com/hbprotoss/codejam/blob/master/kmp.py"&gt;https://github.com/hbprotoss/codejam/blob/master/kmp.py&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;全文完。&lt;/p&gt;&lt;/div&gt;</description><category>字符串</category><category>算法</category><guid>http://hbprotoss.github.io/posts/tong-su-yan-yi-kmp.html</guid><pubDate>Tue, 07 May 2013 12:09:38 GMT</pubDate></item><item><title>Python decorator的应用</title><link>http://hbprotoss.github.io/posts/python-decoratorde-ying-yong.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;p&gt;Decorator是23种设计模式之一，提出的目的是为了在不改变现有代码的前提下，通过在头部或尾部添加代码来扩展功能。&lt;br&gt;
-Python语言内建支持decorator模式。由于语法不是本文重点，对语法不熟悉的童鞋可以参考以下几篇文章：  &lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Stackoverflow上的神文：&lt;a href="http://stackoverflow.com/a/1594484/837187"&gt;Understanding Python decorators&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href="http://blog.donews.com/limodou/archive/2004/12/19/207521.aspx"&gt;[Python学习]decorator的使用&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href="http://www.python.org/dev/peps/pep-0318/"&gt;PEP318&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;下面说一下最近在写SNS客户端插件时Python decorator的应用。&lt;br&gt;
-插件的方法完成的任务是：  &lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;根据OAuth协议，设置好参数，访问HTTP API&lt;/li&gt;
-&lt;li&gt;读取服务器返回的json&lt;/li&gt;
-&lt;li&gt;解析json&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;异常可能来自访问API过程中的网络问题，以及解析json发现服务器返回了错误代码（比如API访问过于频繁，access token有问题等）。在写头几个API的时候做法很自然，用try-except块包裹可能出异常的代码，将各种标准库的异常或者服务器返回的错误信息封装成自己的exception，raise一下告诉主程序有异常需要处理。&lt;br&gt;
-但是写了几个方法后发现，每个方法的异常处理流程几乎一模一样，特别是封装标准库的异常，唯一不同的就是解析服务器返回的错误信息。伪码如下：  &lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;def&lt;/span&gt; &lt;span class="n"&gt;method&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;xxx&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-    &lt;span class="nl"&gt;try:&lt;/span&gt;
-        &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;urllib&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;urlopen&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;url&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;headers&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        &lt;span class="n"&gt;raw_data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="n"&gt;decode&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="err"&gt;'&lt;/span&gt;&lt;span class="n"&gt;utf&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="err"&gt;'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        &lt;span class="n"&gt;rtn&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;json&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;loads&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;raw_data&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="n"&gt;except&lt;/span&gt; &lt;span class="n"&gt;Exception1&lt;/span&gt; &lt;span class="n"&gt;as&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-        &lt;span class="n"&gt;log&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;error&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        &lt;span class="n"&gt;raise&lt;/span&gt; &lt;span class="n"&gt;CustomException1&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-    &lt;span class="n"&gt;except&lt;/span&gt; &lt;span class="n"&gt;Exception2&lt;/span&gt; &lt;span class="n"&gt;as&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-        &lt;span class="n"&gt;log&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;error&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        &lt;span class="n"&gt;raise&lt;/span&gt; &lt;span class="n"&gt;CustomException2&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-        &lt;span class="n"&gt;xxx&lt;/span&gt;
-    &lt;span class="nl"&gt;else:&lt;/span&gt;
-        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;rtn&lt;/span&gt;
-&lt;/pre&gt;
-
-
-&lt;p&gt;出于懒的原因（说得好听点，出于代码复用的目的:D)，得想个办法把这些重复性的工作提取出来。&lt;br&gt;
-仔细观察可以发现，这些方法在except处理完异常之后都没有额外的工作需要进行。换句话说，可以认为这些代码都位于核心处理代码之后，这是自然就想到了decorator模式，将异常处理放在decorator里，再decorate一下各个方法就可以了。&lt;br&gt;
-Decorator如下：  &lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;def&lt;/span&gt; &lt;span class="n"&gt;sinaMethod&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-    &lt;span class="n"&gt;def&lt;/span&gt; &lt;span class="n"&gt;func_wrapper&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-        &lt;span class="nl"&gt;try:&lt;/span&gt;
-            &lt;span class="n"&gt;raw_rtn&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        &lt;span class="n"&gt;except&lt;/span&gt; &lt;span class="n"&gt;urllib&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;error&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;HTTPError&lt;/span&gt; &lt;span class="n"&gt;as&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-            &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fp&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-                &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="n"&gt;Sina&lt;/span&gt; &lt;span class="n"&gt;app&lt;/span&gt; &lt;span class="n"&gt;error&lt;/span&gt;
-                &lt;span class="n"&gt;error_msg&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;json&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;loads&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fp&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="n"&gt;decode&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="err"&gt;'&lt;/span&gt;&lt;span class="n"&gt;utf&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="err"&gt;'&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
-                &lt;span class="n"&gt;error_code&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;error_msg&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="err"&gt;'&lt;/span&gt;&lt;span class="n"&gt;error_code&lt;/span&gt;&lt;span class="err"&gt;'&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
-                &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;error_code&lt;/span&gt; &lt;span class="n"&gt;in&lt;/span&gt; &lt;span class="n"&gt;exception_dict&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-                    &lt;span class="n"&gt;raise&lt;/span&gt; &lt;span class="n"&gt;exception_dict&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;error_code&lt;/span&gt;&lt;span class="p"&gt;](&lt;/span&gt;&lt;span class="n"&gt;error_msg&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="err"&gt;'&lt;/span&gt;&lt;span class="n"&gt;error&lt;/span&gt;&lt;span class="err"&gt;'&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
-                &lt;span class="nl"&gt;else:&lt;/span&gt;
-                    &lt;span class="n"&gt;raise&lt;/span&gt; &lt;span class="n"&gt;weiUnknownError&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
-            &lt;span class="nl"&gt;else:&lt;/span&gt;
-                &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="n"&gt;Network&lt;/span&gt; &lt;span class="n"&gt;error&lt;/span&gt;
-                &lt;span class="n"&gt;raise&lt;/span&gt; &lt;span class="n"&gt;weiNetworkError&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
-        &lt;span class="nl"&gt;else:&lt;/span&gt;
-            &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;raw_rtn&lt;/span&gt;
-    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;func_wrapper&lt;/span&gt;
-&lt;/pre&gt;
-
-
-&lt;p&gt;其作用就是，尝试调用被装饰函数，如果顺利的话直接返回结果。如果有HTTPError异常发生，则解析之，并根据相应情况封装成自定义的异常抛出。&lt;br&gt;
-这里使得代码比较简短的一个关键就是这个exception_dict，里面维护了新浪错误代码和需要抛出的异常类之间的映射。根据返回的error_code查找这个字典，如果有则说明这是我们需要关心的异常，那么就用错误消息构造异常对象抛出。如果没有，就不是需要关心的异常，以weiUnknownError异常抛出。&lt;br&gt;
-由于新浪在出错时除了返回HTTP报头，还有一段附加data，所以如果e.fp为None则说明不是应用层的异常，可能是网络层及以下出了问题，抛出weiNetworkError。  &lt;/p&gt;
-&lt;p&gt;使用就很简单了，在被装饰的函数前一行加&lt;code&gt;@sinaMethod&lt;/code&gt;就可以了。&lt;br&gt;
-就这么简单~~  &lt;/p&gt;
-&lt;hr&gt;
-&lt;p&gt;PS：附带说一句，编程语言对设计模式在语法上的支持会大大简化程序猿的编码量。如果是C++/Java，甚至C要用decorator模式就得协商老长一段了~~^_^&lt;/p&gt;&lt;/div&gt;</description><category>Design Pattern</category><category>Python</category><guid>http://hbprotoss.github.io/posts/python-decoratorde-ying-yong.html</guid><pubDate>Wed, 03 Apr 2013 13:23:39 GMT</pubDate></item></channel></rss>
+&lt;p&gt;全文完。&lt;/p&gt;&lt;/div&gt;</description><category>字符串</category><category>算法</category><guid>http://hbprotoss.github.io/posts/tong-su-yan-yi-kmp.html</guid><pubDate>Tue, 07 May 2013 12:09:38 GMT</pubDate></item></channel></rss>
