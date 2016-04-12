@@ -2,52 +2,71 @@
 <html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>hbprotoss的博客 | hbprotoss的博客</title>
 <link href="assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="rss.xml">
 <link rel="canonical" href="http://hbprotoss.github.io/index.html">
-<!--[if lt IE 9]><script src="/assets/js/html5.js"></script><![endif]-->
+<link rel="next" href="index-1.html" type="text/html">
+<!--[if lt IE 9]><script src="assets/js/html5.js"></script><![endif]--><link rel="prefetch" href="posts/da-jian-zhi-neng-fan-qiang-lu-you-qi.html" type="text/html">
 </head>
 <body>
-    <section class="social"><ul>
-<li><a href="#" title="Home"><i class="icon-home"></i></a></li>
-            <li><a href="archive.html" title="Archives"><i class="icon-folder-open-alt"></i></a></li>
-            <li><a href="categories/index.html" title="Tags"><i class="icon-tags"></i></a></li>
-            <li><a href="rss.xml" title="RSS"><i class="icon-rss"></i></a></li>
-            <li><a href="https://twitter.com/hbprotoss" title="My Twitter"><i class="icon-twitter"></i></a></li>
-            <li><a href="https://github.com/hbprotoss" title="My Github"><i class="icon-github"></i></a></li>
-            <li><a href="http://getnikola.com" title="About me"><i class="icon-user"></i></a></li>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
 
-        </ul></section><section class="page-content"><div class="content" rel="main">
+<!-- Menubar -->
+
+<div class="blog-masthead">
+    <div class="container">
+<!-- This keeps the margins nice -->
+        <nav class="blog-nav" role="navigation"><a href="#" class="blog-nav-item active">Home <span class="sr-only">(active)</span></a>
+            <a href="archive.html" class="blog-nav-item">Archives</a>
+            <a href="categories/index.html" class="blog-nav-item">Tags</a>
+            <a href="rss.xml" class="blog-nav-item">RSS</a>
+
             
-        <div class="post">
-            <h1 class="title"><a href="posts/da-jian-zhi-neng-fan-qiang-lu-you-qi.html">搭建智能翻墙路由器</a></h1>
-            <div class="meta">
-                <div class="authordate">
-                    <time class="timeago" datetime="2015-04-16T08:49:13+08:00">2015-04-16 08:49</time>
-</div>
-                <div class="stats">
+
+                
+                
                     
+                
+            
+        </nav>
+</div>
+<!-- /.container -->
+</div>
+<!-- End of Menubar -->
+
+<div class="container" id="content" role="main">
+    <div class="body-content">
+        <div class="blog-header">
+            <h1 class="blog-title">
+                <a href="http://hbprotoss.github.io/">
+
+                    <span id="blog-title">hbprotoss的博客</span>
+                </a>
+            </h1>
+            <p class="lead blog-description"></p>
+            
+        </div>
+        <!--Body content-->
+        <div class="row">
+            <div class="col-sm-8 blog-main">
+                
+
+<div class="postindex">
+    <article class="blog-post h-entry post-text"><header><h2 class="p-name entry-title blog-post-title"><a href="posts/da-jian-zhi-neng-fan-qiang-lu-you-qi.html" class="u-url">搭建智能翻墙路由器</a></h2>
+        <div class="metadata blog-post-meta">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="posts/da-jian-zhi-neng-fan-qiang-lu-you-qi.html" rel="bookmark"><time class="published dt-published" datetime="2015-04-16T08:49:13+08:00" title="2015-04-16 08:49">2015-04-16 08:49</time></a></p>
+                <p class="commentline">
         
     <a href="posts/da-jian-zhi-neng-fan-qiang-lu-you-qi.html#disqus_thread" data-disqus-identifier="cache/posts/da-jian-zhi-neng-fan-qiang-lu-you-qi.html">Comments</a>
 
 
-                </div>
-            
-        <div itemprop="keywords" class="tags">
-        <ul>
-        Tags : 
-           <li><a class="tag p-category" href="categories/dns.html" rel="tag">DNS</a></li>
-           <li><a class="tag p-category" href="categories/openwrt.html" rel="tag">OpenWRT</a></li>
-           <li><a class="tag p-category" href="categories/shadowsocks.html" rel="tag">ShadowSocks</a></li>
-           <li><a class="tag p-category" href="categories/fan-qiang.html" rel="tag">翻墙</a></li>
-        </ul>
+        </p>
 </div>
-
-            </div>
-            <div class="body">
-                <div>
+    </header><div class="e-content entry-content">
+    <div>
 <p>本文着重介绍如何搭建智能翻墙路由器，实现避免DNS污染，并且自动根据是否是国内IP来决定是否翻墙，从而使任何连接路由器的设备无障碍穿墙出去。</p>
 <p>思路是，用shadowsocks建立起翻墙代理服务，用shadowsocks的udp relay模式转发DNS请求，解决DNS污染，再配置iptables根据IP决定是否走shadowsocks来翻墙。</p>
 <h2>准备材料</h2>
@@ -125,26 +144,20 @@ iptables -t nat -A SHADOWSOCKS -d 240.0.0.0/4 -j RETURN
 <p>搞定之后，任何连接这个路由器的设备都能实现透明翻墙了。</p>
 <p>以上</p>
 </div>
-            </div>
-        </div>
-        <div class="post">
-            <h1 class="title"><a href="posts/guan-yu-pythonyi-chang-chu-li-liu-cheng.html">关于Python异常处理流程</a></h1>
-            <div class="meta">
-                <div class="authordate">
-                    <time class="timeago" datetime="2014-10-23T12:27:56+08:00">2014-10-23 12:27</time>
-</div>
-                <div class="stats">
-                    
+    </div>
+    </article><article class="blog-post h-entry post-text"><header><h2 class="p-name entry-title blog-post-title"><a href="posts/guan-yu-pythonyi-chang-chu-li-liu-cheng.html" class="u-url">关于Python异常处理流程</a></h2>
+        <div class="metadata blog-post-meta">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="posts/guan-yu-pythonyi-chang-chu-li-liu-cheng.html" rel="bookmark"><time class="published dt-published" datetime="2014-10-23T12:27:56+08:00" title="2014-10-23 12:27">2014-10-23 12:27</time></a></p>
+                <p class="commentline">
         
     <a href="posts/guan-yu-pythonyi-chang-chu-li-liu-cheng.html#disqus_thread" data-disqus-identifier="cache/posts/guan-yu-pythonyi-chang-chu-li-liu-cheng.html">Comments</a>
 
 
-                </div>
-            
-
-            </div>
-            <div class="body">
-                <div>
+        </p>
+</div>
+    </header><div class="e-content entry-content">
+    <div>
 <pre class="code literal-block"><span class="k">def</span> <span class="nf">f</span><span class="p">():</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">print</span> <span class="s">'try'</span>
@@ -306,32 +319,20 @@ iptables -t nat -A SHADOWSOCKS -d 240.0.0.0/4 -j RETURN
              81 RETURN_VALUE
 </pre>
 </div>
-            </div>
-        </div>
-        <div class="post">
-            <h1 class="title"><a href="posts/innodbyin-qing-suo-yin-xue-xi-bi-ji.html">InnoDB引擎索引学习笔记</a></h1>
-            <div class="meta">
-                <div class="authordate">
-                    <time class="timeago" datetime="2013-11-16T19:31:34+08:00">2013-11-16 19:31</time>
-</div>
-                <div class="stats">
-                    
+    </div>
+    </article><article class="blog-post h-entry post-text"><header><h2 class="p-name entry-title blog-post-title"><a href="posts/innodbyin-qing-suo-yin-xue-xi-bi-ji.html" class="u-url">InnoDB引擎索引学习笔记</a></h2>
+        <div class="metadata blog-post-meta">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="posts/innodbyin-qing-suo-yin-xue-xi-bi-ji.html" rel="bookmark"><time class="published dt-published" datetime="2013-11-16T19:31:34+08:00" title="2013-11-16 19:31">2013-11-16 19:31</time></a></p>
+                <p class="commentline">
         
     <a href="posts/innodbyin-qing-suo-yin-xue-xi-bi-ji.html#disqus_thread" data-disqus-identifier="cache/posts/innodbyin-qing-suo-yin-xue-xi-bi-ji.html">Comments</a>
 
 
-                </div>
-            
-        <div itemprop="keywords" class="tags">
-        <ul>
-        Tags : 
-           <li><a class="tag p-category" href="categories/database.html" rel="tag">Database</a></li>
-        </ul>
+        </p>
 </div>
-
-            </div>
-            <div class="body">
-                <div>
+    </header><div class="e-content entry-content">
+    <div>
 <p>最近在研究学习MySQL，本文记录下索引相关（主要B-Tree索引）的特性。</p>
 <hr>
 <h3>索引是什么</h3>
@@ -430,26 +431,20 @@ Time: 0.103s
 <p>参考资料：</p>
 <p>《高性能MySQL》，电子工业出版社，2010年1月</p>
 </div>
-            </div>
-        </div>
-        <div class="post">
-            <h1 class="title"><a href="posts/pythonla-ji-hui-shou-ji-zhi.html">Python垃圾回收机制</a></h1>
-            <div class="meta">
-                <div class="authordate">
-                    <time class="timeago" datetime="2013-10-24T10:44:52+08:00">2013-10-24 10:44</time>
-</div>
-                <div class="stats">
-                    
+    </div>
+    </article><article class="blog-post h-entry post-text"><header><h2 class="p-name entry-title blog-post-title"><a href="posts/pythonla-ji-hui-shou-ji-zhi.html" class="u-url">Python垃圾回收机制</a></h2>
+        <div class="metadata blog-post-meta">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="posts/pythonla-ji-hui-shou-ji-zhi.html" rel="bookmark"><time class="published dt-published" datetime="2013-10-24T10:44:52+08:00" title="2013-10-24 10:44">2013-10-24 10:44</time></a></p>
+                <p class="commentline">
         
     <a href="posts/pythonla-ji-hui-shou-ji-zhi.html#disqus_thread" data-disqus-identifier="cache/posts/pythonla-ji-hui-shou-ji-zhi.html">Comments</a>
 
 
-                </div>
-            
-
-            </div>
-            <div class="body">
-                <div>
+        </p>
+</div>
+    </header><div class="e-content entry-content">
+    <div>
 <p>题记：我是来填坑的。。。</p>
 <p>本文主要结合CPython源码分析一下Python的GC机制（面试的时候被问到这个问题，之前理解不深，答得不好，一波大坑啊。。。）</p>
 <hr>
@@ -670,35 +665,20 @@ Time: 0.103s
 </li>
 </ol>
 </div>
-            </div>
-        </div>
-        <div class="post">
-            <h1 class="title"><a href="posts/li-yong-ld_preloadjin-xing-hook.html">利用LD_PRELOAD进行hook</a></h1>
-            <div class="meta">
-                <div class="authordate">
-                    <time class="timeago" datetime="2013-10-09T11:44:50+08:00">2013-10-09 11:44</time>
-</div>
-                <div class="stats">
-                    
+    </div>
+    </article><article class="blog-post h-entry post-text"><header><h2 class="p-name entry-title blog-post-title"><a href="posts/li-yong-ld_preloadjin-xing-hook.html" class="u-url">利用LD_PRELOAD进行hook</a></h2>
+        <div class="metadata blog-post-meta">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="posts/li-yong-ld_preloadjin-xing-hook.html" rel="bookmark"><time class="published dt-published" datetime="2013-10-09T11:44:50+08:00" title="2013-10-09 11:44">2013-10-09 11:44</time></a></p>
+                <p class="commentline">
         
     <a href="posts/li-yong-ld_preloadjin-xing-hook.html#disqus_thread" data-disqus-identifier="cache/posts/li-yong-ld_preloadjin-xing-hook.html">Comments</a>
 
 
-                </div>
-            
-        <div itemprop="keywords" class="tags">
-        <ul>
-        Tags : 
-           <li><a class="tag p-category" href="categories/c.html" rel="tag">C</a></li>
-           <li><a class="tag p-category" href="categories/hook.html" rel="tag">Hook</a></li>
-           <li><a class="tag p-category" href="categories/linux.html" rel="tag">Linux</a></li>
-           <li><a class="tag p-category" href="categories/security.html" rel="tag">Security</a></li>
-        </ul>
+        </p>
 </div>
-
-            </div>
-            <div class="body">
-                <div>
+    </header><div class="e-content entry-content">
+    <div>
 <p>好久没玩hook这种猥琐的东西里，今天在Linux下体验了一把。</p>
 <p>loader在进行动态链接的时候，会将有相同符号名的符号覆盖成LD_PRELOAD指定的so文件中的符号。换句话说，可以用我们自己的so库中的函数替换原来库里有的函数，从而达到hook的目的。这和Windows下通过修改import table来hook API很类似。相比较之下，LD_PRELOAD更方便了，都不用自己写代码了，系统的loader会帮我们搞定。但是LD_PRELOAD有个限制：只能hook动态链接的库，对静态链接的库无效，因为静态链接的代码都写到可执行文件里了嘛，没有坑让你填。</p>
 <p>上代码</p>
@@ -770,34 +750,20 @@ Correct password
 <p>参考资料：</p>
 <p><a href="http://www.exploit-db.com/papers/13233/">Reverse Engineering with LD_PRELOAD</a></p>
 </div>
-            </div>
-        </div>
-        <div class="post">
-            <h1 class="title"><a href="posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html">Linux下编译链接动态库</a></h1>
-            <div class="meta">
-                <div class="authordate">
-                    <time class="timeago" datetime="2013-10-08T09:18:31+08:00">2013-10-08 09:18</time>
-</div>
-                <div class="stats">
-                    
+    </div>
+    </article><article class="blog-post h-entry post-text"><header><h2 class="p-name entry-title blog-post-title"><a href="posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html" class="u-url">Linux下编译链接动态库</a></h2>
+        <div class="metadata blog-post-meta">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html" rel="bookmark"><time class="published dt-published" datetime="2013-10-08T09:18:31+08:00" title="2013-10-08 09:18">2013-10-08 09:18</time></a></p>
+                <p class="commentline">
         
     <a href="posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html#disqus_thread" data-disqus-identifier="cache/posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html">Comments</a>
 
 
-                </div>
-            
-        <div itemprop="keywords" class="tags">
-        <ul>
-        Tags : 
-           <li><a class="tag p-category" href="categories/c.html" rel="tag">C</a></li>
-           <li><a class="tag p-category" href="categories/linux.html" rel="tag">Linux</a></li>
-           <li><a class="tag p-category" href="categories/programming.html" rel="tag">Programming</a></li>
-        </ul>
+        </p>
 </div>
-
-            </div>
-            <div class="body">
-                <div>
+    </header><div class="e-content entry-content">
+    <div>
 <p>记录下Linux下编译和链接动态库的过程。</p>
 <h3>一、 编写动态库</h3>
 <p>头文件so.h：  </p>
@@ -974,33 +940,20 @@ Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
 <li><a href="http://stackoverflow.com/questions/10480657/import-names-in-elf-binary">Import names in ELF binary</a></li>
 </ol>
 </div>
-            </div>
-        </div>
-        <div class="post">
-            <h1 class="title"><a href="posts/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.html">C语言宏的特殊用法和几个坑</a></h1>
-            <div class="meta">
-                <div class="authordate">
-                    <time class="timeago" datetime="2013-07-13T14:25:31+08:00">2013-07-13 14:25</time>
-</div>
-                <div class="stats">
-                    
+    </div>
+    </article><article class="blog-post h-entry post-text"><header><h2 class="p-name entry-title blog-post-title"><a href="posts/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.html" class="u-url">C语言宏的特殊用法和几个坑</a></h2>
+        <div class="metadata blog-post-meta">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="posts/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.html" rel="bookmark"><time class="published dt-published" datetime="2013-07-13T14:25:31+08:00" title="2013-07-13 14:25">2013-07-13 14:25</time></a></p>
+                <p class="commentline">
         
     <a href="posts/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.html#disqus_thread" data-disqus-identifier="cache/posts/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.html">Comments</a>
 
 
-                </div>
-            
-        <div itemprop="keywords" class="tags">
-        <ul>
-        Tags : 
-           <li><a class="tag p-category" href="categories/c.html" rel="tag">C</a></li>
-           <li><a class="tag p-category" href="categories/macro.html" rel="tag">Macro</a></li>
-        </ul>
+        </p>
 </div>
-
-            </div>
-            <div class="body">
-                <div>
+    </header><div class="e-content entry-content">
+    <div>
 <p>总结一下C语言中宏的一些特殊用法和几个容易踩的坑。由于本文主要参考GCC文档，某些细节（如宏参数中的空格是否处理之类）在别的编译器可能有细微差别，请参考相应文档。</p>
 <h3>宏基础</h3>
 <p>宏仅仅是在C预处理阶段的一种文本替换工具，编译完之后对二进制代码不可见。基本用法如下：</p>
@@ -1176,32 +1129,20 @@ Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
 <p>参考资料：</p>
 <p><a href="http://gcc.gnu.org/onlinedocs/cpp/Macros.html">http://gcc.gnu.org/onlinedocs/cpp/Macros.html</a></p>
 </div>
-            </div>
-        </div>
-        <div class="post">
-            <h1 class="title"><a href="posts/python-descriptor.html">Python descriptor</a></h1>
-            <div class="meta">
-                <div class="authordate">
-                    <time class="timeago" datetime="2013-06-12T12:31:54+08:00">2013-06-12 12:31</time>
-</div>
-                <div class="stats">
-                    
+    </div>
+    </article><article class="blog-post h-entry post-text"><header><h2 class="p-name entry-title blog-post-title"><a href="posts/python-descriptor.html" class="u-url">Python descriptor</a></h2>
+        <div class="metadata blog-post-meta">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="posts/python-descriptor.html" rel="bookmark"><time class="published dt-published" datetime="2013-06-12T12:31:54+08:00" title="2013-06-12 12:31">2013-06-12 12:31</time></a></p>
+                <p class="commentline">
         
     <a href="posts/python-descriptor.html#disqus_thread" data-disqus-identifier="cache/posts/python-descriptor.html">Comments</a>
 
 
-                </div>
-            
-        <div itemprop="keywords" class="tags">
-        <ul>
-        Tags : 
-           <li><a class="tag p-category" href="categories/python.html" rel="tag">Python</a></li>
-        </ul>
+        </p>
 </div>
-
-            </div>
-            <div class="body">
-                <div>
+    </header><div class="e-content entry-content">
+    <div>
 <p>一次偶然发现，Python的对象竟然可以在运行期动态添加类定义时没有的属性，这又颠覆了我对Python OO机制的理解。Google了一把，顺着<code>__dict__</code>属性一路找到descriptor，揭开了隐藏在Python对象之后的内幕。</p>
 <p>本文主要记录Python的descriptor机制，以及其在Python对象的属性、方法绑定上的作用。</p>
 <p>先从本文的始作俑者，运行期动态添加对象属性开始讲起。</p>
@@ -1353,34 +1294,20 @@ Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
 </li>
 </ol>
 </div>
-            </div>
-        </div>
-        <div class="post">
-            <h1 class="title"><a href="posts/trieshu-de-pythonshi-xian.html">Trie树的Python实现</a></h1>
-            <div class="meta">
-                <div class="authordate">
-                    <time class="timeago" datetime="2013-05-21T19:48:53+08:00">2013-05-21 19:48</time>
-</div>
-                <div class="stats">
-                    
+    </div>
+    </article><article class="blog-post h-entry post-text"><header><h2 class="p-name entry-title blog-post-title"><a href="posts/trieshu-de-pythonshi-xian.html" class="u-url">Trie树的Python实现</a></h2>
+        <div class="metadata blog-post-meta">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="posts/trieshu-de-pythonshi-xian.html" rel="bookmark"><time class="published dt-published" datetime="2013-05-21T19:48:53+08:00" title="2013-05-21 19:48">2013-05-21 19:48</time></a></p>
+                <p class="commentline">
         
     <a href="posts/trieshu-de-pythonshi-xian.html#disqus_thread" data-disqus-identifier="cache/posts/trieshu-de-pythonshi-xian.html">Comments</a>
 
 
-                </div>
-            
-        <div itemprop="keywords" class="tags">
-        <ul>
-        Tags : 
-           <li><a class="tag p-category" href="categories/python.html" rel="tag">Python</a></li>
-           <li><a class="tag p-category" href="categories/shu-ju-jie-gou.html" rel="tag">数据结构</a></li>
-           <li><a class="tag p-category" href="categories/suan-fa.html" rel="tag">算法</a></li>
-        </ul>
+        </p>
 </div>
-
-            </div>
-            <div class="body">
-                <div>
+    </header><div class="e-content entry-content">
+    <div>
 <p>又是一个由需求驱动的算法学习的例子。</p>
 <p>最近<a href="https://github.com/hbprotoss/weibo">weii</a>需要实现一个这样的功能：在发送AT好友的时候能给出自动补全的列表。</p>
 <p>最先想到的是当我给出一个用户名的前几个字的时候能自动提示以这个字开头的所有用户名列表（虽然最后发现这是个很2的解决方案-_-），所以最理想的数据结构就是Trie树，也就是字典树。</p>
@@ -1572,33 +1499,20 @@ Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
 
 <p>全文完。</p>
 </div>
-            </div>
-        </div>
-        <div class="post">
-            <h1 class="title"><a href="posts/tong-su-yan-yi-kmp.html">通俗演绎KMP</a></h1>
-            <div class="meta">
-                <div class="authordate">
-                    <time class="timeago" datetime="2013-05-07T20:09:38+08:00">2013-05-07 20:09</time>
-</div>
-                <div class="stats">
-                    
+    </div>
+    </article><article class="blog-post h-entry post-text"><header><h2 class="p-name entry-title blog-post-title"><a href="posts/tong-su-yan-yi-kmp.html" class="u-url">通俗演绎KMP</a></h2>
+        <div class="metadata blog-post-meta">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="posts/tong-su-yan-yi-kmp.html" rel="bookmark"><time class="published dt-published" datetime="2013-05-07T20:09:38+08:00" title="2013-05-07 20:09">2013-05-07 20:09</time></a></p>
+                <p class="commentline">
         
     <a href="posts/tong-su-yan-yi-kmp.html#disqus_thread" data-disqus-identifier="cache/posts/tong-su-yan-yi-kmp.html">Comments</a>
 
 
-                </div>
-            
-        <div itemprop="keywords" class="tags">
-        <ul>
-        Tags : 
-           <li><a class="tag p-category" href="categories/zi-fu-chuan.html" rel="tag">字符串</a></li>
-           <li><a class="tag p-category" href="categories/suan-fa.html" rel="tag">算法</a></li>
-        </ul>
+        </p>
 </div>
-
-            </div>
-            <div class="body">
-                <div>
+    </header><div class="e-content entry-content">
+    <div>
 <p>最近要实现关键字过滤功能，小看了一些经典的字符串匹配算法。<br>
 本文要介绍的是KMP算法（<strong>Knuth–Morris–Pratt Algorithm</strong>）,那个Knuth应该再熟悉不过了。  </p>
 <p>KMP算法是从朴素匹配算法改进而来。回忆一下朴素的匹配算法是怎么完成字符串的匹配的呢？<br>
@@ -1627,23 +1541,43 @@ ABCDABF的partial match table如下：<br><img alt="KMP6.png" src="galleries/KMP
 <p>具体代码参考<a href="https://github.com/hbprotoss/codejam/blob/master/kmp.py">https://github.com/hbprotoss/codejam/blob/master/kmp.py</a></p>
 <p>全文完。</p>
 </div>
-            </div>
-        </div>
-    
+    </div>
+    </article>
+</div>
+
         <nav class="postindexpager"><ul class="pager">
 <li class="next">
                 <a href="index-1.html" rel="next">Older posts</a>
             </li>
-        </ul></nav><script>var disqus_shortname="hbprotoss";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script><footer id="footer"><p>
-<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png"></a><br>本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh">知识共享署名-非商业性使用-禁止演绎 3.0 未本地化版本许可协议</a>进行许可。
-<br>Contents © 2016 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a></p>
-            
-        </footer>
+        </ul></nav><script>var disqus_shortname="hbprotoss";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script>
 </div>
-    </section><script src="assets/js/all-nocdn.js" type="text/javascript"></script><script type="text/javascript">
-            $(function(){
-                $('.timeago').timeago();
-            });
-        </script>
+            <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+                    <div class="sidebar-module sidebar-module-inset">
+      <h4>About</h4>
+      <p>踏歌长行</p>
+      <p>梦想永在</p>
+    </div>
+    <div class="sidebar-module">
+      <h4>Links</h4>
+      <ol class="list-unstyled">
+<li><a href="http://weibo.com/hbprotoss">Weibo</a></li>
+        <li><a href="https://twitter.com/hbprotoss">Twitter</a></li>
+        <li><a href="https://github.com/hbprotoss">GitHub</a></li>
+      </ol>
+</div>
+    
+            </div>
+        <!--End of body content-->
+        </div>
+    </div>
+</div>
+
+<footer class="blog-footer" id="footer"><a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png"></a><br>本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh">知识共享署名-非商业性使用-禁止演绎 3.0 未本地化版本许可协议</a>进行许可。
+<br>Contents © 2016 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
+    
+</footer><script src="assets/js/all-nocdn.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
+    moment.locale("en");
+    fancydates(0, "YYYY-MM-DD HH:mm");
+    </script><!-- end fancy dates -->
 </body>
 </html>
