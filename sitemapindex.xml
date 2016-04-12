@@ -10,6 +10,10 @@
   <lastmod>2016-04-12T06:44:00Z</lastmod>
  </sitemap>
  <sitemap>
+  <loc>http://hbprotoss.github.io/categories/crawler.xml</loc>
+  <lastmod>2016-04-12T08:24:00Z</lastmod>
+ </sitemap>
+ <sitemap>
   <loc>http://hbprotoss.github.io/categories/database.xml</loc>
   <lastmod>2016-04-12T06:44:00Z</lastmod>
  </sitemap>
@@ -55,11 +59,15 @@
  </sitemap>
  <sitemap>
   <loc>http://hbprotoss.github.io/categories/python.xml</loc>
-  <lastmod>2016-04-12T06:44:00Z</lastmod>
+  <lastmod>2016-04-12T08:24:00Z</lastmod>
  </sitemap>
  <sitemap>
   <loc>http://hbprotoss.github.io/categories/qt.xml</loc>
   <lastmod>2016-04-12T06:44:00Z</lastmod>
+ </sitemap>
+ <sitemap>
+  <loc>http://hbprotoss.github.io/categories/scrapy.xml</loc>
+  <lastmod>2016-04-12T08:24:00Z</lastmod>
  </sitemap>
  <sitemap>
   <loc>http://hbprotoss.github.io/categories/security.xml</loc>
@@ -99,10 +107,10 @@
  </sitemap>
  <sitemap>
   <loc>http://hbprotoss.github.io/rss.xml</loc>
-  <lastmod>2016-04-12T06:44:00Z</lastmod>
+  <lastmod>2016-04-12T08:24:00Z</lastmod>
  </sitemap>
  <sitemap>
   <loc>http://hbprotoss.github.io/sitemap.xml</loc>
-  <lastmod>2016-04-12T07:34:00Z</lastmod>
+  <lastmod>2016-04-12T08:24:00Z</lastmod>
  </sitemap>
 </sitemapindex>

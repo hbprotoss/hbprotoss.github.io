@@ -1,5 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>hbprotoss的博客</title><link>http://hbprotoss.github.io/</link><description></description><atom:link href="http://hbprotoss.github.io/rss.xml" type="application/rss+xml" rel="self"></atom:link><language>en</language><lastBuildDate>Tue, 12 Apr 2016 06:43:59 GMT</lastBuildDate><generator>https://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>搭建智能翻墙路由器</title><link>http://hbprotoss.github.io/posts/da-jian-zhi-neng-fan-qiang-lu-you-qi.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;p&gt;本文着重介绍如何搭建智能翻墙路由器，实现避免DNS污染，并且自动根据是否是国内IP来决定是否翻墙，从而使任何连接路由器的设备无障碍穿墙出去。&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>hbprotoss的博客</title><link>http://hbprotoss.github.io/</link><description></description><atom:link href="http://hbprotoss.github.io/rss.xml" type="application/rss+xml" rel="self"></atom:link><language>en</language><lastBuildDate>Tue, 12 Apr 2016 08:24:34 GMT</lastBuildDate><generator>https://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>XPath备忘</title><link>http://hbprotoss.github.io/posts/xpathbei-wang.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;p&gt;最近写了几个scrapy的爬虫程序，里面用到了xpath，写个日志记录一下用法。&lt;/p&gt;
+&lt;h2&gt;XPath是什么&lt;/h2&gt;
+&lt;p&gt;XPath是一种用于xml、html等结构化文档中寻址定位特定元素等描述性语言&lt;/p&gt;
+&lt;h2&gt;XPath主要功能&lt;/h2&gt;
+&lt;p&gt;下面以如下测试文档为例进行说明：&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;html&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;body&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;contents&lt;/span&gt; &lt;span class="na"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"content"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;para&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt; &lt;span class="na"&gt;href&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"one.html"&lt;/span&gt; &lt;span class="na"&gt;class&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"normal-link"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;One&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;para&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;para&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt; &lt;span class="na"&gt;href&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"two.html"&lt;/span&gt; &lt;span class="na"&gt;class&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"normal-link"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;Two&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;para&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;para&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt; &lt;span class="na"&gt;href&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"three.html"&lt;/span&gt; &lt;span class="na"&gt;class&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"ex-link"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;Three&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;para&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;contents&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;body&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;html&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;h3&gt;精确路径寻址&lt;/h3&gt;
+&lt;p&gt;指通过精确制定的路径取得元素。例如&lt;/p&gt;
+&lt;p&gt;和unix文件系统概念一致，有如下几种定位方式：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;绝对路径，&lt;code&gt;/html/body/contents/para&lt;/code&gt;能查找出文档中的三个para元素&lt;/li&gt;
+&lt;li&gt;相对路径，在&lt;code&gt;/html/body&lt;/code&gt;路径下，&lt;code&gt;/contents/para&lt;/code&gt;同样也能查找出这三个para元素&lt;/li&gt;
+&lt;li&gt;父级路径，&lt;code&gt;.&lt;/code&gt;表示当前路径，&lt;code&gt;..&lt;/code&gt;表示当前路径的父级路径&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;模糊路径寻址&lt;/h3&gt;
+&lt;p&gt;不需要指定绝对路径或根据当前路径确定的相对路径，只需要指定某个子结构，就能查找出所有符合这个子结构的元素。如&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;//contents/para&lt;/code&gt;在任何路径下，都能查找到&lt;strong&gt;整个文档&lt;/strong&gt;下的这三个para元素&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;.//contents/para&lt;/code&gt;能在当前路径下，查找到子节点中任何符合&lt;code&gt;contents/para&lt;/code&gt;结构的元素&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;节点属性匹配&lt;/h3&gt;
+&lt;p&gt;格式：元素[@属性="xxx"]&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;a[@class="normal-link"]&lt;/code&gt;能查找出两个有带normal-link class的a链&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;para[a/@class="ex-link"]&lt;/code&gt;能查找出一级子元素中有带ex-link class的a链的para元素，这里就是&lt;code&gt;&amp;lt;para&amp;gt;&amp;lt;a href="three.html" class="ex-link"&amp;gt;Three&amp;lt;/a&amp;gt;&amp;lt;/para&amp;gt;&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;属性选择&lt;/h3&gt;
+&lt;p&gt;查找某个元素中的特定属性值，如：&lt;code&gt;a[@class="ex-link"]/@href&lt;/code&gt;能读取第三个a链的href值&lt;/p&gt;
+&lt;h3&gt;内置函数&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;node()，返回任意种类的节点。比如和内置关键字&lt;code&gt;child&lt;/code&gt;组合成&lt;code&gt;/html/body/contents/child::node()&lt;/code&gt;，可以选择所有的para节点&lt;/li&gt;
+&lt;li&gt;text()，返回节点中包含的文本。&lt;code&gt;/html/body/contents/para/a[@class="ex-link"]/text()&lt;/code&gt;返回Three。特别的，和模糊路径寻址配合，如&lt;code&gt;/html/body/contents//text()&lt;/code&gt;，能返回contents下的&lt;code&gt;One Two Three&lt;/code&gt;字符串&lt;/li&gt;
+&lt;/ul&gt;&lt;/div&gt;</description><category>Crawler</category><category>Python</category><category>Scrapy</category><guid>http://hbprotoss.github.io/posts/xpathbei-wang.html</guid><pubDate>Tue, 12 Apr 2016 07:46:09 GMT</pubDate></item><item><title>搭建智能翻墙路由器</title><link>http://hbprotoss.github.io/posts/da-jian-zhi-neng-fan-qiang-lu-you-qi.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;p&gt;本文着重介绍如何搭建智能翻墙路由器，实现避免DNS污染，并且自动根据是否是国内IP来决定是否翻墙，从而使任何连接路由器的设备无障碍穿墙出去。&lt;/p&gt;
 &lt;p&gt;思路是，用shadowsocks建立起翻墙代理服务，用shadowsocks的udp relay模式转发DNS请求，解决DNS污染，再配置iptables根据IP决定是否走shadowsocks来翻墙。&lt;/p&gt;
 &lt;h2&gt;准备材料&lt;/h2&gt;
 &lt;ul&gt;
@@ -1292,38 +1335,4 @@ Dynamic section at offset 0xe18 contains &lt;span class="m"&gt;25&lt;/span&gt; e
 &lt;/pre&gt;
 
 
-&lt;p&gt;全文完。&lt;/p&gt;&lt;/div&gt;</description><category>Python</category><category>数据结构</category><category>算法</category><guid>http://hbprotoss.github.io/posts/trieshu-de-pythonshi-xian.html</guid><pubDate>Tue, 21 May 2013 11:48:53 GMT</pubDate></item><item><title>通俗演绎KMP</title><link>http://hbprotoss.github.io/posts/tong-su-yan-yi-kmp.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;p&gt;最近要实现关键字过滤功能，小看了一些经典的字符串匹配算法。&lt;br&gt;
-本文要介绍的是KMP算法（&lt;strong&gt;Knuth–Morris–Pratt Algorithm&lt;/strong&gt;）,那个Knuth应该再熟悉不过了。  &lt;/p&gt;
-&lt;p&gt;KMP算法是从朴素匹配算法改进而来。回忆一下朴素的匹配算法是怎么完成字符串的匹配的呢？&lt;br&gt;
-1. 将原串和模式串左对齐，然后一位一位比较，直到有一个字符不匹配&lt;br&gt;
-&lt;img alt="KMP1.png" src="http://hbprotoss.github.io/galleries/KMP/KMP1.png" title=""&gt;&lt;br&gt;
-2. 发现第二位的B和C不匹配，模式串右移一位&lt;br&gt;
-&lt;img alt="KMP2.png" src="http://hbprotoss.github.io/galleries/KMP/KMP2.png" title=""&gt;&lt;br&gt;
-3. 重复这个流程，直到找到完全匹配的子串或者匹配失败。&lt;/p&gt;
-&lt;p&gt;但这过程中显然有多比较的地方。如，原串为ABCDEABCDF，模式串为ABCDF。第一轮可以发现E和F不匹配&lt;br&gt;
-&lt;img alt="KMP3.png" src="http://hbprotoss.github.io/galleries/KMP/KMP3.png" title=""&gt;&lt;br&gt;
-很显然右移一位必定不匹配，这时模式串可以直接右移4位跳过ABCD，从E开始再次比较&lt;br&gt;
-&lt;img alt="KMP4.png" src="http://hbprotoss.github.io/galleries/KMP/KMP4.png" title=""&gt;  &lt;/p&gt;
-&lt;p&gt;那是不是跳过的长度就是前面相同部分的长度呢？其实不是这样的，这种直接跳过前面相同部分的做法在某些情况下会有问题。如，原串为ABCDABCDABF，模式串为ABCDABF，直接跳过相同部分就会遗漏匹配的串&lt;br&gt;
-&lt;img alt="KMP5.png" src="http://hbprotoss.github.io/galleries/KMP/KMP5.png" title=""&gt;&lt;br&gt;
-所以跳过的长度并不是前面完全匹配的部分，可以跳过的长度一般存储在模式串的partial match table中，即KMP算法需要对模式串进行预处理。&lt;/p&gt;
-&lt;p&gt;先来看看这个partial match table在跳过的过程中是怎么用的，然后再来考察计算partial match table的算法。&lt;br&gt;
-ABCDABF的partial match table如下：&lt;br&gt;
-&lt;img alt="KMP6.png" src="http://hbprotoss.github.io/galleries/KMP/KMP6.png" title=""&gt;&lt;br&gt;
-可以跳过的长度 = 当前已匹配长度 - 最后一个字母在partial match table中的值。例如：&lt;br&gt;
-&lt;img alt="KMP7.png" src="http://hbprotoss.github.io/galleries/KMP/KMP7.png" title=""&gt;&lt;br&gt;
-当发现C和F不匹配时，根据公式，当前已匹配串ABCDAB长度为6, 最后一个字母B在partial match table中的对应值为2，所以可以跳过的长度 = 6 - 2 = 4，即：&lt;br&gt;
-&lt;img alt="KMP8.png" src="http://hbprotoss.github.io/galleries/KMP/KMP8.png" title=""&gt;&lt;br&gt;
-这样就能正确匹配了。&lt;/p&gt;
-&lt;p&gt;partial match table中每个位置i记录的其实就是从0到i的子串中，同时出现在子串前缀和后缀中的最大长度。还是以上面那个例子为例：  &lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;A没有前缀或后缀，所以长度为0&lt;/li&gt;
-&lt;li&gt;AB前缀为A，后缀为B，没有相同部分，长度为0&lt;/li&gt;
-&lt;li&gt;ABC前缀为A、AB，后缀为BC、C，没有相同部分，长度为0&lt;/li&gt;
-&lt;li&gt;ABCD前缀为A、AB、ABC，后缀为BCD、CD、D，没有相同部分，长度为0&lt;/li&gt;
-&lt;li&gt;ABCDA前缀为A、AB、ABC、ABCD，后缀为BCDA、CDA、DA、A，相同部分为A，长度为1&lt;/li&gt;
-&lt;li&gt;ABCDAB前缀为A、AB、ABC、ABCD、ABCDA，后缀为BCDAB、CDAB、DAB、AB、B，相同部分为AB，长度为2&lt;/li&gt;
-&lt;li&gt;ABCDABF前缀为A、AB、ABC、ABCD、ABCDA、ABCDAB，后缀为BCDABF、BCDAB、CDAB、DAB、AB、B，没有相同部分，长度为0&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;具体代码参考&lt;a href="https://github.com/hbprotoss/codejam/blob/master/kmp.py"&gt;https://github.com/hbprotoss/codejam/blob/master/kmp.py&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;全文完。&lt;/p&gt;&lt;/div&gt;</description><category>字符串</category><category>算法</category><guid>http://hbprotoss.github.io/posts/tong-su-yan-yi-kmp.html</guid><pubDate>Tue, 07 May 2013 12:09:38 GMT</pubDate></item></channel></rss>
+&lt;p&gt;全文完。&lt;/p&gt;&lt;/div&gt;</description><category>Python</category><category>数据结构</category><category>算法</category><guid>http://hbprotoss.github.io/posts/trieshu-de-pythonshi-xian.html</guid><pubDate>Tue, 21 May 2013 11:48:53 GMT</pubDate></item></channel></rss>

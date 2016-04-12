@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>hbprotoss的博客 (Scrapy)</title><link>http://hbprotoss.github.io/</link><description></description><atom:link href="http://hbprotoss.github.io/categories/scrapy.xml" type="application/rss+xml" rel="self"></atom:link><language>en</language><lastBuildDate>Tue, 12 Apr 2016 08:24:34 GMT</lastBuildDate><generator>https://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>XPath备忘</title><link>http://hbprotoss.github.io/posts/xpathbei-wang.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;p&gt;最近写了几个scrapy的爬虫程序，里面用到了xpath，写个日志记录一下用法。&lt;/p&gt;
+&lt;h2&gt;XPath是什么&lt;/h2&gt;
+&lt;p&gt;XPath是一种用于xml、html等结构化文档中寻址定位特定元素等描述性语言&lt;/p&gt;
+&lt;h2&gt;XPath主要功能&lt;/h2&gt;
+&lt;p&gt;下面以如下测试文档为例进行说明：&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;html&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;body&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;contents&lt;/span&gt; &lt;span class="na"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"content"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;para&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt; &lt;span class="na"&gt;href&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"one.html"&lt;/span&gt; &lt;span class="na"&gt;class&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"normal-link"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;One&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;para&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;para&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt; &lt;span class="na"&gt;href&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"two.html"&lt;/span&gt; &lt;span class="na"&gt;class&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"normal-link"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;Two&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;para&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;para&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt; &lt;span class="na"&gt;href&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"three.html"&lt;/span&gt; &lt;span class="na"&gt;class&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"ex-link"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;Three&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;para&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;contents&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;body&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;html&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;h3&gt;精确路径寻址&lt;/h3&gt;
+&lt;p&gt;指通过精确制定的路径取得元素。例如&lt;/p&gt;
+&lt;p&gt;和unix文件系统概念一致，有如下几种定位方式：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;绝对路径，&lt;code&gt;/html/body/contents/para&lt;/code&gt;能查找出文档中的三个para元素&lt;/li&gt;
+&lt;li&gt;相对路径，在&lt;code&gt;/html/body&lt;/code&gt;路径下，&lt;code&gt;/contents/para&lt;/code&gt;同样也能查找出这三个para元素&lt;/li&gt;
+&lt;li&gt;父级路径，&lt;code&gt;.&lt;/code&gt;表示当前路径，&lt;code&gt;..&lt;/code&gt;表示当前路径的父级路径&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;模糊路径寻址&lt;/h3&gt;
+&lt;p&gt;不需要指定绝对路径或根据当前路径确定的相对路径，只需要指定某个子结构，就能查找出所有符合这个子结构的元素。如&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;//contents/para&lt;/code&gt;在任何路径下，都能查找到&lt;strong&gt;整个文档&lt;/strong&gt;下的这三个para元素&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;.//contents/para&lt;/code&gt;能在当前路径下，查找到子节点中任何符合&lt;code&gt;contents/para&lt;/code&gt;结构的元素&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;节点属性匹配&lt;/h3&gt;
+&lt;p&gt;格式：元素[@属性="xxx"]&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;a[@class="normal-link"]&lt;/code&gt;能查找出两个有带normal-link class的a链&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;para[a/@class="ex-link"]&lt;/code&gt;能查找出一级子元素中有带ex-link class的a链的para元素，这里就是&lt;code&gt;&amp;lt;para&amp;gt;&amp;lt;a href="three.html" class="ex-link"&amp;gt;Three&amp;lt;/a&amp;gt;&amp;lt;/para&amp;gt;&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;属性选择&lt;/h3&gt;
+&lt;p&gt;查找某个元素中的特定属性值，如：&lt;code&gt;a[@class="ex-link"]/@href&lt;/code&gt;能读取第三个a链的href值&lt;/p&gt;
+&lt;h3&gt;内置函数&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;node()，返回任意种类的节点。比如和内置关键字&lt;code&gt;child&lt;/code&gt;组合成&lt;code&gt;/html/body/contents/child::node()&lt;/code&gt;，可以选择所有的para节点&lt;/li&gt;
+&lt;li&gt;text()，返回节点中包含的文本。&lt;code&gt;/html/body/contents/para/a[@class="ex-link"]/text()&lt;/code&gt;返回Three。特别的，和模糊路径寻址配合，如&lt;code&gt;/html/body/contents//text()&lt;/code&gt;，能返回contents下的&lt;code&gt;One Two Three&lt;/code&gt;字符串&lt;/li&gt;
+&lt;/ul&gt;&lt;/div&gt;</description><category>Crawler</category><category>Python</category><category>Scrapy</category><guid>http://hbprotoss.github.io/posts/xpathbei-wang.html</guid><pubDate>Tue, 12 Apr 2016 07:46:09 GMT</pubDate></item></channel></rss>

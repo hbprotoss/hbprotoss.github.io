@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>XPath备忘 | hbprotoss的博客</title>
+<link href="../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<link rel="canonical" href="http://hbprotoss.github.io/posts/xpathbei-wang.html">
+<!--[if lt IE 9]><script src="../assets/js/html5.js"></script><![endif]--><meta name="author" content="hbprotoss">
+<link rel="prev" href="da-jian-zhi-neng-fan-qiang-lu-you-qi.html" title="搭建智能翻墙路由器" type="text/html">
+<meta property="og:site_name" content="hbprotoss的博客">
+<meta property="og:title" content="XPath备忘">
+<meta property="og:url" content="http://hbprotoss.github.io/posts/xpathbei-wang.html">
+<meta property="og:description" content='最近写了几个scrapy的爬虫程序，里面用到了xpath，写个日志记录一下用法。
+XPath是什么
+XPath是一种用于xml、html等结构化文档中寻址定位特定元素等描述性语言
+XPath主要功能
+下面以如下测试文档为例进行说明：
+&lt;html&gt;
+    &lt;body&gt;
+        &lt;contents id="content"&gt;
+        &lt;para&gt;&lt;a href="one.html" '>
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2016-04-12T15:46:09+08:00">
+<meta property="article:tag" content="Crawler">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Scrapy">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+<!-- Menubar -->
+
+<div class="blog-masthead">
+    <div class="container">
+<!-- This keeps the margins nice -->
+        <nav class="blog-nav" role="navigation"><a href="../index.html" class="blog-nav-item">Home</a>
+            <a href="../archive.html" class="blog-nav-item">Archives</a>
+            <a href="../categories/index.html" class="blog-nav-item">Tags</a>
+            <a href="../rss.xml" class="blog-nav-item">RSS</a>
+
+            
+
+                
+                
+                    
+    <a href="xpathbei-wang.md" class="blog-nav-item blog-nav-item-aside" id="sourcelink">Source</a>
+
+                
+            
+        </nav>
+</div>
+<!-- /.container -->
+</div>
+<!-- End of Menubar -->
+
+<div class="container" id="content" role="main">
+    <div class="body-content">
+        <div class="blog-header">
+            <h1 class="blog-title">
+                <a href="http://hbprotoss.github.io/">
+
+                    <span id="blog-title">hbprotoss的博客</span>
+                </a>
+            </h1>
+            <p class="lead blog-description"></p>
+            
+        </div>
+        <!--Body content-->
+        <div class="row">
+            <div class="col-sm-8 blog-main">
+                
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h2 class="p-name entry-title blog-post-title" itemprop="headline name"><a href="#" class="u-url">XPath备忘</a></h2>
+
+        <div class="metadata blog-post-meta">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="#" rel="bookmark"><time class="published dt-published" datetime="2016-04-12T15:46:09+08:00" itemprop="datePublished" title="2016-04-12 15:46">2016-04-12 15:46</time></a></p>
+                <p class="commentline">
+        
+    <a href="xpathbei-wang.html#disqus_thread" data-disqus-identifier="cache/posts/xpathbei-wang.html">Comments</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="xpathbei-wang.md" id="sourcelink">Source</a></p>
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p>最近写了几个scrapy的爬虫程序，里面用到了xpath，写个日志记录一下用法。</p>
+<h2>XPath是什么</h2>
+<p>XPath是一种用于xml、html等结构化文档中寻址定位特定元素等描述性语言</p>
+<h2>XPath主要功能</h2>
+<p>下面以如下测试文档为例进行说明：</p>
+<pre class="code literal-block"><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">contents</span> <span class="na">id</span><span class="o">=</span><span class="s">"content"</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">para</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">"one.html"</span> <span class="na">class</span><span class="o">=</span><span class="s">"normal-link"</span><span class="p">&gt;</span>One<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">para</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">para</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">"two.html"</span> <span class="na">class</span><span class="o">=</span><span class="s">"normal-link"</span><span class="p">&gt;</span>Two<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">para</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">para</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">"three.html"</span> <span class="na">class</span><span class="o">=</span><span class="s">"ex-link"</span><span class="p">&gt;</span>Three<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">para</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">contents</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre>
+
+
+<h3>精确路径寻址</h3>
+<p>指通过精确制定的路径取得元素。例如</p>
+<p>和unix文件系统概念一致，有如下几种定位方式：</p>
+<ul>
+<li>绝对路径，<code>/html/body/contents/para</code>能查找出文档中的三个para元素</li>
+<li>相对路径，在<code>/html/body</code>路径下，<code>/contents/para</code>同样也能查找出这三个para元素</li>
+<li>父级路径，<code>.</code>表示当前路径，<code>..</code>表示当前路径的父级路径</li>
+</ul>
+<h3>模糊路径寻址</h3>
+<p>不需要指定绝对路径或根据当前路径确定的相对路径，只需要指定某个子结构，就能查找出所有符合这个子结构的元素。如</p>
+<ul>
+<li>
+<code>//contents/para</code>在任何路径下，都能查找到<strong>整个文档</strong>下的这三个para元素</li>
+<li>
+<code>.//contents/para</code>能在当前路径下，查找到子节点中任何符合<code>contents/para</code>结构的元素</li>
+</ul>
+<h3>节点属性匹配</h3>
+<p>格式：元素[@属性="xxx"]</p>
+<ul>
+<li>
+<code>a[@class="normal-link"]</code>能查找出两个有带normal-link class的a链</li>
+<li>
+<code>para[a/@class="ex-link"]</code>能查找出一级子元素中有带ex-link class的a链的para元素，这里就是<code>&lt;para&gt;&lt;a href="three.html" class="ex-link"&gt;Three&lt;/a&gt;&lt;/para&gt;</code>
+</li>
+</ul>
+<h3>属性选择</h3>
+<p>查找某个元素中的特定属性值，如：<code>a[@class="ex-link"]/@href</code>能读取第三个a链的href值</p>
+<h3>内置函数</h3>
+<ul>
+<li>node()，返回任意种类的节点。比如和内置关键字<code>child</code>组合成<code>/html/body/contents/child::node()</code>，可以选择所有的para节点</li>
+<li>text()，返回节点中包含的文本。<code>/html/body/contents/para/a[@class="ex-link"]/text()</code>返回Three。特别的，和模糊路径寻址配合，如<code>/html/body/contents//text()</code>，能返回contents下的<code>One Two Three</code>字符串</li>
+</ul>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../categories/crawler.html" rel="tag">Crawler</a></li>
+            <li><a class="tag p-category" href="../categories/python.html" rel="tag">Python</a></li>
+            <li><a class="tag p-category" href="../categories/scrapy.html" rel="tag">Scrapy</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="da-jian-zhi-neng-fan-qiang-lu-you-qi.html" rel="prev" title="搭建智能翻墙路由器">Previous post</a>
+            </li>
+        </ul></nav></aside><section class="comments hidden-print"><h2>Comments</h2>
+        
+        
+        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="hbprotoss",
+            disqus_url="http://hbprotoss.github.io/posts/xpathbei-wang.html",
+        disqus_title="XPath\u5907\u5fd8",
+        disqus_identifier="cache/posts/xpathbei-wang.html",
+        disqus_config = function () {
+            this.language = "en";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+        </section></article><script>var disqus_shortname="hbprotoss";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script>
+</div>
+            <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+                    <div class="sidebar-module sidebar-module-inset">
+      <h4>About</h4>
+      <p>踏歌长行</p>
+      <p>梦想永在</p>
+    </div>
+    <div class="sidebar-module">
+      <h4>Links</h4>
+      <ol class="list-unstyled">
+<li><a href="http://weibo.com/hbprotoss">Weibo</a></li>
+        <li><a href="https://twitter.com/hbprotoss">Twitter</a></li>
+        <li><a href="https://github.com/hbprotoss">GitHub</a></li>
+      </ol>
+</div>
+    
+            </div>
+        <!--End of body content-->
+        </div>
+    </div>
+</div>
+
+<footer class="blog-footer" id="footer"><a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png"></a><br>本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh">知识共享署名-非商业性使用-禁止演绎 3.0 未本地化版本许可协议</a>进行许可。
+<br>Contents © 2016 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
+    
+</footer><script src="../assets/js/all-nocdn.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
+    moment.locale("en");
+    fancydates(0, "YYYY-MM-DD HH:mm");
+    </script><!-- end fancy dates -->
+</body>
+</html>

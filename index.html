@@ -8,7 +8,7 @@
 <link rel="alternate" type="application/rss+xml" title="RSS" href="rss.xml">
 <link rel="canonical" href="http://hbprotoss.github.io/index.html">
 <link rel="next" href="index-1.html" type="text/html">
-<!--[if lt IE 9]><script src="assets/js/html5.js"></script><![endif]--><link rel="prefetch" href="posts/da-jian-zhi-neng-fan-qiang-lu-you-qi.html" type="text/html">
+<!--[if lt IE 9]><script src="assets/js/html5.js"></script><![endif]--><link rel="prefetch" href="posts/xpathbei-wang.html" type="text/html">
 </head>
 <body>
 <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
@@ -54,7 +54,71 @@
                 
 
 <div class="postindex">
-    <article class="blog-post h-entry post-text"><header><h2 class="p-name entry-title blog-post-title"><a href="posts/da-jian-zhi-neng-fan-qiang-lu-you-qi.html" class="u-url">搭建智能翻墙路由器</a></h2>
+    <article class="blog-post h-entry post-text"><header><h2 class="p-name entry-title blog-post-title"><a href="posts/xpathbei-wang.html" class="u-url">XPath备忘</a></h2>
+        <div class="metadata blog-post-meta">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="posts/xpathbei-wang.html" rel="bookmark"><time class="published dt-published" datetime="2016-04-12T15:46:09+08:00" title="2016-04-12 15:46">2016-04-12 15:46</time></a></p>
+                <p class="commentline">
+        
+    <a href="posts/xpathbei-wang.html#disqus_thread" data-disqus-identifier="cache/posts/xpathbei-wang.html">Comments</a>
+
+
+        </p>
+</div>
+    </header><div class="e-content entry-content">
+    <div>
+<p>最近写了几个scrapy的爬虫程序，里面用到了xpath，写个日志记录一下用法。</p>
+<h2>XPath是什么</h2>
+<p>XPath是一种用于xml、html等结构化文档中寻址定位特定元素等描述性语言</p>
+<h2>XPath主要功能</h2>
+<p>下面以如下测试文档为例进行说明：</p>
+<pre class="code literal-block"><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">contents</span> <span class="na">id</span><span class="o">=</span><span class="s">"content"</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">para</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">"one.html"</span> <span class="na">class</span><span class="o">=</span><span class="s">"normal-link"</span><span class="p">&gt;</span>One<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">para</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">para</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">"two.html"</span> <span class="na">class</span><span class="o">=</span><span class="s">"normal-link"</span><span class="p">&gt;</span>Two<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">para</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">para</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">"three.html"</span> <span class="na">class</span><span class="o">=</span><span class="s">"ex-link"</span><span class="p">&gt;</span>Three<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">para</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">contents</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre>
+
+
+<h3>精确路径寻址</h3>
+<p>指通过精确制定的路径取得元素。例如</p>
+<p>和unix文件系统概念一致，有如下几种定位方式：</p>
+<ul>
+<li>绝对路径，<code>/html/body/contents/para</code>能查找出文档中的三个para元素</li>
+<li>相对路径，在<code>/html/body</code>路径下，<code>/contents/para</code>同样也能查找出这三个para元素</li>
+<li>父级路径，<code>.</code>表示当前路径，<code>..</code>表示当前路径的父级路径</li>
+</ul>
+<h3>模糊路径寻址</h3>
+<p>不需要指定绝对路径或根据当前路径确定的相对路径，只需要指定某个子结构，就能查找出所有符合这个子结构的元素。如</p>
+<ul>
+<li>
+<code>//contents/para</code>在任何路径下，都能查找到<strong>整个文档</strong>下的这三个para元素</li>
+<li>
+<code>.//contents/para</code>能在当前路径下，查找到子节点中任何符合<code>contents/para</code>结构的元素</li>
+</ul>
+<h3>节点属性匹配</h3>
+<p>格式：元素[@属性="xxx"]</p>
+<ul>
+<li>
+<code>a[@class="normal-link"]</code>能查找出两个有带normal-link class的a链</li>
+<li>
+<code>para[a/@class="ex-link"]</code>能查找出一级子元素中有带ex-link class的a链的para元素，这里就是<code>&lt;para&gt;&lt;a href="three.html" class="ex-link"&gt;Three&lt;/a&gt;&lt;/para&gt;</code>
+</li>
+</ul>
+<h3>属性选择</h3>
+<p>查找某个元素中的特定属性值，如：<code>a[@class="ex-link"]/@href</code>能读取第三个a链的href值</p>
+<h3>内置函数</h3>
+<ul>
+<li>node()，返回任意种类的节点。比如和内置关键字<code>child</code>组合成<code>/html/body/contents/child::node()</code>，可以选择所有的para节点</li>
+<li>text()，返回节点中包含的文本。<code>/html/body/contents/para/a[@class="ex-link"]/text()</code>返回Three。特别的，和模糊路径寻址配合，如<code>/html/body/contents//text()</code>，能返回contents下的<code>One Two Three</code>字符串</li>
+</ul>
+</div>
+    </div>
+    </article><article class="blog-post h-entry post-text"><header><h2 class="p-name entry-title blog-post-title"><a href="posts/da-jian-zhi-neng-fan-qiang-lu-you-qi.html" class="u-url">搭建智能翻墙路由器</a></h2>
         <div class="metadata blog-post-meta">
             <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
             <p class="dateline"><a href="posts/da-jian-zhi-neng-fan-qiang-lu-you-qi.html" rel="bookmark"><time class="published dt-published" datetime="2015-04-16T08:49:13+08:00" title="2015-04-16 08:49">2015-04-16 08:49</time></a></p>
@@ -1497,48 +1561,6 @@ Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
 </pre>
 
 
-<p>全文完。</p>
-</div>
-    </div>
-    </article><article class="blog-post h-entry post-text"><header><h2 class="p-name entry-title blog-post-title"><a href="posts/tong-su-yan-yi-kmp.html" class="u-url">通俗演绎KMP</a></h2>
-        <div class="metadata blog-post-meta">
-            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
-            <p class="dateline"><a href="posts/tong-su-yan-yi-kmp.html" rel="bookmark"><time class="published dt-published" datetime="2013-05-07T20:09:38+08:00" title="2013-05-07 20:09">2013-05-07 20:09</time></a></p>
-                <p class="commentline">
-        
-    <a href="posts/tong-su-yan-yi-kmp.html#disqus_thread" data-disqus-identifier="cache/posts/tong-su-yan-yi-kmp.html">Comments</a>
-
-
-        </p>
-</div>
-    </header><div class="e-content entry-content">
-    <div>
-<p>最近要实现关键字过滤功能，小看了一些经典的字符串匹配算法。<br>
-本文要介绍的是KMP算法（<strong>Knuth–Morris–Pratt Algorithm</strong>）,那个Knuth应该再熟悉不过了。  </p>
-<p>KMP算法是从朴素匹配算法改进而来。回忆一下朴素的匹配算法是怎么完成字符串的匹配的呢？<br>
-1. 将原串和模式串左对齐，然后一位一位比较，直到有一个字符不匹配<br><img alt="KMP1.png" src="galleries/KMP/KMP1.png" title=""><br>
-2. 发现第二位的B和C不匹配，模式串右移一位<br><img alt="KMP2.png" src="galleries/KMP/KMP2.png" title=""><br>
-3. 重复这个流程，直到找到完全匹配的子串或者匹配失败。</p>
-<p>但这过程中显然有多比较的地方。如，原串为ABCDEABCDF，模式串为ABCDF。第一轮可以发现E和F不匹配<br><img alt="KMP3.png" src="galleries/KMP/KMP3.png" title=""><br>
-很显然右移一位必定不匹配，这时模式串可以直接右移4位跳过ABCD，从E开始再次比较<br><img alt="KMP4.png" src="galleries/KMP/KMP4.png" title=""></p>
-<p>那是不是跳过的长度就是前面相同部分的长度呢？其实不是这样的，这种直接跳过前面相同部分的做法在某些情况下会有问题。如，原串为ABCDABCDABF，模式串为ABCDABF，直接跳过相同部分就会遗漏匹配的串<br><img alt="KMP5.png" src="galleries/KMP/KMP5.png" title=""><br>
-所以跳过的长度并不是前面完全匹配的部分，可以跳过的长度一般存储在模式串的partial match table中，即KMP算法需要对模式串进行预处理。</p>
-<p>先来看看这个partial match table在跳过的过程中是怎么用的，然后再来考察计算partial match table的算法。<br>
-ABCDABF的partial match table如下：<br><img alt="KMP6.png" src="galleries/KMP/KMP6.png" title=""><br>
-可以跳过的长度 = 当前已匹配长度 - 最后一个字母在partial match table中的值。例如：<br><img alt="KMP7.png" src="galleries/KMP/KMP7.png" title=""><br>
-当发现C和F不匹配时，根据公式，当前已匹配串ABCDAB长度为6, 最后一个字母B在partial match table中的对应值为2，所以可以跳过的长度 = 6 - 2 = 4，即：<br><img alt="KMP8.png" src="galleries/KMP/KMP8.png" title=""><br>
-这样就能正确匹配了。</p>
-<p>partial match table中每个位置i记录的其实就是从0到i的子串中，同时出现在子串前缀和后缀中的最大长度。还是以上面那个例子为例：  </p>
-<ul>
-<li>A没有前缀或后缀，所以长度为0</li>
-<li>AB前缀为A，后缀为B，没有相同部分，长度为0</li>
-<li>ABC前缀为A、AB，后缀为BC、C，没有相同部分，长度为0</li>
-<li>ABCD前缀为A、AB、ABC，后缀为BCD、CD、D，没有相同部分，长度为0</li>
-<li>ABCDA前缀为A、AB、ABC、ABCD，后缀为BCDA、CDA、DA、A，相同部分为A，长度为1</li>
-<li>ABCDAB前缀为A、AB、ABC、ABCD、ABCDA，后缀为BCDAB、CDAB、DAB、AB、B，相同部分为AB，长度为2</li>
-<li>ABCDABF前缀为A、AB、ABC、ABCD、ABCDA、ABCDAB，后缀为BCDABF、BCDAB、CDAB、DAB、AB、B，没有相同部分，长度为0</li>
-</ul>
-<p>具体代码参考<a href="https://github.com/hbprotoss/codejam/blob/master/kmp.py">https://github.com/hbprotoss/codejam/blob/master/kmp.py</a></p>
 <p>全文完。</p>
 </div>
     </div>
