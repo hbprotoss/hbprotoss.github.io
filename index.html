@@ -1,37 +1,17 @@
 <!DOCTYPE html>
 <html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="en">
-    <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width">
-    <title>hbprotoss的博客 | hbprotoss的博客</title>
-
-    
-            <link href="assets/css/bitter.css" rel="stylesheet" type="text/css">
-        <link href="assets/css/main.css" rel="stylesheet" type="text/css">
-        <link href="assets/css/rst.css" rel="stylesheet" type="text/css">
-        <link href="assets/css/code.css" rel="stylesheet" type="text/css">
-
-    
-            <link rel="alternate" type="application/rss+xml" title="RSS" href="rss.xml">
-
-      <link rel="canonical" href="http://hbprotoss.github.io/index.html">
-
-
-
-    
-        <!--[if lt IE 9]><script src="/assets/js/html5.js"></script><![endif]-->
-
-    
-
-
-
-
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>hbprotoss的博客 | hbprotoss的博客</title>
+<link href="assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="rss.xml">
+<link rel="canonical" href="http://hbprotoss.github.io/index.html">
+<!--[if lt IE 9]><script src="/assets/js/html5.js"></script><![endif]-->
 </head>
 <body>
-    <section class="social">
-        <ul>
-        
-            <li><a href="#" title="Home"><i class="icon-home"></i></a></li>
+    <section class="social"><ul>
+<li><a href="#" title="Home"><i class="icon-home"></i></a></li>
             <li><a href="archive.html" title="Archives"><i class="icon-folder-open-alt"></i></a></li>
             <li><a href="categories/index.html" title="Tags"><i class="icon-tags"></i></a></li>
             <li><a href="rss.xml" title="RSS"><i class="icon-rss"></i></a></li>
@@ -39,17 +19,14 @@
             <li><a href="https://github.com/hbprotoss" title="My Github"><i class="icon-github"></i></a></li>
             <li><a href="http://getnikola.com" title="About me"><i class="icon-user"></i></a></li>
 
-        </ul>
-    </section>
-    <section class="page-content">
-        <div class="content" rel="main">
+        </ul></section><section class="page-content"><div class="content" rel="main">
             
         <div class="post">
             <h1 class="title"><a href="posts/da-jian-zhi-neng-fan-qiang-lu-you-qi.html">搭建智能翻墙路由器</a></h1>
             <div class="meta">
                 <div class="authordate">
                     <time class="timeago" datetime="2015-04-16T08:49:13+08:00">2015-04-16 08:49</time>
-                </div>
+</div>
                 <div class="stats">
                     
         
@@ -66,7 +43,7 @@
            <li><a class="tag p-category" href="categories/shadowsocks.html" rel="tag">ShadowSocks</a></li>
            <li><a class="tag p-category" href="categories/fan-qiang.html" rel="tag">翻墙</a></li>
         </ul>
-        </div>
+</div>
 
             </div>
             <div class="body">
@@ -107,7 +84,7 @@
 注意这里不需要<code>-u</code>选项，转发的是TCP包，ss-redir也不支持这个选项。</p>
 <h4>ss-tunnel</h4>
 <p>ss-tunnel用于实现本地port forward，和ssh的port forward一样，只是加密方式用了shadowsocks协议，用于在本地起服务，转发DNS请求</p>
-<p>在本地路由器启动ss-tunnel: <code>ss-redir -s "your_server_ip" -p "your_server_port" -l "local_service_port" -m "encryption_method" -k "server_password" -L "server_ip:server_port" -f "pid_file_path" -u</code></p>
+<p>在本地路由器启动ss-tunnel: <code>ss-tunnel -s "your_server_ip" -p "your_server_port" -l "local_service_port" -m "encryption_method" -k "server_password" -L "server_ip:server_port" -f "pid_file_path" -u</code></p>
 <p>这个<code>-L</code>选项理论上可以填国外DNS的IP/PORT，比如<code>8.8.8.8:53</code>，我在我的VPS起了一个DNS转发服务，填了自己的IP/PORT，效果应该一样。<code>-u</code>是开启udp relay，DNS是UDP包嘛</p>
 <h3>ChinaDNS</h3>
 <p>如果所有DNS请求都走国外DNS server，国内有些网站（如微博）在海外有服务器，就会比较慢。ChinaDNS保证的就是国内域名能解析成国内IP，国外域名解析成国外IP。</p>
@@ -155,7 +132,7 @@ iptables -t nat -A SHADOWSOCKS -d 240.0.0.0/4 -j RETURN
             <div class="meta">
                 <div class="authordate">
                     <time class="timeago" datetime="2014-10-23T12:27:56+08:00">2014-10-23 12:27</time>
-                </div>
+</div>
                 <div class="stats">
                     
         
@@ -336,7 +313,7 @@ iptables -t nat -A SHADOWSOCKS -d 240.0.0.0/4 -j RETURN
             <div class="meta">
                 <div class="authordate">
                     <time class="timeago" datetime="2013-11-16T19:31:34+08:00">2013-11-16 19:31</time>
-                </div>
+</div>
                 <div class="stats">
                     
         
@@ -350,7 +327,7 @@ iptables -t nat -A SHADOWSOCKS -d 240.0.0.0/4 -j RETURN
         Tags : 
            <li><a class="tag p-category" href="categories/database.html" rel="tag">Database</a></li>
         </ul>
-        </div>
+</div>
 
             </div>
             <div class="body">
@@ -460,7 +437,7 @@ Time: 0.103s
             <div class="meta">
                 <div class="authordate">
                     <time class="timeago" datetime="2013-10-24T10:44:52+08:00">2013-10-24 10:44</time>
-                </div>
+</div>
                 <div class="stats">
                     
         
@@ -700,7 +677,7 @@ Time: 0.103s
             <div class="meta">
                 <div class="authordate">
                     <time class="timeago" datetime="2013-10-09T11:44:50+08:00">2013-10-09 11:44</time>
-                </div>
+</div>
                 <div class="stats">
                     
         
@@ -717,7 +694,7 @@ Time: 0.103s
            <li><a class="tag p-category" href="categories/linux.html" rel="tag">Linux</a></li>
            <li><a class="tag p-category" href="categories/security.html" rel="tag">Security</a></li>
         </ul>
-        </div>
+</div>
 
             </div>
             <div class="body">
@@ -800,7 +777,7 @@ Correct password
             <div class="meta">
                 <div class="authordate">
                     <time class="timeago" datetime="2013-10-08T09:18:31+08:00">2013-10-08 09:18</time>
-                </div>
+</div>
                 <div class="stats">
                     
         
@@ -816,7 +793,7 @@ Correct password
            <li><a class="tag p-category" href="categories/linux.html" rel="tag">Linux</a></li>
            <li><a class="tag p-category" href="categories/programming.html" rel="tag">Programming</a></li>
         </ul>
-        </div>
+</div>
 
             </div>
             <div class="body">
@@ -1004,7 +981,7 @@ Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
             <div class="meta">
                 <div class="authordate">
                     <time class="timeago" datetime="2013-07-13T14:25:31+08:00">2013-07-13 14:25</time>
-                </div>
+</div>
                 <div class="stats">
                     
         
@@ -1019,7 +996,7 @@ Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
            <li><a class="tag p-category" href="categories/c.html" rel="tag">C</a></li>
            <li><a class="tag p-category" href="categories/macro.html" rel="tag">Macro</a></li>
         </ul>
-        </div>
+</div>
 
             </div>
             <div class="body">
@@ -1169,7 +1146,7 @@ Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
 </pre>
 
 
-<p>按前面的理解，<code>(4 + foo)</code>会展开成<code>(4 + (4 + foo)</code>，然后一直展开下去，直至内存耗尽。但是，预处理器采取的策略是<strong><em>只展开一次</em></strong>。也就是说，<code>foo</code>只会展开成<code>(4 + foo)</code>，而展开之后<code>foo</code>的含义就要根据上下文来确定了。</p>
+<p>按前面的理解，<code>(4 + foo)</code>会展开成<code>(4 + (4 + foo))</code>，然后一直展开下去，直至内存耗尽。但是，预处理器采取的策略是<strong><em>只展开一次</em></strong>。也就是说，<code>foo</code>只会展开成<code>(4 + foo)</code>，而展开之后<code>foo</code>的含义就要根据上下文来确定了。</p>
 <p>对于以下的交叉引用，宏体也只会展开一次。</p>
 <pre class="code literal-block"><span class="cp">#define x (4 + y)</span>
 <span class="cp">#define y (2 * x)</span>
@@ -1206,7 +1183,7 @@ Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
             <div class="meta">
                 <div class="authordate">
                     <time class="timeago" datetime="2013-06-12T12:31:54+08:00">2013-06-12 12:31</time>
-                </div>
+</div>
                 <div class="stats">
                     
         
@@ -1220,7 +1197,7 @@ Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
         Tags : 
            <li><a class="tag p-category" href="categories/python.html" rel="tag">Python</a></li>
         </ul>
-        </div>
+</div>
 
             </div>
             <div class="body">
@@ -1383,7 +1360,7 @@ Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
             <div class="meta">
                 <div class="authordate">
                     <time class="timeago" datetime="2013-05-21T19:48:53+08:00">2013-05-21 19:48</time>
-                </div>
+</div>
                 <div class="stats">
                     
         
@@ -1399,7 +1376,7 @@ Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
            <li><a class="tag p-category" href="categories/shu-ju-jie-gou.html" rel="tag">数据结构</a></li>
            <li><a class="tag p-category" href="categories/suan-fa.html" rel="tag">算法</a></li>
         </ul>
-        </div>
+</div>
 
             </div>
             <div class="body">
@@ -1602,7 +1579,7 @@ Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
             <div class="meta">
                 <div class="authordate">
                     <time class="timeago" datetime="2013-05-07T20:09:38+08:00">2013-05-07 20:09</time>
-                </div>
+</div>
                 <div class="stats">
                     
         
@@ -1617,7 +1594,7 @@ Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
            <li><a class="tag p-category" href="categories/zi-fu-chuan.html" rel="tag">字符串</a></li>
            <li><a class="tag p-category" href="categories/suan-fa.html" rel="tag">算法</a></li>
         </ul>
-        </div>
+</div>
 
             </div>
             <div class="body">
@@ -1625,25 +1602,17 @@ Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
 <p>最近要实现关键字过滤功能，小看了一些经典的字符串匹配算法。<br>
 本文要介绍的是KMP算法（<strong>Knuth–Morris–Pratt Algorithm</strong>）,那个Knuth应该再熟悉不过了。  </p>
 <p>KMP算法是从朴素匹配算法改进而来。回忆一下朴素的匹配算法是怎么完成字符串的匹配的呢？<br>
-1. 将原串和模式串左对齐，然后一位一位比较，直到有一个字符不匹配<br>
-<img alt="KMP1.png" src="galleries/KMP/KMP1.png" title=""><br>
-2. 发现第二位的B和C不匹配，模式串右移一位<br>
-<img alt="KMP2.png" src="galleries/KMP/KMP2.png" title=""><br>
+1. 将原串和模式串左对齐，然后一位一位比较，直到有一个字符不匹配<br><img alt="KMP1.png" src="galleries/KMP/KMP1.png" title=""><br>
+2. 发现第二位的B和C不匹配，模式串右移一位<br><img alt="KMP2.png" src="galleries/KMP/KMP2.png" title=""><br>
 3. 重复这个流程，直到找到完全匹配的子串或者匹配失败。</p>
-<p>但这过程中显然有多比较的地方。如，原串为ABCDEABCDF，模式串为ABCDF。第一轮可以发现E和F不匹配<br>
-<img alt="KMP3.png" src="galleries/KMP/KMP3.png" title=""><br>
-很显然右移一位必定不匹配，这时模式串可以直接右移4位跳过ABCD，从E开始再次比较<br>
-<img alt="KMP4.png" src="galleries/KMP/KMP4.png" title="">  </p>
-<p>那是不是跳过的长度就是前面相同部分的长度呢？其实不是这样的，这种直接跳过前面相同部分的做法在某些情况下会有问题。如，原串为ABCDABCDABF，模式串为ABCDABF，直接跳过相同部分就会遗漏匹配的串<br>
-<img alt="KMP5.png" src="galleries/KMP/KMP5.png" title=""><br>
+<p>但这过程中显然有多比较的地方。如，原串为ABCDEABCDF，模式串为ABCDF。第一轮可以发现E和F不匹配<br><img alt="KMP3.png" src="galleries/KMP/KMP3.png" title=""><br>
+很显然右移一位必定不匹配，这时模式串可以直接右移4位跳过ABCD，从E开始再次比较<br><img alt="KMP4.png" src="galleries/KMP/KMP4.png" title=""></p>
+<p>那是不是跳过的长度就是前面相同部分的长度呢？其实不是这样的，这种直接跳过前面相同部分的做法在某些情况下会有问题。如，原串为ABCDABCDABF，模式串为ABCDABF，直接跳过相同部分就会遗漏匹配的串<br><img alt="KMP5.png" src="galleries/KMP/KMP5.png" title=""><br>
 所以跳过的长度并不是前面完全匹配的部分，可以跳过的长度一般存储在模式串的partial match table中，即KMP算法需要对模式串进行预处理。</p>
 <p>先来看看这个partial match table在跳过的过程中是怎么用的，然后再来考察计算partial match table的算法。<br>
-ABCDABF的partial match table如下：<br>
-<img alt="KMP6.png" src="galleries/KMP/KMP6.png" title=""><br>
-可以跳过的长度 = 当前已匹配长度 - 最后一个字母在partial match table中的值。例如：<br>
-<img alt="KMP7.png" src="galleries/KMP/KMP7.png" title=""><br>
-当发现C和F不匹配时，根据公式，当前已匹配串ABCDAB长度为6, 最后一个字母B在partial match table中的对应值为2，所以可以跳过的长度 = 6 - 2 = 4，即：<br>
-<img alt="KMP8.png" src="galleries/KMP/KMP8.png" title=""><br>
+ABCDABF的partial match table如下：<br><img alt="KMP6.png" src="galleries/KMP/KMP6.png" title=""><br>
+可以跳过的长度 = 当前已匹配长度 - 最后一个字母在partial match table中的值。例如：<br><img alt="KMP7.png" src="galleries/KMP/KMP7.png" title=""><br>
+当发现C和F不匹配时，根据公式，当前已匹配串ABCDAB长度为6, 最后一个字母B在partial match table中的对应值为2，所以可以跳过的长度 = 6 - 2 = 4，即：<br><img alt="KMP8.png" src="galleries/KMP/KMP8.png" title=""><br>
 这样就能正确匹配了。</p>
 <p>partial match table中每个位置i记录的其实就是从0到i的子串中，同时出现在子串前缀和后缀中的最大长度。还是以上面那个例子为例：  </p>
 <ul>
@@ -1661,66 +1630,20 @@ ABCDABF的partial match table如下：<br>
             </div>
         </div>
     
-        <nav class="postindexpager">
-        <ul class="pager">
-            <li class="next">
+        <nav class="postindexpager"><ul class="pager">
+<li class="next">
                 <a href="index-1.html" rel="next">Older posts</a>
             </li>
-        </ul>
-        </nav>
-
-    
-        
-       <script>var disqus_shortname="hbprotoss";(function(){var a=document.createElement("script");a.async=true;a.src="//"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script>
-
-
-    
-
-
-             
-        <footer id="footer" role="contentinfo">
-            <p>
+        </ul></nav><script>var disqus_shortname="hbprotoss";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script><footer id="footer"><p>
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png"></a><br>本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh">知识共享署名-非商业性使用-禁止演绎 3.0 未本地化版本许可协议</a>进行许可。
-<br>Contents © 2015 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a></p>
+<br>Contents © 2016 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a></p>
             
         </footer>
-
-        </div>
-    </section>
-    
-    
-    
-            <script src="assets/js/jquery-1.10.2.min.js" type="text/javascript"></script>
-            <script src="assets/js/jquery.timeago.js" type="text/javascript"></script>
-    
-<!-- Social buttons -->
-<div id="addthisbox" class="addthis_toolbox addthis_peekaboo_style addthis_default_style addthis_label_style addthis_32x32_style">
-<a class="addthis_button_more">Share</a>
-<ul>
-<li>
-<a class="addthis_button_facebook"></a>
-</li>
-<li>
-<a class="addthis_button_google_plusone_share"></a>
-</li>
-<li>
-<a class="addthis_button_linkedin"></a>
-</li>
-<li>
-<a class="addthis_button_twitter"></a>
-</li>
-</ul>
 </div>
-<script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-4f7088a56bb93798"></script>
-<!-- End of social buttons -->
-
-
-    
-        <script type="text/javascript">
+    </section><script src="assets/js/all-nocdn.js" type="text/javascript"></script><script type="text/javascript">
             $(function(){
                 $('.timeago').timeago();
             });
         </script>
-    
 </body>
 </html>

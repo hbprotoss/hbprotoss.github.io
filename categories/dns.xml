@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>hbprotoss的博客 (DNS)</title><link>http://hbprotoss.github.io/</link><description></description><atom:link href="http://hbprotoss.github.io/categories/dns.xml" type="application/rss+xml" rel="self"></atom:link><language>en</language><lastBuildDate>Sat, 18 Apr 2015 08:24:32 GMT</lastBuildDate><generator>http://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>搭建智能翻墙路由器</title><link>http://hbprotoss.github.io/posts/da-jian-zhi-neng-fan-qiang-lu-you-qi.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;p&gt;本文着重介绍如何搭建智能翻墙路由器，实现避免DNS污染，并且自动根据是否是国内IP来决定是否翻墙，从而使任何连接路由器的设备无障碍穿墙出去。&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>hbprotoss的博客 (DNS)</title><link>http://hbprotoss.github.io/</link><description></description><atom:link href="http://hbprotoss.github.io/categories/dns.xml" type="application/rss+xml" rel="self"></atom:link><language>en</language><lastBuildDate>Tue, 12 Apr 2016 06:44:00 GMT</lastBuildDate><generator>https://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>搭建智能翻墙路由器</title><link>http://hbprotoss.github.io/posts/da-jian-zhi-neng-fan-qiang-lu-you-qi.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;p&gt;本文着重介绍如何搭建智能翻墙路由器，实现避免DNS污染，并且自动根据是否是国内IP来决定是否翻墙，从而使任何连接路由器的设备无障碍穿墙出去。&lt;/p&gt;
 &lt;p&gt;思路是，用shadowsocks建立起翻墙代理服务，用shadowsocks的udp relay模式转发DNS请求，解决DNS污染，再配置iptables根据IP决定是否走shadowsocks来翻墙。&lt;/p&gt;
 &lt;h2&gt;准备材料&lt;/h2&gt;
 &lt;ul&gt;
@@ -35,7 +35,7 @@
 注意这里不需要&lt;code&gt;-u&lt;/code&gt;选项，转发的是TCP包，ss-redir也不支持这个选项。&lt;/p&gt;
 &lt;h4&gt;ss-tunnel&lt;/h4&gt;
 &lt;p&gt;ss-tunnel用于实现本地port forward，和ssh的port forward一样，只是加密方式用了shadowsocks协议，用于在本地起服务，转发DNS请求&lt;/p&gt;
-&lt;p&gt;在本地路由器启动ss-tunnel: &lt;code&gt;ss-redir -s "your_server_ip" -p "your_server_port" -l "local_service_port" -m "encryption_method" -k "server_password" -L "server_ip:server_port" -f "pid_file_path" -u&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;在本地路由器启动ss-tunnel: &lt;code&gt;ss-tunnel -s "your_server_ip" -p "your_server_port" -l "local_service_port" -m "encryption_method" -k "server_password" -L "server_ip:server_port" -f "pid_file_path" -u&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;这个&lt;code&gt;-L&lt;/code&gt;选项理论上可以填国外DNS的IP/PORT，比如&lt;code&gt;8.8.8.8:53&lt;/code&gt;，我在我的VPS起了一个DNS转发服务，填了自己的IP/PORT，效果应该一样。&lt;code&gt;-u&lt;/code&gt;是开启udp relay，DNS是UDP包嘛&lt;/p&gt;
 &lt;h3&gt;ChinaDNS&lt;/h3&gt;
 &lt;p&gt;如果所有DNS请求都走国外DNS server，国内有些网站（如微博）在海外有服务器，就会比较慢。ChinaDNS保证的就是国内域名能解析成国内IP，国外域名解析成国外IP。&lt;/p&gt;

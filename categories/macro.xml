@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>hbprotoss的博客 (Macro)</title><link>http://hbprotoss.github.io/</link><description></description><atom:link href="http://hbprotoss.github.io/categories/macro.xml" type="application/rss+xml" rel="self"></atom:link><language>en</language><lastBuildDate>Sat, 18 Apr 2015 08:24:33 GMT</lastBuildDate><generator>http://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>C语言宏的特殊用法和几个坑</title><link>http://hbprotoss.github.io/posts/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;p&gt;总结一下C语言中宏的一些特殊用法和几个容易踩的坑。由于本文主要参考GCC文档，某些细节（如宏参数中的空格是否处理之类）在别的编译器可能有细微差别，请参考相应文档。&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>hbprotoss的博客 (Macro)</title><link>http://hbprotoss.github.io/</link><description></description><atom:link href="http://hbprotoss.github.io/categories/macro.xml" type="application/rss+xml" rel="self"></atom:link><language>en</language><lastBuildDate>Tue, 12 Apr 2016 06:43:59 GMT</lastBuildDate><generator>https://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>C语言宏的特殊用法和几个坑</title><link>http://hbprotoss.github.io/posts/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;p&gt;总结一下C语言中宏的一些特殊用法和几个容易踩的坑。由于本文主要参考GCC文档，某些细节（如宏参数中的空格是否处理之类）在别的编译器可能有细微差别，请参考相应文档。&lt;/p&gt;
 &lt;h3&gt;宏基础&lt;/h3&gt;
 &lt;p&gt;宏仅仅是在C预处理阶段的一种文本替换工具，编译完之后对二进制代码不可见。基本用法如下：&lt;/p&gt;
 &lt;h4&gt;1. 标示符别名&lt;/h4&gt;
@@ -144,7 +144,7 @@
 &lt;/pre&gt;
 
 
-&lt;p&gt;按前面的理解，&lt;code&gt;(4 + foo)&lt;/code&gt;会展开成&lt;code&gt;(4 + (4 + foo)&lt;/code&gt;，然后一直展开下去，直至内存耗尽。但是，预处理器采取的策略是&lt;strong&gt;&lt;em&gt;只展开一次&lt;/em&gt;&lt;/strong&gt;。也就是说，&lt;code&gt;foo&lt;/code&gt;只会展开成&lt;code&gt;(4 + foo)&lt;/code&gt;，而展开之后&lt;code&gt;foo&lt;/code&gt;的含义就要根据上下文来确定了。&lt;/p&gt;
+&lt;p&gt;按前面的理解，&lt;code&gt;(4 + foo)&lt;/code&gt;会展开成&lt;code&gt;(4 + (4 + foo))&lt;/code&gt;，然后一直展开下去，直至内存耗尽。但是，预处理器采取的策略是&lt;strong&gt;&lt;em&gt;只展开一次&lt;/em&gt;&lt;/strong&gt;。也就是说，&lt;code&gt;foo&lt;/code&gt;只会展开成&lt;code&gt;(4 + foo)&lt;/code&gt;，而展开之后&lt;code&gt;foo&lt;/code&gt;的含义就要根据上下文来确定了。&lt;/p&gt;
 &lt;p&gt;对于以下的交叉引用，宏体也只会展开一次。&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#define x (4 + y)&lt;/span&gt;
 &lt;span class="cp"&gt;#define y (2 * x)&lt;/span&gt;

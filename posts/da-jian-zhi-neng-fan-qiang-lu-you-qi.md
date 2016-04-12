@@ -57,7 +57,7 @@ ss-redir用于将客户端的原始数据封装成shadowsocks协议内容，转�
 
 ss-tunnel用于实现本地port forward，和ssh的port forward一样，只是加密方式用了shadowsocks协议，用于在本地起服务，转发DNS请求
 
-在本地路由器启动ss-tunnel: `ss-redir -s "your_server_ip" -p "your_server_port" -l "local_service_port" -m "encryption_method" -k "server_password" -L "server_ip:server_port" -f "pid_file_path" -u`
+在本地路由器启动ss-tunnel: `ss-tunnel -s "your_server_ip" -p "your_server_port" -l "local_service_port" -m "encryption_method" -k "server_password" -L "server_ip:server_port" -f "pid_file_path" -u`
 
 这个`-L`选项理论上可以填国外DNS的IP/PORT，比如`8.8.8.8:53`，我在我的VPS起了一个DNS转发服务，填了自己的IP/PORT，效果应该一样。`-u`是开启udp relay，DNS是UDP包嘛
 
