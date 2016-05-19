@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>hbprotoss的博客 (C)</title><link>http://hbprotoss.github.io/</link><description></description><atom:link href="http://hbprotoss.github.io/categories/c.xml" type="application/rss+xml" rel="self"></atom:link><language>en</language><lastBuildDate>Tue, 12 Apr 2016 06:44:00 GMT</lastBuildDate><generator>https://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>利用LD_PRELOAD进行hook</title><link>http://hbprotoss.github.io/posts/li-yong-ld_preloadjin-xing-hook.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;p&gt;好久没玩hook这种猥琐的东西里，今天在Linux下体验了一把。&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>hbprotoss的博客 (C)</title><link>http://hbprotoss.github.io/</link><description></description><atom:link href="http://hbprotoss.github.io/categories/c.xml" type="application/rss+xml" rel="self"></atom:link><language>en</language><lastBuildDate>Thu, 19 May 2016 08:10:05 GMT</lastBuildDate><generator>https://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>利用LD_PRELOAD进行hook</title><link>http://hbprotoss.github.io/posts/li-yong-ld_preloadjin-xing-hook.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;p&gt;好久没玩hook这种猥琐的东西里，今天在Linux下体验了一把。&lt;/p&gt;
 &lt;p&gt;loader在进行动态链接的时候，会将有相同符号名的符号覆盖成LD_PRELOAD指定的so文件中的符号。换句话说，可以用我们自己的so库中的函数替换原来库里有的函数，从而达到hook的目的。这和Windows下通过修改import table来hook API很类似。相比较之下，LD_PRELOAD更方便了，都不用自己写代码了，系统的loader会帮我们搞定。但是LD_PRELOAD有个限制：只能hook动态链接的库，对静态链接的库无效，因为静态链接的代码都写到可执行文件里了嘛，没有坑让你填。&lt;/p&gt;
 &lt;p&gt;上代码&lt;/p&gt;
 &lt;p&gt;先是受害者，我们的主程序main.c，通过strcmp比较字符串是否相等：&lt;/p&gt;
@@ -246,13 +246,13 @@ Dynamic section at offset 0xe18 contains &lt;span class="m"&gt;25&lt;/span&gt; e
 &lt;h3&gt;宏基础&lt;/h3&gt;
 &lt;p&gt;宏仅仅是在C预处理阶段的一种文本替换工具，编译完之后对二进制代码不可见。基本用法如下：&lt;/p&gt;
 &lt;h4&gt;1. 标示符别名&lt;/h4&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#define BUFFER_SIZE 1024&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#define BUFFER_SIZE 1024&lt;/span&gt;
 &lt;/pre&gt;
 
 
 &lt;p&gt;预处理阶段，&lt;code&gt;foo = (char *) malloc (BUFFER_SIZE);&lt;/code&gt;会被替换成&lt;code&gt;foo = (char *) malloc (1024);&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;宏体换行需要在行末加反斜杠\&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#define NUMBERS 1, \&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#define NUMBERS 1, \&lt;/span&gt;
 &lt;span class="cp"&gt;                2, \&lt;/span&gt;
 &lt;span class="cp"&gt;                3&lt;/span&gt;
 &lt;/pre&gt;
@@ -261,7 +261,7 @@ Dynamic section at offset 0xe18 contains &lt;span class="m"&gt;25&lt;/span&gt; e
 &lt;p&gt;预处理阶段&lt;code&gt;int x[] = { NUMBERS };&lt;/code&gt;会被扩展成&lt;code&gt;int x[] = { 1, 2, 3 };&lt;/code&gt;&lt;/p&gt;
 &lt;h4&gt;2. 宏函数&lt;/h4&gt;
 &lt;p&gt;宏名之后带括号的宏被认为是宏函数。用法和普通函数一样，只不过在预处理阶段，宏函数会被展开。优点是没有普通函数保存寄存器和参数传递的开销，展开后的代码有利于CPU cache的利用和指令预测，速度快。缺点是可执行代码体积大。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#define min(X, Y)  ((X) &amp;lt; (Y) ? (X) : (Y))&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#define min(X, Y)  ((X) &amp;lt; (Y) ? (X) : (Y))&lt;/span&gt;
 &lt;/pre&gt;
 
 
@@ -270,7 +270,7 @@ Dynamic section at offset 0xe18 contains &lt;span class="m"&gt;25&lt;/span&gt; e
 &lt;h3&gt;宏特殊用法&lt;/h3&gt;
 &lt;h4&gt;1. 字符串化(Stringification)&lt;/h4&gt;
 &lt;p&gt;在宏体中，如果宏参数前加个&lt;code&gt;#&lt;/code&gt;，那么在宏体扩展的时候，宏参数会被扩展成字符串的形式。如：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#define WARN_IF(EXP) \&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#define WARN_IF(EXP) \&lt;/span&gt;
 &lt;span class="cp"&gt;     do { if (EXP) \&lt;/span&gt;
 &lt;span class="cp"&gt;             fprintf (stderr, "Warning: " #EXP "\n"); } \&lt;/span&gt;
 &lt;span class="cp"&gt;     while (0)&lt;/span&gt;
@@ -278,7 +278,7 @@ Dynamic section at offset 0xe18 contains &lt;span class="m"&gt;25&lt;/span&gt; e
 
 
 &lt;p&gt;&lt;code&gt;WARN_IF (x == 0);&lt;/code&gt;会被扩展成：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;do&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;do&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
     &lt;span class="n"&gt;fprintf&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;stderr&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;"Warning: "&lt;/span&gt; &lt;span class="s"&gt;"x == 0"&lt;/span&gt; &lt;span class="s"&gt;"&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
 &lt;span class="k"&gt;while&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
 &lt;/pre&gt;
@@ -287,7 +287,7 @@ Dynamic section at offset 0xe18 contains &lt;span class="m"&gt;25&lt;/span&gt; e
 &lt;p&gt;这种用法可以用在assert中，如果断言失败，可以将失败的语句输出到反馈信息中&lt;/p&gt;
 &lt;h4&gt;2. 连接(Concatenation)&lt;/h4&gt;
 &lt;p&gt;在宏体中，如果宏体所在标示符中有&lt;code&gt;##&lt;/code&gt;，那么在宏体扩展的时候，宏参数会被直接替换到标示符中。如：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#define COMMAND(NAME)  { #NAME, NAME ## _command }&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#define COMMAND(NAME)  { #NAME, NAME ## _command }&lt;/span&gt;
 
 &lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="n"&gt;command&lt;/span&gt;
 &lt;span class="p"&gt;{&lt;/span&gt;
@@ -298,7 +298,7 @@ Dynamic section at offset 0xe18 contains &lt;span class="m"&gt;25&lt;/span&gt; e
 
 
 &lt;p&gt;在宏扩展的时候&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="n"&gt;command&lt;/span&gt; &lt;span class="n"&gt;commands&lt;/span&gt;&lt;span class="p"&gt;[]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="n"&gt;command&lt;/span&gt; &lt;span class="n"&gt;commands&lt;/span&gt;&lt;span class="p"&gt;[]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt;
 &lt;span class="p"&gt;{&lt;/span&gt;
     &lt;span class="n"&gt;COMMAND&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;quit&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
     &lt;span class="n"&gt;COMMAND&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;help&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
@@ -308,7 +308,7 @@ Dynamic section at offset 0xe18 contains &lt;span class="m"&gt;25&lt;/span&gt; e
 
 
 &lt;p&gt;会被扩展成：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="n"&gt;command&lt;/span&gt; &lt;span class="n"&gt;commands&lt;/span&gt;&lt;span class="p"&gt;[]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="n"&gt;command&lt;/span&gt; &lt;span class="n"&gt;commands&lt;/span&gt;&lt;span class="p"&gt;[]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt;
 &lt;span class="p"&gt;{&lt;/span&gt;
     &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="s"&gt;"quit"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;quit_command&lt;/span&gt; &lt;span class="p"&gt;},&lt;/span&gt;
     &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="s"&gt;"help"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;help_command&lt;/span&gt; &lt;span class="p"&gt;},&lt;/span&gt;
@@ -324,13 +324,13 @@ Dynamic section at offset 0xe18 contains &lt;span class="m"&gt;25&lt;/span&gt; e
 &lt;p&gt;由于是纯文本替换，C预处理器不对宏体做任何语法检查，像缺个括号、少个分号神马的预处理器是不管的。这里要格外小心，由此可能引出各种奇葩的问题，一下还很难找到根源。&lt;/p&gt;
 &lt;h4&gt;2. 算符优先级问题&lt;/h4&gt;
 &lt;p&gt;不仅宏体是纯文本替换，宏参数也是纯文本替换。有以下一段简单的宏，实现乘法：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#define MULTIPLY(x, y) x * y&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#define MULTIPLY(x, y) x * y&lt;/span&gt;
 &lt;/pre&gt;
 
 
 &lt;p&gt;&lt;code&gt;MULTIPLY(1, 2)&lt;/code&gt;没问题，会正常展开成&lt;code&gt;1 * 2&lt;/code&gt;。有问题的是这种表达式&lt;code&gt;MULTIPLY(1+2, 3)&lt;/code&gt;，展开后成了&lt;code&gt;1+2 * 3&lt;/code&gt;，显然优先级错了。&lt;/p&gt;
 &lt;p&gt;在宏体中，给引用的参数加个括号就能避免这问题。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#define MULTIPLY(x, y) (x) * (y)&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#define MULTIPLY(x, y) (x) * (y)&lt;/span&gt;
 &lt;/pre&gt;
 
 
@@ -338,7 +338,7 @@ Dynamic section at offset 0xe18 contains &lt;span class="m"&gt;25&lt;/span&gt; e
 &lt;p&gt;其实这个问题和下面要说到的某些问题都属于由于纯文本替换而导致的语义破坏问题，要格外小心。&lt;/p&gt;
 &lt;h4&gt;3. 分号吞噬问题&lt;/h4&gt;
 &lt;p&gt;有如下宏定义：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#define SKIP_SPACES(p, limit)  \&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#define SKIP_SPACES(p, limit)  \&lt;/span&gt;
 &lt;span class="cp"&gt;     { char *lim = (limit);         \&lt;/span&gt;
 &lt;span class="cp"&gt;       while (p &amp;lt; lim) {            \&lt;/span&gt;
 &lt;span class="cp"&gt;         if (*p++ != ' ') {         \&lt;/span&gt;
@@ -347,7 +347,7 @@ Dynamic section at offset 0xe18 contains &lt;span class="m"&gt;25&lt;/span&gt; e
 
 
 &lt;p&gt;假设有如下一段代码：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;p&lt;/span&gt; &lt;span class="o"&gt;!=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;p&lt;/span&gt; &lt;span class="o"&gt;!=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
    &lt;span class="n"&gt;SKIP_SPACES&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;lim&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
 &lt;span class="k"&gt;else&lt;/span&gt; &lt;span class="p"&gt;...&lt;/span&gt;
 &lt;/pre&gt;
@@ -355,7 +355,7 @@ Dynamic section at offset 0xe18 contains &lt;span class="m"&gt;25&lt;/span&gt; e
 
 &lt;p&gt;一编译，GCC报&lt;code&gt;error: ‘else’ without a previous ‘if’&lt;/code&gt;。原来这个看似是一个函数的宏被展开后是一段大括号括起来的代码块，加上分号之后这个if逻辑块就结束了，所以编译器发现这个else没有对应的if。&lt;/p&gt;
 &lt;p&gt;这个问题一般用&lt;code&gt;do ... while(0)&lt;/code&gt;的形式来解决：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#define SKIP_SPACES(p, limit)     \&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#define SKIP_SPACES(p, limit)     \&lt;/span&gt;
 &lt;span class="cp"&gt;     do { char *lim = (limit);         \&lt;/span&gt;
 &lt;span class="cp"&gt;          while (p &amp;lt; lim) {            \&lt;/span&gt;
 &lt;span class="cp"&gt;            if (*p++ != ' ') {         \&lt;/span&gt;
@@ -365,7 +365,7 @@ Dynamic section at offset 0xe18 contains &lt;span class="m"&gt;25&lt;/span&gt; e
 
 
 &lt;p&gt;展开后就成了&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;p&lt;/span&gt; &lt;span class="o"&gt;!=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;p&lt;/span&gt; &lt;span class="o"&gt;!=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
     &lt;span class="k"&gt;do&lt;/span&gt; &lt;span class="p"&gt;...&lt;/span&gt; &lt;span class="k"&gt;while&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
 &lt;span class="k"&gt;else&lt;/span&gt; &lt;span class="p"&gt;...&lt;/span&gt;
 &lt;/pre&gt;
@@ -375,7 +375,7 @@ Dynamic section at offset 0xe18 contains &lt;span class="m"&gt;25&lt;/span&gt; e
 &lt;p&gt;这个技巧在Linux内核源码里很常见，比如这个置位宏&lt;code&gt;#define SET_REG_BIT(reg, bit)              do { (reg |= (1 &amp;lt;&amp;lt; (bit))); } while (0)&lt;/code&gt;(位于arch/mips/include/asm/mach-pnx833x/gpio.h)&lt;/p&gt;
 &lt;h4&gt;4. 宏参数重复调用&lt;/h4&gt;
 &lt;p&gt;有如下宏定义：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#define min(X, Y)  ((X) &amp;lt; (Y) ? (X) : (Y))&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#define min(X, Y)  ((X) &amp;lt; (Y) ? (X) : (Y))&lt;/span&gt;
 &lt;/pre&gt;
 
 
@@ -383,13 +383,13 @@ Dynamic section at offset 0xe18 contains &lt;span class="m"&gt;25&lt;/span&gt; e
 &lt;p&gt;所以，尽量不要在宏参数中传入函数调用。&lt;/p&gt;
 &lt;h4&gt;5. 对自身的递归引用&lt;/h4&gt;
 &lt;p&gt;有如下宏定义：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#define foo (4 + foo)&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#define foo (4 + foo)&lt;/span&gt;
 &lt;/pre&gt;
 
 
 &lt;p&gt;按前面的理解，&lt;code&gt;(4 + foo)&lt;/code&gt;会展开成&lt;code&gt;(4 + (4 + foo))&lt;/code&gt;，然后一直展开下去，直至内存耗尽。但是，预处理器采取的策略是&lt;strong&gt;&lt;em&gt;只展开一次&lt;/em&gt;&lt;/strong&gt;。也就是说，&lt;code&gt;foo&lt;/code&gt;只会展开成&lt;code&gt;(4 + foo)&lt;/code&gt;，而展开之后&lt;code&gt;foo&lt;/code&gt;的含义就要根据上下文来确定了。&lt;/p&gt;
 &lt;p&gt;对于以下的交叉引用，宏体也只会展开一次。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#define x (4 + y)&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#define x (4 + y)&lt;/span&gt;
 &lt;span class="cp"&gt;#define y (2 * x)&lt;/span&gt;
 &lt;/pre&gt;
 
@@ -399,7 +399,7 @@ Dynamic section at offset 0xe18 contains &lt;span class="m"&gt;25&lt;/span&gt; e
 &lt;h4&gt;6. 宏参数预处理&lt;/h4&gt;
 &lt;p&gt;宏参数中若包含另外的宏，那么宏参数在被代入到宏体之前会做一次完全的展开，除非宏体中含有&lt;code&gt;#&lt;/code&gt;或&lt;code&gt;##&lt;/code&gt;。&lt;/p&gt;
 &lt;p&gt;有如下宏定义：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#define AFTERX(x) X_ ## x&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#define AFTERX(x) X_ ## x&lt;/span&gt;
 &lt;span class="cp"&gt;#define XAFTERX(x) AFTERX(x)&lt;/span&gt;
 &lt;span class="cp"&gt;#define TABLESIZE 1024&lt;/span&gt;
 &lt;span class="cp"&gt;#define BUFSIZE TABLESIZE&lt;/span&gt;

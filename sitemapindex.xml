@@ -7,7 +7,7 @@
                         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
  <sitemap>
   <loc>http://hbprotoss.github.io/categories/c.xml</loc>
-  <lastmod>2016-04-12T06:44:00Z</lastmod>
+  <lastmod>2016-05-19T08:10:00Z</lastmod>
  </sitemap>
  <sitemap>
   <loc>http://hbprotoss.github.io/categories/crawler.xml</loc>
@@ -43,7 +43,7 @@
  </sitemap>
  <sitemap>
   <loc>http://hbprotoss.github.io/categories/macro.xml</loc>
-  <lastmod>2016-04-12T06:43:00Z</lastmod>
+  <lastmod>2016-05-19T08:10:00Z</lastmod>
  </sitemap>
  <sitemap>
   <loc>http://hbprotoss.github.io/categories/nikola.xml</loc>
@@ -95,22 +95,22 @@
  </sitemap>
  <sitemap>
   <loc>http://hbprotoss.github.io/galleries/InnoDB/rss.xml</loc>
-  <lastmod>2016-04-12T07:34:00Z</lastmod>
+  <lastmod>2016-05-19T08:10:00Z</lastmod>
  </sitemap>
  <sitemap>
   <loc>http://hbprotoss.github.io/galleries/KMP/rss.xml</loc>
-  <lastmod>2016-04-12T07:34:00Z</lastmod>
+  <lastmod>2016-05-19T08:10:00Z</lastmod>
  </sitemap>
  <sitemap>
   <loc>http://hbprotoss.github.io/galleries/rss.xml</loc>
-  <lastmod>2016-04-12T07:34:00Z</lastmod>
+  <lastmod>2016-05-19T08:10:00Z</lastmod>
  </sitemap>
  <sitemap>
   <loc>http://hbprotoss.github.io/rss.xml</loc>
-  <lastmod>2016-04-12T08:24:00Z</lastmod>
+  <lastmod>2016-05-19T08:10:00Z</lastmod>
  </sitemap>
  <sitemap>
   <loc>http://hbprotoss.github.io/sitemap.xml</loc>
-  <lastmod>2016-04-12T08:24:00Z</lastmod>
+  <lastmod>2016-05-19T08:10:00Z</lastmod>
  </sitemap>
 </sitemapindex>

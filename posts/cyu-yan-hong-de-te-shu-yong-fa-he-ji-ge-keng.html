@@ -94,13 +94,13 @@
 <h3>宏基础</h3>
 <p>宏仅仅是在C预处理阶段的一种文本替换工具，编译完之后对二进制代码不可见。基本用法如下：</p>
 <h4>1. 标示符别名</h4>
-<pre class="code literal-block"><span class="cp">#define BUFFER_SIZE 1024</span>
+<pre class="code literal-block"><span></span><span class="cp">#define BUFFER_SIZE 1024</span>
 </pre>
 
 
 <p>预处理阶段，<code>foo = (char *) malloc (BUFFER_SIZE);</code>会被替换成<code>foo = (char *) malloc (1024);</code></p>
 <p>宏体换行需要在行末加反斜杠\</p>
-<pre class="code literal-block"><span class="cp">#define NUMBERS 1, \</span>
+<pre class="code literal-block"><span></span><span class="cp">#define NUMBERS 1, \</span>
 <span class="cp">                2, \</span>
 <span class="cp">                3</span>
 </pre>
@@ -109,7 +109,7 @@
 <p>预处理阶段<code>int x[] = { NUMBERS };</code>会被扩展成<code>int x[] = { 1, 2, 3 };</code></p>
 <h4>2. 宏函数</h4>
 <p>宏名之后带括号的宏被认为是宏函数。用法和普通函数一样，只不过在预处理阶段，宏函数会被展开。优点是没有普通函数保存寄存器和参数传递的开销，展开后的代码有利于CPU cache的利用和指令预测，速度快。缺点是可执行代码体积大。</p>
-<pre class="code literal-block"><span class="cp">#define min(X, Y)  ((X) &lt; (Y) ? (X) : (Y))</span>
+<pre class="code literal-block"><span></span><span class="cp">#define min(X, Y)  ((X) &lt; (Y) ? (X) : (Y))</span>
 </pre>
 
 
@@ -118,7 +118,7 @@
 <h3>宏特殊用法</h3>
 <h4>1. 字符串化(Stringification)</h4>
 <p>在宏体中，如果宏参数前加个<code>#</code>，那么在宏体扩展的时候，宏参数会被扩展成字符串的形式。如：</p>
-<pre class="code literal-block"><span class="cp">#define WARN_IF(EXP) \</span>
+<pre class="code literal-block"><span></span><span class="cp">#define WARN_IF(EXP) \</span>
 <span class="cp">     do { if (EXP) \</span>
 <span class="cp">             fprintf (stderr, "Warning: " #EXP "\n"); } \</span>
 <span class="cp">     while (0)</span>
@@ -126,7 +126,7 @@
 
 
 <p><code>WARN_IF (x == 0);</code>会被扩展成：</p>
-<pre class="code literal-block"><span class="k">do</span> <span class="p">{</span> <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+<pre class="code literal-block"><span></span><span class="k">do</span> <span class="p">{</span> <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
     <span class="n">fprintf</span> <span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">"Warning: "</span> <span class="s">"x == 0"</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span> <span class="p">}</span>
 <span class="k">while</span> <span class="p">(</span><span class="mi">0</span><span class="p">);</span>
 </pre>
@@ -135,7 +135,7 @@
 <p>这种用法可以用在assert中，如果断言失败，可以将失败的语句输出到反馈信息中</p>
 <h4>2. 连接(Concatenation)</h4>
 <p>在宏体中，如果宏体所在标示符中有<code>##</code>，那么在宏体扩展的时候，宏参数会被直接替换到标示符中。如：</p>
-<pre class="code literal-block"><span class="cp">#define COMMAND(NAME)  { #NAME, NAME ## _command }</span>
+<pre class="code literal-block"><span></span><span class="cp">#define COMMAND(NAME)  { #NAME, NAME ## _command }</span>
 
 <span class="k">struct</span> <span class="n">command</span>
 <span class="p">{</span>
@@ -146,7 +146,7 @@
 
 
 <p>在宏扩展的时候</p>
-<pre class="code literal-block"><span class="k">struct</span> <span class="n">command</span> <span class="n">commands</span><span class="p">[]</span> <span class="o">=</span>
+<pre class="code literal-block"><span></span><span class="k">struct</span> <span class="n">command</span> <span class="n">commands</span><span class="p">[]</span> <span class="o">=</span>
 <span class="p">{</span>
     <span class="n">COMMAND</span> <span class="p">(</span><span class="n">quit</span><span class="p">),</span>
     <span class="n">COMMAND</span> <span class="p">(</span><span class="n">help</span><span class="p">),</span>
@@ -156,7 +156,7 @@
 
 
 <p>会被扩展成：</p>
-<pre class="code literal-block"><span class="k">struct</span> <span class="n">command</span> <span class="n">commands</span><span class="p">[]</span> <span class="o">=</span>
+<pre class="code literal-block"><span></span><span class="k">struct</span> <span class="n">command</span> <span class="n">commands</span><span class="p">[]</span> <span class="o">=</span>
 <span class="p">{</span>
     <span class="p">{</span> <span class="s">"quit"</span><span class="p">,</span> <span class="n">quit_command</span> <span class="p">},</span>
     <span class="p">{</span> <span class="s">"help"</span><span class="p">,</span> <span class="n">help_command</span> <span class="p">},</span>
@@ -172,13 +172,13 @@
 <p>由于是纯文本替换，C预处理器不对宏体做任何语法检查，像缺个括号、少个分号神马的预处理器是不管的。这里要格外小心，由此可能引出各种奇葩的问题，一下还很难找到根源。</p>
 <h4>2. 算符优先级问题</h4>
 <p>不仅宏体是纯文本替换，宏参数也是纯文本替换。有以下一段简单的宏，实现乘法：</p>
-<pre class="code literal-block"><span class="cp">#define MULTIPLY(x, y) x * y</span>
+<pre class="code literal-block"><span></span><span class="cp">#define MULTIPLY(x, y) x * y</span>
 </pre>
 
 
 <p><code>MULTIPLY(1, 2)</code>没问题，会正常展开成<code>1 * 2</code>。有问题的是这种表达式<code>MULTIPLY(1+2, 3)</code>，展开后成了<code>1+2 * 3</code>，显然优先级错了。</p>
 <p>在宏体中，给引用的参数加个括号就能避免这问题。</p>
-<pre class="code literal-block"><span class="cp">#define MULTIPLY(x, y) (x) * (y)</span>
+<pre class="code literal-block"><span></span><span class="cp">#define MULTIPLY(x, y) (x) * (y)</span>
 </pre>
 
 
@@ -186,7 +186,7 @@
 <p>其实这个问题和下面要说到的某些问题都属于由于纯文本替换而导致的语义破坏问题，要格外小心。</p>
 <h4>3. 分号吞噬问题</h4>
 <p>有如下宏定义：</p>
-<pre class="code literal-block"><span class="cp">#define SKIP_SPACES(p, limit)  \</span>
+<pre class="code literal-block"><span></span><span class="cp">#define SKIP_SPACES(p, limit)  \</span>
 <span class="cp">     { char *lim = (limit);         \</span>
 <span class="cp">       while (p &lt; lim) {            \</span>
 <span class="cp">         if (*p++ != ' ') {         \</span>
@@ -195,7 +195,7 @@
 
 
 <p>假设有如下一段代码：</p>
-<pre class="code literal-block"><span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">p</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+<pre class="code literal-block"><span></span><span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">p</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
    <span class="n">SKIP_SPACES</span> <span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">lim</span><span class="p">);</span>
 <span class="k">else</span> <span class="p">...</span>
 </pre>
@@ -203,7 +203,7 @@
 
 <p>一编译，GCC报<code>error: ‘else’ without a previous ‘if’</code>。原来这个看似是一个函数的宏被展开后是一段大括号括起来的代码块，加上分号之后这个if逻辑块就结束了，所以编译器发现这个else没有对应的if。</p>
 <p>这个问题一般用<code>do ... while(0)</code>的形式来解决：</p>
-<pre class="code literal-block"><span class="cp">#define SKIP_SPACES(p, limit)     \</span>
+<pre class="code literal-block"><span></span><span class="cp">#define SKIP_SPACES(p, limit)     \</span>
 <span class="cp">     do { char *lim = (limit);         \</span>
 <span class="cp">          while (p &lt; lim) {            \</span>
 <span class="cp">            if (*p++ != ' ') {         \</span>
@@ -213,7 +213,7 @@
 
 
 <p>展开后就成了</p>
-<pre class="code literal-block"><span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">p</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+<pre class="code literal-block"><span></span><span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">p</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
     <span class="k">do</span> <span class="p">...</span> <span class="k">while</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
 <span class="k">else</span> <span class="p">...</span>
 </pre>
@@ -223,7 +223,7 @@
 <p>这个技巧在Linux内核源码里很常见，比如这个置位宏<code>#define SET_REG_BIT(reg, bit)              do { (reg |= (1 &lt;&lt; (bit))); } while (0)</code>(位于arch/mips/include/asm/mach-pnx833x/gpio.h)</p>
 <h4>4. 宏参数重复调用</h4>
 <p>有如下宏定义：</p>
-<pre class="code literal-block"><span class="cp">#define min(X, Y)  ((X) &lt; (Y) ? (X) : (Y))</span>
+<pre class="code literal-block"><span></span><span class="cp">#define min(X, Y)  ((X) &lt; (Y) ? (X) : (Y))</span>
 </pre>
 
 
@@ -231,13 +231,13 @@
 <p>所以，尽量不要在宏参数中传入函数调用。</p>
 <h4>5. 对自身的递归引用</h4>
 <p>有如下宏定义：</p>
-<pre class="code literal-block"><span class="cp">#define foo (4 + foo)</span>
+<pre class="code literal-block"><span></span><span class="cp">#define foo (4 + foo)</span>
 </pre>
 
 
 <p>按前面的理解，<code>(4 + foo)</code>会展开成<code>(4 + (4 + foo))</code>，然后一直展开下去，直至内存耗尽。但是，预处理器采取的策略是<strong><em>只展开一次</em></strong>。也就是说，<code>foo</code>只会展开成<code>(4 + foo)</code>，而展开之后<code>foo</code>的含义就要根据上下文来确定了。</p>
 <p>对于以下的交叉引用，宏体也只会展开一次。</p>
-<pre class="code literal-block"><span class="cp">#define x (4 + y)</span>
+<pre class="code literal-block"><span></span><span class="cp">#define x (4 + y)</span>
 <span class="cp">#define y (2 * x)</span>
 </pre>
 
@@ -247,7 +247,7 @@
 <h4>6. 宏参数预处理</h4>
 <p>宏参数中若包含另外的宏，那么宏参数在被代入到宏体之前会做一次完全的展开，除非宏体中含有<code>#</code>或<code>##</code>。</p>
 <p>有如下宏定义：</p>
-<pre class="code literal-block"><span class="cp">#define AFTERX(x) X_ ## x</span>
+<pre class="code literal-block"><span></span><span class="cp">#define AFTERX(x) X_ ## x</span>
 <span class="cp">#define XAFTERX(x) AFTERX(x)</span>
 <span class="cp">#define TABLESIZE 1024</span>
 <span class="cp">#define BUFSIZE TABLESIZE</span>
@@ -313,6 +313,10 @@
 <li><a href="http://weibo.com/hbprotoss">Weibo</a></li>
         <li><a href="https://twitter.com/hbprotoss">Twitter</a></li>
         <li><a href="https://github.com/hbprotoss">GitHub</a></li>
+      </ol>
+<h4>友情链接</h4>
+      <ol class="list-unstyled">
+<li><a href="http://mckobe23.github.io">喀秋莎的技术博客</a></li>
       </ol>
 </div>
     
