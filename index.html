@@ -8,7 +8,7 @@
 <link rel="alternate" type="application/rss+xml" title="RSS" href="rss.xml">
 <link rel="canonical" href="http://hbprotoss.github.io/index.html">
 <link rel="next" href="index-1.html" type="text/html">
-<!--[if lt IE 9]><script src="assets/js/html5.js"></script><![endif]--><link rel="prefetch" href="posts/xpathbei-wang.html" type="text/html">
+<!--[if lt IE 9]><script src="assets/js/html5.js"></script><![endif]--><link rel="prefetch" href="posts/thymeleafde-keng-yi-ji.html" type="text/html">
 </head>
 <body>
 <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
@@ -54,7 +54,67 @@
                 
 
 <div class="postindex">
-    <article class="blog-post h-entry post-text"><header><h2 class="p-name entry-title blog-post-title"><a href="posts/xpathbei-wang.html" class="u-url">XPath备忘</a></h2>
+    <article class="blog-post h-entry post-text"><header><h2 class="p-name entry-title blog-post-title"><a href="posts/thymeleafde-keng-yi-ji.html" class="u-url">thymeleaf的坑一记</a></h2>
+        <div class="metadata blog-post-meta">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="posts/thymeleafde-keng-yi-ji.html" rel="bookmark"><time class="published dt-published" datetime="2016-05-31T08:37:04+08:00" title="2016-05-31 08:37">2016-05-31 08:37</time></a></p>
+                <p class="commentline">
+        
+    <a href="posts/thymeleafde-keng-yi-ji.html#disqus_thread" data-disqus-identifier="cache/posts/thymeleafde-keng-yi-ji.html">Comments</a>
+
+
+        </p>
+</div>
+    </header><div class="e-content entry-content">
+    <div>
+<p>记录下thymeleaf 3.0新增的<code>th:field</code>与<code>th:each</code>中生成的变量结合使用时的坑。</p>
+<p>代码就是官方例子<a href="https://github.com/thymeleaf/thymeleafexamples-stsm.git">https://github.com/thymeleaf/thymeleafexamples-stsm.git</a>，在<code>webapp/WEB-INF/seedstartermng.html</code>中118-131行</p>
+<pre class="code literal-block"><span></span><span class="p">&lt;</span><span class="nt">tr</span> <span class="na">th:each</span><span class="o">=</span><span class="s">"row,rowStat : *{rows}"</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">td</span> <span class="na">th:text</span><span class="o">=</span><span class="s">"${rowStat.count}"</span><span class="p">&gt;</span>1<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">select</span> <span class="na">th:field</span><span class="o">=</span><span class="s">"*{rows[__${rowStat.index}__].variety}"</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">option</span> <span class="na">th:each</span><span class="o">=</span><span class="s">"var : ${allVarieties}"</span> <span class="na">th:value</span><span class="o">=</span><span class="s">"${var.id}"</span> <span class="na">th:text</span><span class="o">=</span><span class="s">"${var.name}"</span><span class="p">&gt;</span>Thymus Thymi<span class="p">&lt;/</span><span class="nt">option</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">select</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">"text"</span> <span class="na">th:field</span><span class="o">=</span><span class="s">"*{rows[__${rowStat.index}__].seedsPerCell}"</span> <span class="na">th:errorclass</span><span class="o">=</span><span class="s">"fieldError"</span> <span class="p">/&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">"submit"</span> <span class="na">name</span><span class="o">=</span><span class="s">"removeRow"</span> <span class="na">th:value</span><span class="o">=</span><span class="s">"${rowStat.index}"</span> <span class="na">th:text</span><span class="o">=</span><span class="s">"#{seedstarter.row.remove}"</span><span class="p">&gt;</span>Remove row<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+</pre>
+
+
+<p>其中第二个td取出rows中的每一行的variety，做成一个select下拉菜单，当我尝试用<code>${row.variety}</code>替换原文的<code>*{rows[__${rowStat.index}__].variety}</code>时，页面渲染抛出异常<code>Neither BindingResult nor plain target object for bean name 'row' available as request attribute</code>。多方探索之后得出结论：这是我们使用的问题，设计时特意在遇到这种情况时为了避免服务端无法处理提交后的表单，就抛出异常。</p>
+<p>用例子中的代码渲染完生成后的页面为：</p>
+<pre class="code literal-block"><span></span><span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>1<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">select</span> <span class="na">id</span><span class="o">=</span><span class="s">"rows0.variety"</span> <span class="na">name</span><span class="o">=</span><span class="s">"rows[0].variety"</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">option</span> <span class="na">value</span><span class="o">=</span><span class="s">"1"</span><span class="p">&gt;</span>Thymus vulgaris<span class="p">&lt;/</span><span class="nt">option</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">option</span> <span class="na">value</span><span class="o">=</span><span class="s">"2"</span><span class="p">&gt;</span>Thymus x citriodorus<span class="p">&lt;/</span><span class="nt">option</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">option</span> <span class="na">value</span><span class="o">=</span><span class="s">"3"</span><span class="p">&gt;</span>Thymus herba-barona<span class="p">&lt;/</span><span class="nt">option</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">option</span> <span class="na">value</span><span class="o">=</span><span class="s">"4"</span><span class="p">&gt;</span>Thymus pseudolaginosus<span class="p">&lt;/</span><span class="nt">option</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">option</span> <span class="na">value</span><span class="o">=</span><span class="s">"5"</span><span class="p">&gt;</span>Thymus serpyllum<span class="p">&lt;/</span><span class="nt">option</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">select</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">"text"</span> <span class="na">id</span><span class="o">=</span><span class="s">"rows0.seedsPerCell"</span> <span class="na">name</span><span class="o">=</span><span class="s">"rows[0].seedsPerCell"</span> <span class="na">value</span><span class="o">=</span><span class="s">""</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">"submit"</span> <span class="na">name</span><span class="o">=</span><span class="s">"removeRow"</span> <span class="na">value</span><span class="o">=</span><span class="s">"0"</span><span class="p">&gt;</span>Remove row<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+</pre>
+
+
+<p>其中，<code>th:field</code>在渲染时会给目标元素加上id和name属性，name属性取<code>*{...}</code>中表达式的值。由于<code>__${rowStat.index}__</code>是个预处理语句，在渲染之前会直接文本替换，所以最终的表达式为<code>rows[0].variety</code>。</p>
+<p>但是如果是<code>${row.variety}</code>，则最终name会被替换为<code>row.variety</code>，由于浏览器作为客户端无法知道服务端的逻辑，这样之后的每个tr中的元素都是这个表达式，表单提交的时候无法被spring解析成一个list对象，就会出现错误。</p>
+<p>官方站在实现角度的解释可以看这个<a href="https://github.com/thymeleaf/thymeleaf/issues/505#issuecomment-222557959">issue</a></p>
+</div>
+    </div>
+    </article><article class="blog-post h-entry post-text"><header><h2 class="p-name entry-title blog-post-title"><a href="posts/xpathbei-wang.html" class="u-url">XPath备忘</a></h2>
         <div class="metadata blog-post-meta">
             <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
             <p class="dateline"><a href="posts/xpathbei-wang.html" rel="bookmark"><time class="published dt-published" datetime="2016-04-12T15:46:09+08:00" title="2016-04-12 15:46">2016-04-12 15:46</time></a></p>
@@ -1357,211 +1417,6 @@ Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
 <li>《Expert Python Programming》,Tarek Ziadé: <a href="http://book.douban.com/subject/3285148/">http://book.douban.com/subject/3285148/</a>
 </li>
 </ol>
-</div>
-    </div>
-    </article><article class="blog-post h-entry post-text"><header><h2 class="p-name entry-title blog-post-title"><a href="posts/trieshu-de-pythonshi-xian.html" class="u-url">Trie树的Python实现</a></h2>
-        <div class="metadata blog-post-meta">
-            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
-            <p class="dateline"><a href="posts/trieshu-de-pythonshi-xian.html" rel="bookmark"><time class="published dt-published" datetime="2013-05-21T19:48:53+08:00" title="2013-05-21 19:48">2013-05-21 19:48</time></a></p>
-                <p class="commentline">
-        
-    <a href="posts/trieshu-de-pythonshi-xian.html#disqus_thread" data-disqus-identifier="cache/posts/trieshu-de-pythonshi-xian.html">Comments</a>
-
-
-        </p>
-</div>
-    </header><div class="e-content entry-content">
-    <div>
-<p>又是一个由需求驱动的算法学习的例子。</p>
-<p>最近<a href="https://github.com/hbprotoss/weibo">weii</a>需要实现一个这样的功能：在发送AT好友的时候能给出自动补全的列表。</p>
-<p>最先想到的是当我给出一个用户名的前几个字的时候能自动提示以这个字开头的所有用户名列表（虽然最后发现这是个很2的解决方案-_-），所以最理想的数据结构就是Trie树，也就是字典树。</p>
-<p>以前只听过Trie树，现在实际要用了就得把他落到实处了。</p>
-<p>首先是<a href="http://zh.wikipedia.org/wiki/Trie">Trie树在维基百科上的定义</a>：在计算机科学中，trie，又称前缀树，是一种有序树，用于保存关联数组，其中的键通常是字符串。与二叉查找树不同，键不是直接保存在节点中，而是由节点在树中的位置决定。一个节点的所有子孙都有相同的前缀，也就是这个节点对应的字符串，而根节点对应空字符串。一般情况下，不是所有的节点都有对应的值，只有叶子节点和部分内部节点所对应的键才有相关的值。</p>
-<p>说白了就跟在字典里查单词一样：先拿第一个字母在根节点查找下一结点的位置，如果找到就拿第二个字母在刚刚找到的节点下继续往下查找；如果找不到就说明这个字符串在树中不存在。</p>
-<p>C语言实现的代码也在维基百科上：<a href="http://zh.wikipedia.org/wiki/Trie#.E5.AE.9E.E4.BE.8B">http://zh.wikipedia.org/wiki/Trie#.E5.AE.9E.E4.BE.8B</a></p>
-<pre class="code literal-block"><span class="cp">#include &lt;stdio.h&gt;</span>
-<span class="cp">#include &lt;stdlib.h&gt;</span>
-<span class="cp">#include &lt;string.h&gt;</span>
-
-<span class="cp">#define TREE_WIDTH 256</span>
-
-<span class="cp">#define WORDLENMAX 128</span>
-
-<span class="k">struct</span> <span class="n">trie_node_st</span> <span class="p">{</span>
-        <span class="kt">int</span> <span class="n">count</span><span class="p">;</span>
-        <span class="k">struct</span> <span class="n">trie_node_st</span> <span class="o">*</span><span class="n">next</span><span class="p">[</span><span class="n">TREE_WIDTH</span><span class="p">];</span>
-<span class="p">};</span>
-
-<span class="k">static</span> <span class="k">struct</span> <span class="n">trie_node_st</span> <span class="n">root</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="p">{</span><span class="nb">NULL</span><span class="p">}};</span>
-
-<span class="k">static</span> <span class="kt">char</span> <span class="o">*</span><span class="n">spaces</span><span class="o">=</span><span class="s">" </span><span class="se">\t\n</span><span class="s">/.</span><span class="se">\"\'</span><span class="s">()"</span><span class="p">;</span>
-
-<span class="k">static</span> <span class="kt">int</span>
-<span class="nf">insert</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">word</span><span class="p">)</span>
-<span class="p">{</span>
-        <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
-        <span class="k">struct</span> <span class="n">trie_node_st</span> <span class="o">*</span><span class="n">curr</span><span class="p">,</span> <span class="o">*</span><span class="n">newnode</span><span class="p">;</span>
-
-        <span class="k">if</span> <span class="p">(</span><span class="n">word</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="sc">'\0'</span><span class="p">)</span> <span class="p">{</span>
-                <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-        <span class="p">}</span>
-        <span class="n">curr</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">root</span><span class="p">;</span>
-        <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">word</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="sc">'\0'</span><span class="p">)</span> <span class="p">{</span>
-                        <span class="k">break</span><span class="p">;</span>
-                <span class="p">}</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">curr</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">[</span> <span class="n">word</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">]</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
-                        <span class="n">newnode</span><span class="o">=</span><span class="p">(</span><span class="k">struct</span> <span class="n">trie_node_st</span><span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">trie_node_st</span><span class="p">));</span>
-                        <span class="n">memset</span><span class="p">(</span><span class="n">newnode</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">trie_node_st</span><span class="p">));</span>
-                        <span class="n">curr</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">[</span> <span class="n">word</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">]</span> <span class="o">=</span> <span class="n">newnode</span><span class="p">;</span>
-                <span class="p">}</span> 
-                <span class="n">curr</span> <span class="o">=</span> <span class="n">curr</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">[</span> <span class="n">word</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">];</span>
-        <span class="p">}</span>
-        <span class="n">curr</span><span class="o">-&gt;</span><span class="n">count</span> <span class="o">++</span><span class="p">;</span>
-
-        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="k">static</span> <span class="kt">void</span>
-<span class="nf">printword</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">str</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">)</span>
-<span class="p">{</span>
-        <span class="n">printf</span><span class="p">(</span><span class="s">"%s</span><span class="se">\t</span><span class="s">%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">str</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
-<span class="p">}</span>
-
-<span class="k">static</span> <span class="kt">int</span>
-<span class="nf">do_travel</span><span class="p">(</span><span class="k">struct</span> <span class="n">trie_node_st</span> <span class="o">*</span><span class="n">rootp</span><span class="p">)</span>
-<span class="p">{</span>
-        <span class="k">static</span> <span class="kt">char</span> <span class="n">worddump</span><span class="p">[</span><span class="n">WORDLENMAX</span><span class="o">+</span><span class="mi">1</span><span class="p">];</span>
-        <span class="k">static</span> <span class="kt">int</span> <span class="n">pos</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
-        <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
-
-        <span class="k">if</span> <span class="p">(</span><span class="n">rootp</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
-                <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-        <span class="p">}</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">rootp</span><span class="o">-&gt;</span><span class="n">count</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">worddump</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span><span class="o">=</span><span class="sc">'\0'</span><span class="p">;</span>
-                <span class="n">printword</span><span class="p">(</span><span class="n">worddump</span><span class="p">,</span> <span class="n">rootp</span><span class="o">-&gt;</span><span class="n">count</span><span class="p">);</span>
-        <span class="p">}</span>
-        <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">TREE_WIDTH</span><span class="p">;</span><span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">worddump</span><span class="p">[</span><span class="n">pos</span><span class="o">++</span><span class="p">]</span><span class="o">=</span><span class="n">i</span><span class="p">;</span>
-                <span class="n">do_travel</span><span class="p">(</span><span class="n">rootp</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
-                <span class="n">pos</span><span class="o">--</span><span class="p">;</span>
-        <span class="p">}</span>
-        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="kt">int</span>
-<span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
-<span class="p">{</span>
-        <span class="kt">char</span> <span class="o">*</span><span class="n">linebuf</span><span class="o">=</span><span class="nb">NULL</span><span class="p">,</span> <span class="o">*</span><span class="n">line</span><span class="p">,</span> <span class="o">*</span><span class="n">word</span><span class="p">;</span>
-        <span class="kt">size_t</span> <span class="n">bufsize</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
-        <span class="kt">int</span> <span class="n">ret</span><span class="p">;</span>
-
-        <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">ret</span><span class="o">=</span><span class="n">getline</span><span class="p">(</span><span class="o">&amp;</span><span class="n">linebuf</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">bufsize</span><span class="p">,</span> <span class="n">stdin</span><span class="p">);</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">ret</span><span class="o">==-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-                        <span class="k">break</span><span class="p">;</span>
-                <span class="p">}</span>
-                <span class="n">line</span><span class="o">=</span><span class="n">linebuf</span><span class="p">;</span>
-                <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-                        <span class="n">word</span> <span class="o">=</span> <span class="n">strsep</span><span class="p">(</span><span class="o">&amp;</span><span class="n">line</span><span class="p">,</span> <span class="n">spaces</span><span class="p">);</span>
-                        <span class="k">if</span> <span class="p">(</span><span class="n">word</span><span class="o">==</span><span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
-                                <span class="k">break</span><span class="p">;</span>
-                        <span class="p">}</span>
-                        <span class="k">if</span> <span class="p">(</span><span class="n">word</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="sc">'\0'</span><span class="p">)</span> <span class="p">{</span>
-                                <span class="k">continue</span><span class="p">;</span>
-                        <span class="p">}</span>
-                        <span class="n">insert</span><span class="p">(</span><span class="n">word</span><span class="p">);</span>
-                <span class="p">}</span>
-        <span class="p">}</span>
-
-<span class="cm">/* free(linebuf); */</span>
-
-        <span class="n">do_travel</span><span class="p">(</span><span class="o">&amp;</span><span class="n">root</span><span class="p">);</span>
-
-        <span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
-<span class="p">}</span>
-</pre>
-
-
-<p>但这个版本的实现有两个问题：</p>
-<ol>
-<li>非常耗内存，一个节点下必须有TREE_WIDTH个子节点，不管子节点代表的字母是否出现在Trie树里。这是非常暴力的哈希。。。</li>
-<li>设定了这个TREE_WIDTH也就意味着这个实现只支持ASCII表中的字符作键，不支持中文。</li>
-</ol>
-<p>Python内置的dict是用哈希实现的，正好可以解决这两个问题。（dict的基本原理可以参考<a href="http://blog.csdn.net/digimon/article/details/7875789">《Python源码剖析》阅读笔记：第五章-dict对象</a>）</p>
-<ol>
-<li>dict采用的是开放寻址法解决冲突，节省了内存，但时间复杂度还是O(1)。</li>
-<li>dict这个哈希表里可以放任意字符作为键，中文当然也不例外。</li>
-</ol>
-<p>Python版的关键改造就是节点的next表用dict代替，维护的是<code>字符-&gt;子节点</code>的映射。查找时，若待查询字符是next里的一个键就说明该字符在Trie树里，以这个键得到值就能找到下一节点。插入时也只要插入<code>字符-&gt;子节点</code>的映射就可以了。</p>
-<p>具体代码在：<a href="https://github.com/hbprotoss/codejam/blob/master/trie.py">https://github.com/hbprotoss/codejam/blob/master/trie.py</a></p>
-<pre class="code literal-block"><span class="c">#!/usr/bin/env python3</span>
-
-<span class="k">class</span> <span class="nc">Trie</span><span class="p">:</span>
-    <span class="n">root</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
-        <span class="n">index</span><span class="p">,</span> <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">findLastNode</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">string</span><span class="p">[</span><span class="n">index</span><span class="p">:]:</span>
-            <span class="n">new_node</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-            <span class="n">node</span><span class="p">[</span><span class="n">char</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_node</span>
-            <span class="n">node</span> <span class="o">=</span> <span class="n">new_node</span>
-
-    <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
-        <span class="n">index</span><span class="p">,</span> <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">findLastNode</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">index</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">string</span><span class="p">))</span>
-
-    <span class="k">def</span> <span class="nf">findLastNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
-        <span class="sd">'''</span>
-<span class="sd">        @param string: string to be searched</span>
-<span class="sd">        @return: (index, node).</span>
-<span class="sd">            index: int. first char(string[index]) of string not found in Trie tree. Otherwise, the length of string</span>
-<span class="sd">            node: dict. node doesn't have string[index].</span>
-<span class="sd">        '''</span>
-        <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span>
-        <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">while</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
-            <span class="n">char</span> <span class="o">=</span> <span class="n">string</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">node</span><span class="p">:</span>
-                <span class="n">node</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="n">char</span><span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">break</span>
-            <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">printTree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">layer</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s">'</span><span class="se">\n</span><span class="s">'</span>
-
-        <span class="n">rtns</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">items</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="n">rtns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
-        <span class="n">rtns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">printTree</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">layer</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
-
-        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
-            <span class="n">rtns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">'.'</span> <span class="o">*</span> <span class="n">layer</span><span class="p">)</span>
-            <span class="n">rtns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-            <span class="n">rtns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">printTree</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">layer</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
-
-        <span class="k">return</span> <span class="s">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rtns</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">printTree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-
-<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">'__main__'</span><span class="p">:</span>
-    <span class="n">tree</span> <span class="o">=</span> <span class="n">Trie</span><span class="p">()</span>
-    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
-        <span class="n">src</span> <span class="o">=</span> <span class="nb">input</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">src</span> <span class="o">==</span> <span class="s">''</span><span class="p">:</span>
-            <span class="k">break</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">tree</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
-</pre>
-
-
-<p>全文完。</p>
 </div>
     </div>
     </article>
