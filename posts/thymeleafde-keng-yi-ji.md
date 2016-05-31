@@ -2,7 +2,7 @@
 .. title: thymeleaf的坑一记
 .. slug: thymeleafde-keng-yi-ji
 .. date: 2016-05-31 08:37:04 UTC+08:00
-.. tags: 
+.. tags: thymeleaf, Java, Spring
 .. category: 
 .. link: 
 .. description: 

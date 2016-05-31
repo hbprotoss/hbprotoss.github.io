@@ -59,7 +59,7 @@
  </url>
  <url>
   <loc>http://hbprotoss.github.io/2016/05/index.html</loc>
-  <lastmod>2016-05-31T00:54:00Z</lastmod>
+  <lastmod>2016-05-31T00:58:00Z</lastmod>
  </url>
  <url>
   <loc>http://hbprotoss.github.io/2016/index.html</loc>
@@ -103,7 +103,11 @@
  </url>
  <url>
   <loc>http://hbprotoss.github.io/categories/index.html</loc>
-  <lastmod>2016-05-19T08:10:00Z</lastmod>
+  <lastmod>2016-05-31T00:58:00Z</lastmod>
+ </url>
+ <url>
+  <loc>http://hbprotoss.github.io/categories/java.html</loc>
+  <lastmod>2016-05-31T00:58:00Z</lastmod>
  </url>
  <url>
   <loc>http://hbprotoss.github.io/categories/linux.html</loc>
@@ -150,8 +154,16 @@
   <lastmod>2016-05-19T08:10:00Z</lastmod>
  </url>
  <url>
+  <loc>http://hbprotoss.github.io/categories/spring.html</loc>
+  <lastmod>2016-05-31T00:58:00Z</lastmod>
+ </url>
+ <url>
   <loc>http://hbprotoss.github.io/categories/suan-fa.html</loc>
   <lastmod>2016-05-19T08:10:00Z</lastmod>
+ </url>
+ <url>
+  <loc>http://hbprotoss.github.io/categories/thymeleaf.html</loc>
+  <lastmod>2016-05-31T00:58:00Z</lastmod>
  </url>
  <url>
   <loc>http://hbprotoss.github.io/categories/xian-cheng-chi.html</loc>
@@ -179,7 +191,7 @@
  </url>
  <url>
   <loc>http://hbprotoss.github.io/index.html</loc>
-  <lastmod>2016-05-31T00:54:00Z</lastmod>
+  <lastmod>2016-05-31T00:58:00Z</lastmod>
  </url>
  <url>
   <loc>http://hbprotoss.github.io/listings/index.html</loc>
@@ -239,7 +251,7 @@
  </url>
  <url>
   <loc>http://hbprotoss.github.io/posts/thymeleafde-keng-yi-ji.html</loc>
-  <lastmod>2016-05-31T00:54:00Z</lastmod>
+  <lastmod>2016-05-31T00:58:00Z</lastmod>
  </url>
  <url>
   <loc>http://hbprotoss.github.io/posts/tong-su-yan-yi-kmp.html</loc>

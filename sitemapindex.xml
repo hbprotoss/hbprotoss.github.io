@@ -38,6 +38,10 @@
   <lastmod>2016-04-12T06:44:00Z</lastmod>
  </sitemap>
  <sitemap>
+  <loc>http://hbprotoss.github.io/categories/java.xml</loc>
+  <lastmod>2016-05-31T00:58:00Z</lastmod>
+ </sitemap>
+ <sitemap>
   <loc>http://hbprotoss.github.io/categories/linux.xml</loc>
   <lastmod>2016-04-12T06:44:00Z</lastmod>
  </sitemap>
@@ -82,8 +86,16 @@
   <lastmod>2016-04-12T06:44:00Z</lastmod>
  </sitemap>
  <sitemap>
+  <loc>http://hbprotoss.github.io/categories/spring.xml</loc>
+  <lastmod>2016-05-31T00:58:00Z</lastmod>
+ </sitemap>
+ <sitemap>
   <loc>http://hbprotoss.github.io/categories/suan-fa.xml</loc>
   <lastmod>2016-04-12T06:44:00Z</lastmod>
+ </sitemap>
+ <sitemap>
+  <loc>http://hbprotoss.github.io/categories/thymeleaf.xml</loc>
+  <lastmod>2016-05-31T00:58:00Z</lastmod>
  </sitemap>
  <sitemap>
   <loc>http://hbprotoss.github.io/categories/xian-cheng-chi.xml</loc>
@@ -107,10 +119,10 @@
  </sitemap>
  <sitemap>
   <loc>http://hbprotoss.github.io/rss.xml</loc>
-  <lastmod>2016-05-31T00:54:00Z</lastmod>
+  <lastmod>2016-05-31T00:58:00Z</lastmod>
  </sitemap>
  <sitemap>
   <loc>http://hbprotoss.github.io/sitemap.xml</loc>
-  <lastmod>2016-05-31T00:54:00Z</lastmod>
+  <lastmod>2016-05-31T00:58:00Z</lastmod>
  </sitemap>
 </sitemapindex>
