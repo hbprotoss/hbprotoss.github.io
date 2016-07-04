@@ -10,6 +10,10 @@
   <lastmod>2016-05-19T08:10:00Z</lastmod>
  </sitemap>
  <sitemap>
+  <loc>http://hbprotoss.github.io/categories/cookie.xml</loc>
+  <lastmod>2016-07-04T07:43:00Z</lastmod>
+ </sitemap>
+ <sitemap>
   <loc>http://hbprotoss.github.io/categories/crawler.xml</loc>
   <lastmod>2016-04-12T08:24:00Z</lastmod>
  </sitemap>
@@ -119,10 +123,10 @@
  </sitemap>
  <sitemap>
   <loc>http://hbprotoss.github.io/rss.xml</loc>
-  <lastmod>2016-05-31T00:58:00Z</lastmod>
+  <lastmod>2016-07-04T07:43:00Z</lastmod>
  </sitemap>
  <sitemap>
   <loc>http://hbprotoss.github.io/sitemap.xml</loc>
-  <lastmod>2016-05-31T00:58:00Z</lastmod>
+  <lastmod>2016-07-04T07:43:00Z</lastmod>
  </sitemap>
 </sitemapindex>
