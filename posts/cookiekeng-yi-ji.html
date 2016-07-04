@@ -14,8 +14,8 @@
 <meta property="og:url" content="http://hbprotoss.github.io/posts/cookiekeng-yi-ji.html">
 <meta property="og:description" content="关于Cookie的domain属性，RFC6265上是这么说的：
 
-如果domain属性缺失，那么该cookie只能对当前host可见。比如，xx.com下有个cookie，没有带domain属性，那么这个cookie只对xx.com下的页面可见，a.xx.com等子域名不可见
-.xx.com这种domain其实是不合法的，只不过浏览器在见到这种域名的时候，需要自动把最前面的.忽略掉，把xx.co">
+如果domain属性缺失，那么该cookie只能对当前host可见。比如，xx.com下有个cookie，Set-Cookie头没有带domain属性，那么这个cookie只对xx.com下的页面可见，a.xx.com等子域名不可见
+.xx.com这种domain其实是不合法的，只不过浏览器在见到这种域名的时候，需要自动把最前面的">
 <meta property="og:type" content="article">
 <meta property="article:published_time" content="2016-07-04T15:23:48+08:00">
 <meta property="article:tag" content="Cookie">
@@ -85,7 +85,7 @@
     <div>
 <p>关于Cookie的domain属性，<a href="https://tools.ietf.org/html/rfc6265#section-4.1.2.3">RFC6265</a>上是这么说的：</p>
 <ol>
-<li>如果domain属性缺失，那么该cookie只能对<strong>当前host</strong>可见。比如，xx.com下有个cookie，没有带domain属性，那么这个cookie只对xx.com下的页面可见，a.xx.com等子域名不可见</li>
+<li>如果domain属性缺失，那么该cookie只能对<strong>当前host</strong>可见。比如，xx.com下有个cookie，<code>Set-Cookie</code>头没有带domain属性，那么这个cookie只对xx.com下的页面可见，a.xx.com等子域名不可见</li>
 <li>.xx.com这种domain其实是不合法的，只不过浏览器在见到这种域名的时候，需要自动把最前面的.忽略掉，把xx.com作为cookie的domain，即xx.com及其子域名都可见</li>
 </ol>
 </div>
