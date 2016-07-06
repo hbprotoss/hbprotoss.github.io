@@ -8,7 +8,7 @@
 <link rel="alternate" type="application/rss+xml" title="RSS" href="rss.xml">
 <link rel="canonical" href="http://hbprotoss.github.io/index.html">
 <link rel="next" href="index-1.html" type="text/html">
-<!--[if lt IE 9]><script src="assets/js/html5.js"></script><![endif]--><link rel="prefetch" href="posts/cookiekeng-yi-ji.html" type="text/html">
+<!--[if lt IE 9]><script src="assets/js/html5.js"></script><![endif]--><link rel="prefetch" href="posts/classpath-vs-classpath-in-spring.html" type="text/html">
 </head>
 <body>
 <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
@@ -54,7 +54,73 @@
                 
 
 <div class="postindex">
-    <article class="blog-post h-entry post-text"><header><h2 class="p-name entry-title blog-post-title"><a href="posts/cookiekeng-yi-ji.html" class="u-url">Cookie坑一记</a></h2>
+    <article class="blog-post h-entry post-text"><header><h2 class="p-name entry-title blog-post-title"><a href="posts/classpath-vs-classpath-in-spring.html" class="u-url">classpath* vs classpath in spring</a></h2>
+        <div class="metadata blog-post-meta">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="posts/classpath-vs-classpath-in-spring.html" rel="bookmark"><time class="published dt-published" datetime="2016-07-06T09:12:52+08:00" title="2016-07-06 09:12">2016-07-06 09:12</time></a></p>
+                <p class="commentline">
+        
+    <a href="posts/classpath-vs-classpath-in-spring.html#disqus_thread" data-disqus-identifier="cache/posts/classpath-vs-classpath-in-spring.html">Comments</a>
+
+
+        </p>
+</div>
+    </header><div class="e-content entry-content">
+    <div>
+<p>记录一下spring里读取资源时的classpath*和classpath表达式的区别。不想看细节的可以直接跳到最后直接看结论。</p>
+<p>读取资源的主要逻辑在<code>PathMatchingResourcePatternResolver.getResources</code></p>
+<pre class="code literal-block"><span></span><span class="kd">public</span> <span class="n">Resource</span><span class="o">[]</span> <span class="nf">getResources</span><span class="o">(</span><span class="n">String</span> <span class="n">locationPattern</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+    <span class="n">Assert</span><span class="o">.</span><span class="na">notNull</span><span class="o">(</span><span class="n">locationPattern</span><span class="o">,</span> <span class="s">"Location pattern must not be null"</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">locationPattern</span><span class="o">.</span><span class="na">startsWith</span><span class="o">(</span><span class="n">CLASSPATH_ALL_URL_PREFIX</span><span class="o">))</span> <span class="o">{</span>
+        <span class="c1">// a class path resource (multiple resources for same name possible)</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">getPathMatcher</span><span class="o">().</span><span class="na">isPattern</span><span class="o">(</span><span class="n">locationPattern</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">CLASSPATH_ALL_URL_PREFIX</span><span class="o">.</span><span class="na">length</span><span class="o">())))</span> <span class="o">{</span>
+            <span class="c1">// a class path resource pattern</span>
+            <span class="k">return</span> <span class="n">findPathMatchingResources</span><span class="o">(</span><span class="n">locationPattern</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">else</span> <span class="o">{</span>
+            <span class="c1">// all class path resources with the given name</span>
+            <span class="k">return</span> <span class="n">findAllClassPathResources</span><span class="o">(</span><span class="n">locationPattern</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">CLASSPATH_ALL_URL_PREFIX</span><span class="o">.</span><span class="na">length</span><span class="o">()));</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="k">else</span> <span class="o">{</span>
+        <span class="c1">// Only look for a pattern after a prefix here</span>
+        <span class="c1">// (to not get fooled by a pattern symbol in a strange prefix).</span>
+        <span class="kt">int</span> <span class="n">prefixEnd</span> <span class="o">=</span> <span class="n">locationPattern</span><span class="o">.</span><span class="na">indexOf</span><span class="o">(</span><span class="s">":"</span><span class="o">)</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">getPathMatcher</span><span class="o">().</span><span class="na">isPattern</span><span class="o">(</span><span class="n">locationPattern</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">prefixEnd</span><span class="o">)))</span> <span class="o">{</span>
+            <span class="c1">// a file pattern</span>
+            <span class="k">return</span> <span class="n">findPathMatchingResources</span><span class="o">(</span><span class="n">locationPattern</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">else</span> <span class="o">{</span>
+            <span class="c1">// a single resource with the given name</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="n">Resource</span><span class="o">[]</span> <span class="o">{</span><span class="n">getResourceLoader</span><span class="o">().</span><span class="na">getResource</span><span class="o">(</span><span class="n">locationPattern</span><span class="o">)};</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre>
+
+
+<ul>
+<li>
+<p>classpath*:resource</p>
+<p>代码中的if逻辑，通过findAllClassPathResources，遍历整个classpath，从搜索所有名字匹配的文件返回</p>
+</li>
+<li>
+<p>classpath:resource</p>
+<p>代码中的else逻辑，<code>getResourceLoader().getResource(locationPattern)</code>最终调用tomcat提供的WebappClassLoader，从classpath中遍历每个目录（包括jar），寻找指定的resource直到找到指定的第一个匹配文件返回</p>
+</li>
+</ul>
+<p>读取完resource列表之后，AbstractBeanDefinitionReader.loadBeanDefinitions会载入得到resource列表</p>
+<pre class="code literal-block"><span></span><span class="n">Resource</span><span class="o">[]</span> <span class="n">resources</span> <span class="o">=</span> <span class="o">((</span><span class="n">ResourcePatternResolver</span><span class="o">)</span> <span class="n">resourceLoader</span><span class="o">).</span><span class="na">getResources</span><span class="o">(</span><span class="n">location</span><span class="o">);</span>
+<span class="kt">int</span> <span class="n">loadCount</span> <span class="o">=</span> <span class="n">loadBeanDefinitions</span><span class="o">(</span><span class="n">resources</span><span class="o">);</span>
+</pre>
+
+
+<h4>结论</h4>
+<p>从<code>classpath*:resource</code>中读取资源，就相当于把整个classpath下能找到的同名resource按照classpath中的次序拼接成一个大文件后载入，位于classpath后部的resource定义会覆盖前面的。由于tomcat会保证<code>WEB-INF/class</code>下的class会放在classpath中的第一位，所以导致jar中的同名resource定义覆盖app中的定义。</p>
+<p><code>classpath:resource</code>仅载入classpath路径中碰到的第一个resource。</p>
+</div>
+    </div>
+    </article><article class="blog-post h-entry post-text"><header><h2 class="p-name entry-title blog-post-title"><a href="posts/cookiekeng-yi-ji.html" class="u-url">Cookie坑一记</a></h2>
         <div class="metadata blog-post-meta">
             <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
             <p class="dateline"><a href="posts/cookiekeng-yi-ji.html" rel="bookmark"><time class="published dt-published" datetime="2016-07-04T15:23:48+08:00" title="2016-07-04 15:23">2016-07-04 15:23</time></a></p>
@@ -1083,195 +1149,6 @@ Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
 <li><a href="http://stackoverflow.com/questions/34732/how-do-i-list-the-symbols-in-a-so-file">How do I list the symbols in a .so file</a></li>
 <li><a href="http://stackoverflow.com/questions/10480657/import-names-in-elf-binary">Import names in ELF binary</a></li>
 </ol>
-</div>
-    </div>
-    </article><article class="blog-post h-entry post-text"><header><h2 class="p-name entry-title blog-post-title"><a href="posts/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.html" class="u-url">C语言宏的特殊用法和几个坑</a></h2>
-        <div class="metadata blog-post-meta">
-            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
-            <p class="dateline"><a href="posts/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.html" rel="bookmark"><time class="published dt-published" datetime="2013-07-13T14:25:31+08:00" title="2013-07-13 14:25">2013-07-13 14:25</time></a></p>
-                <p class="commentline">
-        
-    <a href="posts/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.html#disqus_thread" data-disqus-identifier="cache/posts/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.html">Comments</a>
-
-
-        </p>
-</div>
-    </header><div class="e-content entry-content">
-    <div>
-<p>总结一下C语言中宏的一些特殊用法和几个容易踩的坑。由于本文主要参考GCC文档，某些细节（如宏参数中的空格是否处理之类）在别的编译器可能有细微差别，请参考相应文档。</p>
-<h3>宏基础</h3>
-<p>宏仅仅是在C预处理阶段的一种文本替换工具，编译完之后对二进制代码不可见。基本用法如下：</p>
-<h4>1. 标示符别名</h4>
-<pre class="code literal-block"><span></span><span class="cp">#define BUFFER_SIZE 1024</span>
-</pre>
-
-
-<p>预处理阶段，<code>foo = (char *) malloc (BUFFER_SIZE);</code>会被替换成<code>foo = (char *) malloc (1024);</code></p>
-<p>宏体换行需要在行末加反斜杠\</p>
-<pre class="code literal-block"><span></span><span class="cp">#define NUMBERS 1, \</span>
-<span class="cp">                2, \</span>
-<span class="cp">                3</span>
-</pre>
-
-
-<p>预处理阶段<code>int x[] = { NUMBERS };</code>会被扩展成<code>int x[] = { 1, 2, 3 };</code></p>
-<h4>2. 宏函数</h4>
-<p>宏名之后带括号的宏被认为是宏函数。用法和普通函数一样，只不过在预处理阶段，宏函数会被展开。优点是没有普通函数保存寄存器和参数传递的开销，展开后的代码有利于CPU cache的利用和指令预测，速度快。缺点是可执行代码体积大。</p>
-<pre class="code literal-block"><span></span><span class="cp">#define min(X, Y)  ((X) &lt; (Y) ? (X) : (Y))</span>
-</pre>
-
-
-<p><code>y = min(1, 2);</code>会被扩展成<code>y = ((1) &lt; (2) ? (1) : (2));</code></p>
-<hr>
-<h3>宏特殊用法</h3>
-<h4>1. 字符串化(Stringification)</h4>
-<p>在宏体中，如果宏参数前加个<code>#</code>，那么在宏体扩展的时候，宏参数会被扩展成字符串的形式。如：</p>
-<pre class="code literal-block"><span></span><span class="cp">#define WARN_IF(EXP) \</span>
-<span class="cp">     do { if (EXP) \</span>
-<span class="cp">             fprintf (stderr, "Warning: " #EXP "\n"); } \</span>
-<span class="cp">     while (0)</span>
-</pre>
-
-
-<p><code>WARN_IF (x == 0);</code>会被扩展成：</p>
-<pre class="code literal-block"><span></span><span class="k">do</span> <span class="p">{</span> <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">fprintf</span> <span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">"Warning: "</span> <span class="s">"x == 0"</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span> <span class="p">}</span>
-<span class="k">while</span> <span class="p">(</span><span class="mi">0</span><span class="p">);</span>
-</pre>
-
-
-<p>这种用法可以用在assert中，如果断言失败，可以将失败的语句输出到反馈信息中</p>
-<h4>2. 连接(Concatenation)</h4>
-<p>在宏体中，如果宏体所在标示符中有<code>##</code>，那么在宏体扩展的时候，宏参数会被直接替换到标示符中。如：</p>
-<pre class="code literal-block"><span></span><span class="cp">#define COMMAND(NAME)  { #NAME, NAME ## _command }</span>
-
-<span class="k">struct</span> <span class="n">command</span>
-<span class="p">{</span>
-    <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
-    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">function</span><span class="p">)</span> <span class="p">(</span><span class="kt">void</span><span class="p">);</span>
-<span class="p">};</span>
-</pre>
-
-
-<p>在宏扩展的时候</p>
-<pre class="code literal-block"><span></span><span class="k">struct</span> <span class="n">command</span> <span class="n">commands</span><span class="p">[]</span> <span class="o">=</span>
-<span class="p">{</span>
-    <span class="n">COMMAND</span> <span class="p">(</span><span class="n">quit</span><span class="p">),</span>
-    <span class="n">COMMAND</span> <span class="p">(</span><span class="n">help</span><span class="p">),</span>
-    <span class="p">...</span>
-<span class="p">};</span>
-</pre>
-
-
-<p>会被扩展成：</p>
-<pre class="code literal-block"><span></span><span class="k">struct</span> <span class="n">command</span> <span class="n">commands</span><span class="p">[]</span> <span class="o">=</span>
-<span class="p">{</span>
-    <span class="p">{</span> <span class="s">"quit"</span><span class="p">,</span> <span class="n">quit_command</span> <span class="p">},</span>
-    <span class="p">{</span> <span class="s">"help"</span><span class="p">,</span> <span class="n">help_command</span> <span class="p">},</span>
-    <span class="p">...</span>
-<span class="p">};</span>
-</pre>
-
-
-<p>这样就节省了大量时间，提高效率。</p>
-<hr>
-<h3>几个坑</h3>
-<h4>1. 语法问题</h4>
-<p>由于是纯文本替换，C预处理器不对宏体做任何语法检查，像缺个括号、少个分号神马的预处理器是不管的。这里要格外小心，由此可能引出各种奇葩的问题，一下还很难找到根源。</p>
-<h4>2. 算符优先级问题</h4>
-<p>不仅宏体是纯文本替换，宏参数也是纯文本替换。有以下一段简单的宏，实现乘法：</p>
-<pre class="code literal-block"><span></span><span class="cp">#define MULTIPLY(x, y) x * y</span>
-</pre>
-
-
-<p><code>MULTIPLY(1, 2)</code>没问题，会正常展开成<code>1 * 2</code>。有问题的是这种表达式<code>MULTIPLY(1+2, 3)</code>，展开后成了<code>1+2 * 3</code>，显然优先级错了。</p>
-<p>在宏体中，给引用的参数加个括号就能避免这问题。</p>
-<pre class="code literal-block"><span></span><span class="cp">#define MULTIPLY(x, y) (x) * (y)</span>
-</pre>
-
-
-<p><code>MULTIPLY(1+2, 3)</code>就会被展开成<code>(1+2) * (3)</code>，优先级正常了。</p>
-<p>其实这个问题和下面要说到的某些问题都属于由于纯文本替换而导致的语义破坏问题，要格外小心。</p>
-<h4>3. 分号吞噬问题</h4>
-<p>有如下宏定义：</p>
-<pre class="code literal-block"><span></span><span class="cp">#define SKIP_SPACES(p, limit)  \</span>
-<span class="cp">     { char *lim = (limit);         \</span>
-<span class="cp">       while (p &lt; lim) {            \</span>
-<span class="cp">         if (*p++ != ' ') {         \</span>
-<span class="cp">           p--; break; }}}</span>
-</pre>
-
-
-<p>假设有如下一段代码：</p>
-<pre class="code literal-block"><span></span><span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">p</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
-   <span class="n">SKIP_SPACES</span> <span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">lim</span><span class="p">);</span>
-<span class="k">else</span> <span class="p">...</span>
-</pre>
-
-
-<p>一编译，GCC报<code>error: ‘else’ without a previous ‘if’</code>。原来这个看似是一个函数的宏被展开后是一段大括号括起来的代码块，加上分号之后这个if逻辑块就结束了，所以编译器发现这个else没有对应的if。</p>
-<p>这个问题一般用<code>do ... while(0)</code>的形式来解决：</p>
-<pre class="code literal-block"><span></span><span class="cp">#define SKIP_SPACES(p, limit)     \</span>
-<span class="cp">     do { char *lim = (limit);         \</span>
-<span class="cp">          while (p &lt; lim) {            \</span>
-<span class="cp">            if (*p++ != ' ') {         \</span>
-<span class="cp">              p--; break; }}}          \</span>
-<span class="cp">     while (0)</span>
-</pre>
-
-
-<p>展开后就成了</p>
-<pre class="code literal-block"><span></span><span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">p</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="k">do</span> <span class="p">...</span> <span class="k">while</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
-<span class="k">else</span> <span class="p">...</span>
-</pre>
-
-
-<p>这样就消除了分号吞噬问题。</p>
-<p>这个技巧在Linux内核源码里很常见，比如这个置位宏<code>#define SET_REG_BIT(reg, bit)              do { (reg |= (1 &lt;&lt; (bit))); } while (0)</code>(位于arch/mips/include/asm/mach-pnx833x/gpio.h)</p>
-<h4>4. 宏参数重复调用</h4>
-<p>有如下宏定义：</p>
-<pre class="code literal-block"><span></span><span class="cp">#define min(X, Y)  ((X) &lt; (Y) ? (X) : (Y))</span>
-</pre>
-
-
-<p>当有如下调用时<code>next = min (x + y, foo (z));</code>，宏体被展开成<code>next = ((x + y) &lt; (foo (z)) ? (x + y) : (foo (z)));</code>，可以看到，<code>foo(z)</code>被重复调用了两次，做了重复计算。更严重的是，如果foo是不可重入的(foo内修改了全局或静态变量)，程序会产生逻辑错误。</p>
-<p>所以，尽量不要在宏参数中传入函数调用。</p>
-<h4>5. 对自身的递归引用</h4>
-<p>有如下宏定义：</p>
-<pre class="code literal-block"><span></span><span class="cp">#define foo (4 + foo)</span>
-</pre>
-
-
-<p>按前面的理解，<code>(4 + foo)</code>会展开成<code>(4 + (4 + foo))</code>，然后一直展开下去，直至内存耗尽。但是，预处理器采取的策略是<strong><em>只展开一次</em></strong>。也就是说，<code>foo</code>只会展开成<code>(4 + foo)</code>，而展开之后<code>foo</code>的含义就要根据上下文来确定了。</p>
-<p>对于以下的交叉引用，宏体也只会展开一次。</p>
-<pre class="code literal-block"><span></span><span class="cp">#define x (4 + y)</span>
-<span class="cp">#define y (2 * x)</span>
-</pre>
-
-
-<p><code>x</code>展开成<code>(4 + y) -&gt; (4 + (2 * x))</code>，<code>y</code>展开成<code>(2 * x) -&gt; (2 * (4 + y))</code>。</p>
-<p><strong>注意，这是极不推荐的写法，程序可读性极差。</strong></p>
-<h4>6. 宏参数预处理</h4>
-<p>宏参数中若包含另外的宏，那么宏参数在被代入到宏体之前会做一次完全的展开，除非宏体中含有<code>#</code>或<code>##</code>。</p>
-<p>有如下宏定义：</p>
-<pre class="code literal-block"><span></span><span class="cp">#define AFTERX(x) X_ ## x</span>
-<span class="cp">#define XAFTERX(x) AFTERX(x)</span>
-<span class="cp">#define TABLESIZE 1024</span>
-<span class="cp">#define BUFSIZE TABLESIZE</span>
-</pre>
-
-
-<ul>
-<li>
-<code>AFTERX(BUFSIZE)</code>会被展开成<code>X_BUFSIZE</code>。因为宏体中含有<code>##</code>，宏参数直接代入宏体。</li>
-<li>
-<code>XAFTERX(BUFSIZE)</code>会被展开成<code>X_1024</code>。因为<code>XAFTERX(x)</code>的宏体是<code>AFTERX(x)</code>，并没有<code>#</code>或<code>##</code>，所以<code>BUFSIZE</code>在代入前会被完全展开成<code>1024</code>，然后才代入宏体，变成<code>X_1024</code>。</li>
-</ul>
-<p>-EOF-</p>
-<hr>
-<p>参考资料：</p>
-<p><a href="http://gcc.gnu.org/onlinedocs/cpp/Macros.html">http://gcc.gnu.org/onlinedocs/cpp/Macros.html</a></p>
 </div>
     </div>
     </article>

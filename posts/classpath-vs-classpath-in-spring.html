@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>classpath* vs classpath in spring | hbprotoss的博客</title>
+<link href="../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<link rel="canonical" href="http://hbprotoss.github.io/posts/classpath-vs-classpath-in-spring.html">
+<!--[if lt IE 9]><script src="../assets/js/html5.js"></script><![endif]--><meta name="author" content="hbprotoss">
+<link rel="prev" href="cookiekeng-yi-ji.html" title="Cookie坑一记" type="text/html">
+<meta property="og:site_name" content="hbprotoss的博客">
+<meta property="og:title" content="classpath* vs classpath in spring">
+<meta property="og:url" content="http://hbprotoss.github.io/posts/classpath-vs-classpath-in-spring.html">
+<meta property="og:description" content="记录一下spring里读取资源时的classpath*和classpath表达式的区别。不想看细节的可以直接跳到最后直接看结论。
+读取资源的主要逻辑在PathMatchingResourcePatternResolver.getResources
+public Resource[] getResources(String locationPattern) throws IOException {
+">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2016-07-06T09:12:52+08:00">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Spring">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+<!-- Menubar -->
+
+<div class="blog-masthead">
+    <div class="container">
+<!-- This keeps the margins nice -->
+        <nav class="blog-nav" role="navigation"><a href="../index.html" class="blog-nav-item">Home</a>
+            <a href="../archive.html" class="blog-nav-item">Archives</a>
+            <a href="../categories/index.html" class="blog-nav-item">Tags</a>
+            <a href="../rss.xml" class="blog-nav-item">RSS</a>
+
+            
+
+                
+                
+                    
+    <a href="classpath-vs-classpath-in-spring.md" class="blog-nav-item blog-nav-item-aside" id="sourcelink">Source</a>
+
+                
+            
+        </nav>
+</div>
+<!-- /.container -->
+</div>
+<!-- End of Menubar -->
+
+<div class="container" id="content" role="main">
+    <div class="body-content">
+        <div class="blog-header">
+            <h1 class="blog-title">
+                <a href="http://hbprotoss.github.io/">
+
+                    <span id="blog-title">hbprotoss的博客</span>
+                </a>
+            </h1>
+            <p class="lead blog-description"></p>
+            
+        </div>
+        <!--Body content-->
+        <div class="row">
+            <div class="col-sm-8 blog-main">
+                
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h2 class="p-name entry-title blog-post-title" itemprop="headline name"><a href="#" class="u-url">classpath* vs classpath in spring</a></h2>
+
+        <div class="metadata blog-post-meta">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="#" rel="bookmark"><time class="published dt-published" datetime="2016-07-06T09:12:52+08:00" itemprop="datePublished" title="2016-07-06 09:12">2016-07-06 09:12</time></a></p>
+                <p class="commentline">
+        
+    <a href="classpath-vs-classpath-in-spring.html#disqus_thread" data-disqus-identifier="cache/posts/classpath-vs-classpath-in-spring.html">Comments</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="classpath-vs-classpath-in-spring.md" id="sourcelink">Source</a></p>
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p>记录一下spring里读取资源时的classpath*和classpath表达式的区别。不想看细节的可以直接跳到最后直接看结论。</p>
+<p>读取资源的主要逻辑在<code>PathMatchingResourcePatternResolver.getResources</code></p>
+<pre class="code literal-block"><span></span><span class="kd">public</span> <span class="n">Resource</span><span class="o">[]</span> <span class="nf">getResources</span><span class="o">(</span><span class="n">String</span> <span class="n">locationPattern</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+    <span class="n">Assert</span><span class="o">.</span><span class="na">notNull</span><span class="o">(</span><span class="n">locationPattern</span><span class="o">,</span> <span class="s">"Location pattern must not be null"</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">locationPattern</span><span class="o">.</span><span class="na">startsWith</span><span class="o">(</span><span class="n">CLASSPATH_ALL_URL_PREFIX</span><span class="o">))</span> <span class="o">{</span>
+        <span class="c1">// a class path resource (multiple resources for same name possible)</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">getPathMatcher</span><span class="o">().</span><span class="na">isPattern</span><span class="o">(</span><span class="n">locationPattern</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">CLASSPATH_ALL_URL_PREFIX</span><span class="o">.</span><span class="na">length</span><span class="o">())))</span> <span class="o">{</span>
+            <span class="c1">// a class path resource pattern</span>
+            <span class="k">return</span> <span class="n">findPathMatchingResources</span><span class="o">(</span><span class="n">locationPattern</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">else</span> <span class="o">{</span>
+            <span class="c1">// all class path resources with the given name</span>
+            <span class="k">return</span> <span class="n">findAllClassPathResources</span><span class="o">(</span><span class="n">locationPattern</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">CLASSPATH_ALL_URL_PREFIX</span><span class="o">.</span><span class="na">length</span><span class="o">()));</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="k">else</span> <span class="o">{</span>
+        <span class="c1">// Only look for a pattern after a prefix here</span>
+        <span class="c1">// (to not get fooled by a pattern symbol in a strange prefix).</span>
+        <span class="kt">int</span> <span class="n">prefixEnd</span> <span class="o">=</span> <span class="n">locationPattern</span><span class="o">.</span><span class="na">indexOf</span><span class="o">(</span><span class="s">":"</span><span class="o">)</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">getPathMatcher</span><span class="o">().</span><span class="na">isPattern</span><span class="o">(</span><span class="n">locationPattern</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">prefixEnd</span><span class="o">)))</span> <span class="o">{</span>
+            <span class="c1">// a file pattern</span>
+            <span class="k">return</span> <span class="n">findPathMatchingResources</span><span class="o">(</span><span class="n">locationPattern</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">else</span> <span class="o">{</span>
+            <span class="c1">// a single resource with the given name</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="n">Resource</span><span class="o">[]</span> <span class="o">{</span><span class="n">getResourceLoader</span><span class="o">().</span><span class="na">getResource</span><span class="o">(</span><span class="n">locationPattern</span><span class="o">)};</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre>
+
+
+<ul>
+<li>
+<p>classpath*:resource</p>
+<p>代码中的if逻辑，通过findAllClassPathResources，遍历整个classpath，从搜索所有名字匹配的文件返回</p>
+</li>
+<li>
+<p>classpath:resource</p>
+<p>代码中的else逻辑，<code>getResourceLoader().getResource(locationPattern)</code>最终调用tomcat提供的WebappClassLoader，从classpath中遍历每个目录（包括jar），寻找指定的resource直到找到指定的第一个匹配文件返回</p>
+</li>
+</ul>
+<p>读取完resource列表之后，AbstractBeanDefinitionReader.loadBeanDefinitions会载入得到resource列表</p>
+<pre class="code literal-block"><span></span><span class="n">Resource</span><span class="o">[]</span> <span class="n">resources</span> <span class="o">=</span> <span class="o">((</span><span class="n">ResourcePatternResolver</span><span class="o">)</span> <span class="n">resourceLoader</span><span class="o">).</span><span class="na">getResources</span><span class="o">(</span><span class="n">location</span><span class="o">);</span>
+<span class="kt">int</span> <span class="n">loadCount</span> <span class="o">=</span> <span class="n">loadBeanDefinitions</span><span class="o">(</span><span class="n">resources</span><span class="o">);</span>
+</pre>
+
+
+<h4>结论</h4>
+<p>从<code>classpath*:resource</code>中读取资源，就相当于把整个classpath下能找到的同名resource按照classpath中的次序拼接成一个大文件后载入，位于classpath后部的resource定义会覆盖前面的。由于tomcat会保证<code>WEB-INF/class</code>下的class会放在classpath中的第一位，所以导致jar中的同名resource定义覆盖app中的定义。</p>
+<p><code>classpath:resource</code>仅载入classpath路径中碰到的第一个resource。</p>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../categories/java.html" rel="tag">Java</a></li>
+            <li><a class="tag p-category" href="../categories/spring.html" rel="tag">Spring</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="cookiekeng-yi-ji.html" rel="prev" title="Cookie坑一记">Previous post</a>
+            </li>
+        </ul></nav></aside><section class="comments hidden-print"><h2>Comments</h2>
+        
+        
+        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="hbprotoss",
+            disqus_url="http://hbprotoss.github.io/posts/classpath-vs-classpath-in-spring.html",
+        disqus_title="classpath* vs classpath in spring",
+        disqus_identifier="cache/posts/classpath-vs-classpath-in-spring.html",
+        disqus_config = function () {
+            this.language = "en";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+        </section></article><script>var disqus_shortname="hbprotoss";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script>
+</div>
+            <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+                    <div class="sidebar-module sidebar-module-inset">
+      <h4>About</h4>
+      <p>踏歌长行</p>
+      <p>梦想永在</p>
+    </div>
+    <div class="sidebar-module">
+      <h4>Links</h4>
+      <ol class="list-unstyled">
+<li><a href="http://weibo.com/hbprotoss">Weibo</a></li>
+        <li><a href="https://twitter.com/hbprotoss">Twitter</a></li>
+        <li><a href="https://github.com/hbprotoss">GitHub</a></li>
+      </ol>
+<h4>友情链接</h4>
+      <ol class="list-unstyled">
+<li><a href="http://mckobe23.github.io">喀秋莎的技术博客</a></li>
+      </ol>
+</div>
+    
+            </div>
+        <!--End of body content-->
+        </div>
+    </div>
+</div>
+
+<footer class="blog-footer" id="footer"><a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png"></a><br>本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh">知识共享署名-非商业性使用-禁止演绎 3.0 未本地化版本许可协议</a>进行许可。
+<br>Contents © 2016 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
+    
+</footer><script src="../assets/js/all-nocdn.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
+    moment.locale("en");
+    fancydates(0, "YYYY-MM-DD HH:mm");
+    </script><!-- end fancy dates -->
+</body>
+</html>
