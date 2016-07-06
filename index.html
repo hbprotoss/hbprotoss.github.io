@@ -109,7 +109,7 @@
 <p>代码中的else逻辑，<code>getResourceLoader().getResource(locationPattern)</code>最终调用tomcat提供的WebappClassLoader，从classpath中遍历每个目录（包括jar），寻找指定的resource直到找到指定的第一个匹配文件返回</p>
 </li>
 </ul>
-<p>读取完resource列表之后，AbstractBeanDefinitionReader.loadBeanDefinitions会载入得到resource列表</p>
+<p>读取完resource列表之后，<code>AbstractBeanDefinitionReader.loadBeanDefinitions</code>会载入得到resource列表</p>
 <pre class="code literal-block"><span></span><span class="n">Resource</span><span class="o">[]</span> <span class="n">resources</span> <span class="o">=</span> <span class="o">((</span><span class="n">ResourcePatternResolver</span><span class="o">)</span> <span class="n">resourceLoader</span><span class="o">).</span><span class="na">getResources</span><span class="o">(</span><span class="n">location</span><span class="o">);</span>
 <span class="kt">int</span> <span class="n">loadCount</span> <span class="o">=</span> <span class="n">loadBeanDefinitions</span><span class="o">(</span><span class="n">resources</span><span class="o">);</span>
 </pre>

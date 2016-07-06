@@ -53,7 +53,7 @@ public Resource[] getResources(String locationPattern) throws IOException {
 
 	代码中的else逻辑，`getResourceLoader().getResource(locationPattern)`最终调用tomcat提供的WebappClassLoader，从classpath中遍历每个目录（包括jar），寻找指定的resource直到找到指定的第一个匹配文件返回
 	
-读取完resource列表之后，AbstractBeanDefinitionReader.loadBeanDefinitions会载入得到resource列表
+读取完resource列表之后，`AbstractBeanDefinitionReader.loadBeanDefinitions`会载入得到resource列表
 
 ```java
 Resource[] resources = ((ResourcePatternResolver) resourceLoader).getResources(location);
