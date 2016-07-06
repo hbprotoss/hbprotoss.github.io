@@ -46,7 +46,7 @@ public Resource[] getResources(String locationPattern) throws IOException {
 
 * classpath*:resource
 
-	代码中的if逻辑，通过findAllClassPathResources，遍历整个classpath，从搜索所有名字匹配的文件返回
+	代码中的if逻辑，通过findAllClassPathResources，遍历整个classpath，搜索所有名字匹配的文件返回
 
 
 * classpath:resource
