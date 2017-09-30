@@ -1,5 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>hbprotoss的博客</title><link>http://hbprotoss.github.io/</link><description></description><atom:link href="http://hbprotoss.github.io/rss.xml" type="application/rss+xml" rel="self"></atom:link><language>en</language><lastBuildDate>Wed, 06 Jul 2016 02:48:35 GMT</lastBuildDate><generator>https://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>classpath* vs classpath in spring</title><link>http://hbprotoss.github.io/posts/classpath-vs-classpath-in-spring.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;p&gt;记录一下spring里读取资源时的classpath*和classpath表达式的区别。不想看细节的可以直接跳到最后直接看结论。&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>hbprotoss的博客</title><link>http://hbprotoss.github.io/</link><description></description><atom:link href="http://hbprotoss.github.io/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 30 Sep 2017 08:09:26 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>上传python包到pypi</title><link>http://hbprotoss.github.io/posts/shang-chuan-pythonbao-dao-pypi.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;h3&gt;注册账号&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;正式仓库: &lt;a href="https://pypi.python.org/pypi?%3Aaction=register_form"&gt;PyPI Live&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;测试仓库: &lt;a href="https://testpypi.python.org/pypi?%3Aaction=register_form"&gt;PyPI Test&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;创建.pypirc文件&lt;/h3&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;[distutils]&lt;/span&gt;
+&lt;span class="na"&gt;index-servers&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&lt;/span&gt;
+&lt;span class="s"&gt;  pypi&lt;/span&gt;
+&lt;span class="s"&gt;  pypitest&lt;/span&gt;
+
+&lt;span class="k"&gt;[pypi]&lt;/span&gt;
+&lt;span class="na"&gt;repository&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;https://upload.pypi.org/legacy/&lt;/span&gt;
+&lt;span class="na"&gt;username&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;your_username&lt;/span&gt;
+&lt;span class="na"&gt;password&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;your_password&lt;/span&gt;
+
+&lt;span class="k"&gt;[pypitest]&lt;/span&gt;
+&lt;span class="na"&gt;repository&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;https://test.pypi.org/legacy/&lt;/span&gt;
+&lt;span class="na"&gt;username&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;your_username&lt;/span&gt;
+&lt;span class="na"&gt;password&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;your_password&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;保存到&lt;code&gt;~/.pypirc&lt;/code&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;chmod 600 ~/.pypirc
+&lt;/pre&gt;
+
+
+&lt;h3&gt;准备工作&lt;/h3&gt;
+&lt;p&gt;工作目录结构&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;root-dir/   # arbitrary working directory name
+  setup.py
+  setup.cfg
+  LICENSE.txt
+  README.md
+  protoss-pypi/
+    __init__.py
+    foo.py
+    bar.py
+    baz.py
+&lt;/pre&gt;
+
+
+&lt;h4&gt;setup.py&lt;/h4&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;distutils.core&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;setup&lt;/span&gt;
+&lt;span class="n"&gt;setup&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'protoss-pypi'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;packages&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'protoss-pypi'&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;
+    &lt;span class="n"&gt;version&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'0.1.1'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'A random test lib'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;author&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'hbprotoss'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;author_email&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'gamespy1991@gmail.com'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;url&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'https://github.com/hbprotoss/pypitest'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;download_url&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'https://github.com/hbprotoss/pypitest/archive/master.zip'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;keywords&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'testing'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'logging'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'example'&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;  &lt;span class="c1"&gt;# arbitrary keywords&lt;/span&gt;
+    &lt;span class="n"&gt;classifiers&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[],&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;name和packages保持一致，url写git仓库地址，download_url写源码包地址&lt;/p&gt;
+&lt;h4&gt;setup.cfg&lt;/h4&gt;
+&lt;p&gt;markdown写的readme文件需要显示指定&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;[metadata]&lt;/span&gt;
+&lt;span class="na"&gt;description-file&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;README.md&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;h3&gt;打包上传&lt;/h3&gt;
+&lt;h4&gt;正式&lt;/h4&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;python setup.py sdist upload -r pypi
+&lt;/pre&gt;
+
+
+&lt;h4&gt;测试&lt;/h4&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;python setup.py sdist upload -r pypitest
+&lt;/pre&gt;&lt;/div&gt;</description><category>PyPi</category><category>Python</category><guid>http://hbprotoss.github.io/posts/shang-chuan-pythonbao-dao-pypi.html</guid><pubDate>Sat, 30 Sep 2017 07:51:05 GMT</pubDate></item><item><title>classpath* vs classpath in spring</title><link>http://hbprotoss.github.io/posts/classpath-vs-classpath-in-spring.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;p&gt;记录一下spring里读取资源时的classpath*和classpath表达式的区别。不想看细节的可以直接跳到最后直接看结论。&lt;/p&gt;
 &lt;p&gt;读取资源的主要逻辑在&lt;code&gt;PathMatchingResourcePatternResolver.getResources&lt;/code&gt;&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kd"&gt;public&lt;/span&gt; &lt;span class="n"&gt;Resource&lt;/span&gt;&lt;span class="o"&gt;[]&lt;/span&gt; &lt;span class="nf"&gt;getResources&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="n"&gt;String&lt;/span&gt; &lt;span class="n"&gt;locationPattern&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt; &lt;span class="kd"&gt;throws&lt;/span&gt; &lt;span class="n"&gt;IOException&lt;/span&gt; &lt;span class="o"&gt;{&lt;/span&gt;
     &lt;span class="n"&gt;Assert&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="na"&gt;notNull&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="n"&gt;locationPattern&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="s"&gt;"Location pattern must not be null"&lt;/span&gt;&lt;span class="o"&gt;);&lt;/span&gt;
@@ -155,7 +231,7 @@
 &lt;h3&gt;shadowsocks server&lt;/h3&gt;
 &lt;p&gt;shadowsocks-libev的安装参考&lt;a href="http://shadowsocks.org/en/download/servers.html"&gt;http://shadowsocks.org/en/download/servers.html&lt;/a&gt;中的“C with libev”一节&lt;/p&gt;
 &lt;p&gt;安装完成之后将如下配置写入config.json&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;{
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;{
     "server":"0.0.0.0",
     "server_port":8025,
     "password":"123456",
@@ -186,17 +262,17 @@
 &lt;h3&gt;iptables&lt;/h3&gt;
 &lt;p&gt;前面的准备工作完成之后，只要配置一下iptables，将国内TCP流量直接放行，国外TCP流量转发到ss-redir起的端口就行，判断依据是IP。&lt;/p&gt;
 &lt;p&gt;在nat表中新建一个SHADOWSOCKS链&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;iptables -t nat -N SHADOWSOCKS
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;iptables -t nat -N SHADOWSOCKS
 &lt;/pre&gt;
 
 
 &lt;p&gt;远程VPS流量直接放行&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;iptables -t nat -A SHADOWSOCKS -d xxx.xxx.xx.xxx -j RETURN
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;iptables -t nat -A SHADOWSOCKS -d xxx.xxx.xx.xxx -j RETURN
 &lt;/pre&gt;
 
 
 &lt;p&gt;内网流量直接放行&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;iptables -t nat -A SHADOWSOCKS -d 0.0.0.0/8 -j RETURN
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;iptables -t nat -A SHADOWSOCKS -d 0.0.0.0/8 -j RETURN
 iptables -t nat -A SHADOWSOCKS -d 10.0.0.0/8 -j RETURN
 iptables -t nat -A SHADOWSOCKS -d 127.0.0.0/8 -j RETURN
 iptables -t nat -A SHADOWSOCKS -d 169.254.0.0/16 -j RETURN
@@ -209,24 +285,24 @@ iptables -t nat -A SHADOWSOCKS -d 240.0.0.0/4 -j RETURN
 
 &lt;p&gt;国内IP流量直接放行(列表较长，这里不列举了，网上随便搜搜就有)&lt;/p&gt;
 &lt;p&gt;剩下的TCP流量转发到ss-redir端口&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;iptables -t nat -A SHADOWSOCKS -p tcp -j REDIRECT --to-ports xxx
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;iptables -t nat -A SHADOWSOCKS -p tcp -j REDIRECT --to-ports xxx
 &lt;/pre&gt;
 
 
 &lt;h2&gt;完工&lt;/h2&gt;
 &lt;p&gt;搞定之后，任何连接这个路由器的设备都能实现透明翻墙了。&lt;/p&gt;
-&lt;p&gt;以上&lt;/p&gt;&lt;/div&gt;</description><category>DNS</category><category>OpenWRT</category><category>ShadowSocks</category><category>翻墙</category><guid>http://hbprotoss.github.io/posts/da-jian-zhi-neng-fan-qiang-lu-you-qi.html</guid><pubDate>Thu, 16 Apr 2015 00:49:13 GMT</pubDate></item><item><title>关于Python异常处理流程</title><link>http://hbprotoss.github.io/posts/guan-yu-pythonyi-chang-chu-li-liu-cheng.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;f&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+&lt;p&gt;以上&lt;/p&gt;&lt;/div&gt;</description><category>DNS</category><category>OpenWRT</category><category>ShadowSocks</category><category>翻墙</category><guid>http://hbprotoss.github.io/posts/da-jian-zhi-neng-fan-qiang-lu-you-qi.html</guid><pubDate>Thu, 16 Apr 2015 00:49:13 GMT</pubDate></item><item><title>关于Python异常处理流程</title><link>http://hbprotoss.github.io/posts/guan-yu-pythonyi-chang-chu-li-liu-cheng.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;f&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
     &lt;span class="k"&gt;try&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
-        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;'try'&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'try'&lt;/span&gt;
         &lt;span class="k"&gt;raise&lt;/span&gt; &lt;span class="ne"&gt;NameError&lt;/span&gt;
     &lt;span class="k"&gt;except&lt;/span&gt; &lt;span class="ne"&gt;Exception&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
-        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;'except'&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'except'&lt;/span&gt;
         &lt;span class="k"&gt;raise&lt;/span&gt; &lt;span class="ne"&gt;KeyError&lt;/span&gt;
     &lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
-        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;'else'&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'else'&lt;/span&gt;
         &lt;span class="k"&gt;raise&lt;/span&gt; &lt;span class="ne"&gt;IOError&lt;/span&gt;
     &lt;span class="k"&gt;finally&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
-        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;'finally'&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'finally'&lt;/span&gt;
         &lt;span class="k"&gt;raise&lt;/span&gt; &lt;span class="ne"&gt;ValueError&lt;/span&gt;
 &lt;/pre&gt;
 
@@ -241,7 +317,7 @@ iptables -t nat -A SHADOWSOCKS -d 240.0.0.0/4 -j RETURN
 &lt;li&gt;blockstack：也是一个栈，隶属于一个frame。每当遇到循环或者try异常处理块都会压入一个block对象，块流程完了弹出&lt;/li&gt;
 &lt;li&gt;traceback：一个链表，记录发生异常时候的调用栈信息&lt;/li&gt;
 &lt;/ol&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;PyObject&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;PyObject&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;
 &lt;span class="nf"&gt;PyEval_EvalFrameEx&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;PyFrameObject&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;throwflag&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;span class="p"&gt;{&lt;/span&gt;
 
@@ -327,7 +403,7 @@ iptables -t nat -A SHADOWSOCKS -d 240.0.0.0/4 -j RETURN
 
 &lt;p&gt;补充一点：&lt;/p&gt;
 &lt;p&gt;dis模块可以“反汇编”Python字节码变成“Python汇编语言”，下面就是示例代码的反汇编结果：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;  6           0 SETUP_FINALLY           63 (to 66)
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;  6           0 SETUP_FINALLY           63 (to 66)
               3 SETUP_EXCEPT            15 (to 21)
 
   7           6 LOAD_CONST               1 ('try')
@@ -390,7 +466,7 @@ iptables -t nat -A SHADOWSOCKS -d 240.0.0.0/4 -j RETURN
 &lt;h3&gt;性能实测&lt;/h3&gt;
 &lt;p&gt;下面结合实际例子阐述现象和内部结构的关系&lt;/p&gt;
 &lt;p&gt;首先建立一个测试表：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;CREATE&lt;/span&gt; &lt;span class="k"&gt;TABLE&lt;/span&gt; &lt;span class="n"&gt;test&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;CREATE&lt;/span&gt; &lt;span class="k"&gt;TABLE&lt;/span&gt; &lt;span class="n"&gt;test&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;
      &lt;span class="n"&gt;id&lt;/span&gt; &lt;span class="nb"&gt;INT&lt;/span&gt; &lt;span class="k"&gt;NOT&lt;/span&gt; &lt;span class="k"&gt;NULL&lt;/span&gt; &lt;span class="n"&gt;AUTO_INCREMENT&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
      &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="nb"&gt;INT&lt;/span&gt; &lt;span class="k"&gt;NOT&lt;/span&gt; &lt;span class="k"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
      &lt;span class="n"&gt;b&lt;/span&gt; &lt;span class="nb"&gt;INT&lt;/span&gt; &lt;span class="k"&gt;NOT&lt;/span&gt; &lt;span class="k"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
@@ -404,7 +480,7 @@ iptables -t nat -A SHADOWSOCKS -d 240.0.0.0/4 -j RETURN
 &lt;p&gt;数据项为(a,b,c)在0~200之间的所有组合项，共计8000000行记录。为了消除几次实验中以query cache为代表的各种server cache对实验数据的影响，每次实验后均重启mysql服务。&lt;/p&gt;
 &lt;h4&gt;索引对查询效率的影响&lt;/h4&gt;
 &lt;p&gt;首先是建立KEY(a,b,c)索引前后的性能对比，能很明显地看到索引大幅提升查询速度。没有索引的时候需要做全表扫描，建立索引之后通过B-Tree搜索。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;没有索引（除主键，下同）
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;没有索引（除主键，下同）
 [SQL]select * from test where a = 0 and b = 1;
 Affected rows: 0
 Time: 0.324s
@@ -417,21 +493,21 @@ Time: 0.004s
 
 
 &lt;p&gt;由于MySQL优化器的优化，where条件中的各个子条件顺序对索引的使用没有影响。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;[SQL]select * from test where b = 1 and a = 0;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;[SQL]select * from test where b = 1 and a = 0;
 Affected rows: 0
 Time: 0.002s
 &lt;/pre&gt;
 
 
 &lt;p&gt;当使用的列非严格的索引最左前缀时，可以想象，只有a加速了索引搜索，找到所有符合a条件的记录的之后只能顺序扫描检查c是否符合条件。所以相比没有索引时要快，但是慢于使用严格索引最左前缀时的速度。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;[SQL]select * from test where a = 0 and c = 1;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;[SQL]select * from test where a = 0 and c = 1;
 Affected rows: 0
 Time: 0.043s
 &lt;/pre&gt;
 
 
 &lt;p&gt;当没有使用到a列作为条件时完全没法使用索引，甚至比没有索引时还要慢。因为建表的时候a在前，b、c在后，并且数据节点有序。在没有索引的测试中，InnoDB引擎到a不为0时自动停止搜索。而在这个例子中需要扫描全表找出满足符合条件的b、c，达到完全没法忍受的16秒。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;[SQL]select * from test where b = 0 and c = 1;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;[SQL]select * from test where b = 0 and c = 1;
 Affected rows: 0
 Time: 16.023s
 &lt;/pre&gt;
@@ -439,7 +515,7 @@ Time: 16.023s
 
 &lt;h4&gt;索引对排序效率的影响&lt;/h4&gt;
 &lt;p&gt;只要能用到索引，并且ORDER BY后面的列在索引中，则顺序还是倒序排序对性能无影响。因为叶子节点是个双向链表，倒序可以从后向前遍历，与顺序的代价相同。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;[SQL]select * from test where a = 0 ORDER BY b;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;[SQL]select * from test where a = 0 ORDER BY b;
 Affected rows: 0
 Time: 0.085s
 
@@ -450,7 +526,7 @@ Time: 0.089s
 
 
 &lt;p&gt;但是，当有两个字段排序的顺序不同时，叶子节点的有序性就无法用在排序中，必须读出所有叶子节点之后再按指定的字段进行一趟排序，所以速度就慢了下来。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;[SQL]select * from test where a = 0 ORDER BY b DESC, c DESC;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;[SQL]select * from test where a = 0 ORDER BY b DESC, c DESC;
 Affected rows: 0
 Time: 0.089s
 
@@ -461,7 +537,7 @@ Time: 0.184s
 
 
 &lt;p&gt;同样，下面的例子中对索引左边的字段a进行范围选择的时候也没法运用索引，因为多个取值的a无法保证b和c字段有序，必须重新排序&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;[SQL]select * from test where a &amp;lt;= 0 ORDER BY b;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;[SQL]select * from test where a &amp;lt;= 0 ORDER BY b;
 Affected rows: 0
 Time: 0.103s
 &lt;/pre&gt;
@@ -477,7 +553,7 @@ Time: 0.103s
 &lt;h3&gt;引用计数&lt;/h3&gt;
 &lt;p&gt;引用计数法在对象内部维护了一个被其他对象引用数的引用计数值，当这个引用计数值为0时，说明这个对象不再被其他对象引用，就可以被回收了。&lt;/p&gt;
 &lt;p&gt;结合源码来看，所有Python对象的头部包含了这样一个结构PyObject（相当于继承自PyObject）：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;// object.h&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;// object.h&lt;/span&gt;
 &lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="n"&gt;_object&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
     &lt;span class="n"&gt;Py_ssize_t&lt;/span&gt; &lt;span class="n"&gt;ob_refcnt&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
     &lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="n"&gt;PyTypeObject&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;ob_type&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
@@ -487,7 +563,7 @@ Time: 0.103s
 
 &lt;p&gt;ob_refcnt就是引用计数值。&lt;/p&gt;
 &lt;p&gt;例如，下面是int型对象的定义：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;// intobject.h&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;// intobject.h&lt;/span&gt;
 &lt;span class="k"&gt;typedef&lt;/span&gt; &lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
         &lt;span class="n"&gt;PyObject_HEAD&lt;/span&gt;
         &lt;span class="kt"&gt;long&lt;/span&gt; &lt;span class="n"&gt;ob_ival&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
@@ -510,7 +586,7 @@ Time: 0.103s
 &lt;p&gt;为了解决这两个致命弱点，Python又引入了以下两种GC机制。&lt;/p&gt;
 &lt;h3&gt;标记-清除&lt;/h3&gt;
 &lt;p&gt;“标记-清除”法是为了解决循环引用问题。可以包含其他对象引用的容器对象（如list, dict, set，甚至class）都可能产生循环引用，为此，在申请内存时，所有容器对象的头部又加上了&lt;code&gt;PyGC_Head&lt;/code&gt;来实现“标记-清除”机制。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;// objimpl.h&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;// objimpl.h&lt;/span&gt;
 &lt;span class="k"&gt;typedef&lt;/span&gt; &lt;span class="k"&gt;union&lt;/span&gt; &lt;span class="n"&gt;_gc_head&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
     &lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
         &lt;span class="k"&gt;union&lt;/span&gt; &lt;span class="n"&gt;_gc_head&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;gc_next&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
@@ -523,7 +599,7 @@ Time: 0.103s
 
 
 &lt;p&gt;在为对象申请内存的时候，可以明显看到，实际申请的内存数量已经加上了PyGC_Head的大小&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;// gcmodule.c&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;// gcmodule.c&lt;/span&gt;
 &lt;span class="n"&gt;PyObject&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;
 &lt;span class="nf"&gt;_PyObject_GC_Malloc&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;size_t&lt;/span&gt; &lt;span class="n"&gt;basicsize&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;span class="p"&gt;{&lt;/span&gt;
@@ -542,7 +618,7 @@ Time: 0.103s
 
 
 &lt;p&gt;举例来说，从&lt;code&gt;list&lt;/code&gt;对象的创建中，有如下主要逻辑：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;// listobject.c&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;// listobject.c&lt;/span&gt;
 &lt;span class="n"&gt;PyObject&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;
 &lt;span class="nf"&gt;PyList_New&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Py_ssize_t&lt;/span&gt; &lt;span class="n"&gt;size&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;span class="p"&gt;{&lt;/span&gt;
@@ -558,7 +634,7 @@ Time: 0.103s
 
 &lt;p&gt;&lt;code&gt;_PyObject_GC_TRACK&lt;/code&gt;就将对象链接到了第0代对象集合中（后文详述分代回收）。&lt;/p&gt;
 &lt;p&gt;垃圾标记时，先将集合中对象的引用计数复制一份副本(以免在操作过程中破坏真实的引用计数值)：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;// gcmodule.c&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;// gcmodule.c&lt;/span&gt;
 &lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="kt"&gt;void&lt;/span&gt;
 &lt;span class="nf"&gt;update_refs&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;PyGC_Head&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;containers&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;span class="p"&gt;{&lt;/span&gt;
@@ -573,7 +649,7 @@ Time: 0.103s
 
 
 &lt;p&gt;然后操作这个副本，遍历对象集合，将被引用对象的引用计数副本值减1：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;// gcmodule.c&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;// gcmodule.c&lt;/span&gt;
 &lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="kt"&gt;void&lt;/span&gt;
 &lt;span class="nf"&gt;subtract_refs&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;PyGC_Head&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;containers&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;span class="p"&gt;{&lt;/span&gt;
@@ -591,7 +667,7 @@ Time: 0.103s
 
 &lt;p&gt;这个&lt;code&gt;traverse&lt;/code&gt;是对象类型定义的函数，用来遍历对象，通过传入的回调函数&lt;code&gt;visit_decref&lt;/code&gt;来操作引用计数副本。&lt;/p&gt;
 &lt;p&gt;例如&lt;code&gt;dict&lt;/code&gt;就要在key和value上都用&lt;code&gt;visit_decref&lt;/code&gt;操作一遍：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;// dictobject.c&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;// dictobject.c&lt;/span&gt;
 &lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt;
 &lt;span class="nf"&gt;dict_traverse&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;PyObject&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;op&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;visitproc&lt;/span&gt; &lt;span class="n"&gt;visit&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;arg&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;span class="p"&gt;{&lt;/span&gt;
@@ -609,7 +685,7 @@ Time: 0.103s
 
 
 &lt;p&gt;然后根据引用计数副本值是否为0将集合内的对象分成两类，reachable和unreachable，其中unreachable是可以被回收的对象：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;// gcmodule.c&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;// gcmodule.c&lt;/span&gt;
 &lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="kt"&gt;void&lt;/span&gt;
 &lt;span class="nf"&gt;move_unreachable&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;PyGC_Head&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;young&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;PyGC_Head&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;unreachable&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;span class="p"&gt;{&lt;/span&gt;
@@ -641,7 +717,7 @@ Time: 0.103s
 &lt;h3&gt;分代回收&lt;/h3&gt;
 &lt;p&gt;分代回收的整体思想是：将系统中的所有内存块根据其存活时间划分为不同的集合，每个集合就成为一个“代”，垃圾收集频率随着“代”的存活时间的增大而减小，存活时间通常利用经过几次垃圾回收来度量。&lt;/p&gt;
 &lt;p&gt;用来表示“代”的结构体是&lt;code&gt;gc_generation&lt;/code&gt;， 包括了当前代链表表头、对象数量上限、当前对象数量：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;// gcmodule.c&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;// gcmodule.c&lt;/span&gt;
 &lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="n"&gt;gc_generation&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
     &lt;span class="n"&gt;PyGC_Head&lt;/span&gt; &lt;span class="n"&gt;head&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
     &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;threshold&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="cm"&gt;/* collection threshold */&lt;/span&gt;
@@ -652,7 +728,7 @@ Time: 0.103s
 
 
 &lt;p&gt;Python默认定义了三代对象集合，索引数越大，对象存活时间越长。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#define NUM_GENERATIONS 3&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#define NUM_GENERATIONS 3&lt;/span&gt;
 &lt;span class="cp"&gt;#define GEN_HEAD(n) (&amp;amp;generations[n].head)&lt;/span&gt;
 
 &lt;span class="cm"&gt;/* linked lists of container objects */&lt;/span&gt;
@@ -666,7 +742,7 @@ Time: 0.103s
 
 
 &lt;p&gt;新生成的对象会被加入第0代，前面&lt;code&gt;_PyObject_GC_Malloc&lt;/code&gt;中省略的部分就是Python GC触发的时机。每新生成一个对象都会检查第0代有没有满，如果满了就开始着手进行垃圾回收：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt; &lt;span class="n"&gt;g&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;gc&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;gc_refs&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;GC_UNTRACKED&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt; &lt;span class="n"&gt;g&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;gc&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;gc_refs&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;GC_UNTRACKED&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
  &lt;span class="n"&gt;generations&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;].&lt;/span&gt;&lt;span class="n"&gt;count&lt;/span&gt;&lt;span class="o"&gt;++&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="cm"&gt;/* number of allocated GC objects */&lt;/span&gt;
  &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;generations&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;].&lt;/span&gt;&lt;span class="n"&gt;count&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;generations&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;].&lt;/span&gt;&lt;span class="n"&gt;threshold&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt;
      &lt;span class="n"&gt;enabled&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt;
@@ -690,8 +766,8 @@ Time: 0.103s
 &lt;p&gt;loader在进行动态链接的时候，会将有相同符号名的符号覆盖成LD_PRELOAD指定的so文件中的符号。换句话说，可以用我们自己的so库中的函数替换原来库里有的函数，从而达到hook的目的。这和Windows下通过修改import table来hook API很类似。相比较之下，LD_PRELOAD更方便了，都不用自己写代码了，系统的loader会帮我们搞定。但是LD_PRELOAD有个限制：只能hook动态链接的库，对静态链接的库无效，因为静态链接的代码都写到可执行文件里了嘛，没有坑让你填。&lt;/p&gt;
 &lt;p&gt;上代码&lt;/p&gt;
 &lt;p&gt;先是受害者，我们的主程序main.c，通过strcmp比较字符串是否相等：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
-&lt;span class="cp"&gt;#include &amp;lt;string.h&amp;gt;&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;string.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
 
 &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;argc&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[])&lt;/span&gt;
 &lt;span class="p"&gt;{&lt;/span&gt;
@@ -709,9 +785,9 @@ Time: 0.103s
 
 
 &lt;p&gt;然后是用来hook的库hook.c：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
-&lt;span class="cp"&gt;#include &amp;lt;string.h&amp;gt;&lt;/span&gt;
-&lt;span class="cp"&gt;#include &amp;lt;dlfcn.h&amp;gt;&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;string.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;dlfcn.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
 
 &lt;span class="k"&gt;typedef&lt;/span&gt; &lt;span class="nf"&gt;int&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;STRCMP&lt;/span&gt;&lt;span class="p"&gt;)(&lt;/span&gt;&lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
 
@@ -733,8 +809,8 @@ Time: 0.103s
 
 &lt;p&gt;因为hook的目标是strcmp，所以typedef了一个STRCMP函数指针。由于hook的目的是要控制函数行为，所以需要从原库libc.so.6中拿到“正版”strcmp指针，保存成old_strcmp以备调用。&lt;/p&gt;
 &lt;p&gt;Makefile：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;test&lt;/span&gt;: main.c hook.so
-    gcc -o &lt;span class="nb"&gt;test &lt;/span&gt;main.c
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;test: main.c hook.so
+    gcc -o &lt;span class="nb"&gt;test&lt;/span&gt; main.c
 
 hook.so: hook.c
     gcc -fPIC -shared -o hook.so hook.c -ldl
@@ -742,12 +818,12 @@ hook.so: hook.c
 
 
 &lt;p&gt;执行：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$ LD_PRELOAD&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;./hook.so ./test 123
-hack &lt;span class="k"&gt;function&lt;/span&gt; invoked. &lt;span class="nv"&gt;s1&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;123&amp;gt; &lt;span class="nv"&gt;s2&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;&lt;span class="nb"&gt;test&lt;/span&gt;&amp;gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ &lt;span class="nv"&gt;LD_PRELOAD&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;./hook.so ./test &lt;span class="m"&gt;123&lt;/span&gt;
+hack &lt;span class="k"&gt;function&lt;/span&gt; invoked. &lt;span class="nv"&gt;s1&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;&lt;span class="m"&gt;123&lt;/span&gt;&amp;gt; &lt;span class="nv"&gt;s2&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;test&amp;gt;
 Incorrect password
 
-&lt;span class="nv"&gt;$ LD_PRELOAD&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;./hook.so ./test &lt;span class="nb"&gt;test&lt;/span&gt;
-hack &lt;span class="k"&gt;function&lt;/span&gt; invoked. &lt;span class="nv"&gt;s1&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;&lt;span class="nb"&gt;test&lt;/span&gt;&amp;gt; &lt;span class="nv"&gt;s2&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;&lt;span class="nb"&gt;test&lt;/span&gt;&amp;gt;
+$ &lt;span class="nv"&gt;LD_PRELOAD&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;./hook.so ./test &lt;span class="nb"&gt;test&lt;/span&gt;
+hack &lt;span class="k"&gt;function&lt;/span&gt; invoked. &lt;span class="nv"&gt;s1&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;test&amp;gt; &lt;span class="nv"&gt;s2&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;test&amp;gt;
 Correct password
 &lt;/pre&gt;
 
@@ -755,178 +831,4 @@ Correct password
 &lt;p&gt;其中有一点不理解的是，&lt;code&gt;dlopen&lt;/code&gt;打开libc.so.6能拿到“正版”strcmp地址，打开libc.so就是hook后的地址。照理说libc.so不是libc.so.6的一个软链吗？为什么结果会不一样嘞？&lt;/p&gt;
 &lt;hr&gt;
 &lt;p&gt;参考资料：&lt;/p&gt;
-&lt;p&gt;&lt;a href="http://www.exploit-db.com/papers/13233/"&gt;Reverse Engineering with LD_PRELOAD&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</description><category>C</category><category>Hook</category><category>Linux</category><category>Security</category><guid>http://hbprotoss.github.io/posts/li-yong-ld_preloadjin-xing-hook.html</guid><pubDate>Wed, 09 Oct 2013 03:44:50 GMT</pubDate></item><item><title>Linux下编译链接动态库</title><link>http://hbprotoss.github.io/posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;p&gt;记录下Linux下编译和链接动态库的过程。&lt;/p&gt;
-&lt;h3&gt;一、 编写动态库&lt;/h3&gt;
-&lt;p&gt;头文件so.h：  &lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#ifndef  SO_H&lt;/span&gt;
-&lt;span class="cp"&gt;#define  SO_H&lt;/span&gt;
-
-&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
-
-
-&lt;span class="cp"&gt;#endif  &lt;/span&gt;&lt;span class="cm"&gt;/*SO_H*/&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
-&lt;/pre&gt;
-
-
-&lt;p&gt;实现文件so.c：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#include "so.h"&lt;/span&gt;
-
-&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="p"&gt;{&lt;/span&gt;
-    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;/pre&gt;
-
-
-&lt;h3&gt;二、编译动态库&lt;/h3&gt;
-&lt;pre class="code literal-block"&gt;gcc so.c -fPIC -shared -o libtest.so
-&lt;/pre&gt;
-
-
-&lt;p&gt;解释一下各个参数含义：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;-fPIC：生成位置无关代码(&lt;a href="http://en.wikipedia.org/wiki/Position-independent_code"&gt;Position Independent Code&lt;/a&gt;)，只有生成PIC才能通过虚拟页映射达到可执行代码在进程间共享，从而节省内存的目的。&lt;/li&gt;
-&lt;li&gt;说明我们要生成的是动态库so(Shared Object)文件，从而进行动态链接。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;通过&lt;code&gt;nm -g libtest.so&lt;/code&gt;可以看到，导出符号表中已经有&lt;code&gt;add&lt;/code&gt;这个符号了：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;nm -g libtest.so 
-&lt;span class="m"&gt;0000000000000670&lt;/span&gt; T add
-&lt;span class="m"&gt;0000000000201030&lt;/span&gt; B __bss_start
-                 w __cxa_finalize@@GLIBC_2.2.5
-&lt;span class="m"&gt;0000000000201030&lt;/span&gt; D _edata
-&lt;span class="m"&gt;0000000000201038&lt;/span&gt; B _end
-&lt;span class="m"&gt;0000000000000684&lt;/span&gt; T _fini
-                 w __gmon_start__
-&lt;span class="m"&gt;0000000000000540&lt;/span&gt; T _init
-                 w _ITM_deregisterTMCloneTable
-                 w _ITM_registerTMCloneTable
-                 w _Jv_RegisterClasses
-&lt;/pre&gt;
-
-
-&lt;h3&gt;三、使用动态库&lt;/h3&gt;
-&lt;h4&gt;1. 隐式链接(编译时链接)&lt;/h4&gt;
-&lt;p&gt;编写主程序main.c：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
-&lt;span class="cp"&gt;#include "so.h"&lt;/span&gt;
-
-&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;argc&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[])&lt;/span&gt;
-&lt;span class="p"&gt;{&lt;/span&gt;
-    &lt;span class="n"&gt;printf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"%d&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;));&lt;/span&gt;
-    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;/pre&gt;
-
-
-&lt;p&gt;使用&lt;code&gt;gcc main.c -L. -ltest -o test&lt;/code&gt;进行编译。&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;-L：添加库文件的搜索路径&lt;/li&gt;
-&lt;li&gt;-l：指定需要链接的库。该名称是处在头lib和后缀.so中的名称，如上动态库libtest.so的l参数为-l test&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;此时通过&lt;code&gt;readelf test -d&lt;/code&gt;已经能看到生成的可执行文件test的Dynamic section里依赖libtest.so了&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;readelf &lt;span class="nb"&gt;test&lt;/span&gt; -d
-
-Dynamic section at offset 0xe18 contains &lt;span class="m"&gt;25&lt;/span&gt; entries:
-  Tag        Type                         Name/Value
- 0x0000000000000001 &lt;span class="o"&gt;(&lt;/span&gt;NEEDED&lt;span class="o"&gt;)&lt;/span&gt;             Shared library: &lt;span class="o"&gt;[&lt;/span&gt;libtest.so&lt;span class="o"&gt;]&lt;/span&gt;
- 0x0000000000000001 &lt;span class="o"&gt;(&lt;/span&gt;NEEDED&lt;span class="o"&gt;)&lt;/span&gt;             Shared library: &lt;span class="o"&gt;[&lt;/span&gt;libc.so.6&lt;span class="o"&gt;]&lt;/span&gt;
-......
-&lt;/pre&gt;
-
-
-&lt;p&gt;dynamic symbols中也有一个undefined symbol(add)&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;nm -D &lt;span class="nb"&gt;test &lt;/span&gt;
-&lt;span class="nb"&gt;                 &lt;/span&gt;U add
-&lt;span class="m"&gt;0000000000601048&lt;/span&gt; B __bss_start
-&lt;span class="m"&gt;0000000000601048&lt;/span&gt; D _edata
-&lt;span class="m"&gt;0000000000601050&lt;/span&gt; B _end
-00000000004007b4 T _fini
-                 w __gmon_start__
-&lt;span class="m"&gt;0000000000400578&lt;/span&gt; T _init
-                 w _ITM_deregisterTMCloneTable
-                 w _ITM_registerTMCloneTable
-                 w _Jv_RegisterClasses
-                 U __libc_start_main
-                 U &lt;span class="nb"&gt;printf&lt;/span&gt;
-&lt;/pre&gt;
-
-
-&lt;p&gt;在执行隐式链接的程序之前要注意设置&lt;code&gt;LD_LIBRARY_PATH&lt;/code&gt;环境变量，或者把前面生成的libtest.so复制到系统路径下，否则会找不到动态库。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;./test 
-./test: error &lt;span class="k"&gt;while&lt;/span&gt; loading shared libraries: libtest.so: cannot open shared object file: No such file or directory
-
-&lt;span class="nv"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;export &lt;/span&gt;&lt;span class="nv"&gt;LD_LIBRARY_PATH&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;.
-
-&lt;span class="nv"&gt;$ &lt;/span&gt;./test 
-3
-&lt;/pre&gt;
-
-
-&lt;h4&gt;2. 显式链接(运行时链接)&lt;/h4&gt;
-&lt;p&gt;编写主程序dyn_main.c&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
-&lt;span class="cp"&gt;#include &amp;lt;dlfcn.h&amp;gt;&lt;/span&gt;
-
-&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;argc&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[])&lt;/span&gt;
-&lt;span class="p"&gt;{&lt;/span&gt;
-    &lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;dl&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-    &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;)(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
-    &lt;span class="n"&gt;dl&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;dlopen&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="s"&gt;"./libtest.so"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;RTLD_LAZY&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
-    &lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;dl&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="nb"&gt;NULL&lt;/span&gt; &lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="p"&gt;{&lt;/span&gt;
-        &lt;span class="n"&gt;printf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"so loading error.&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
-        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-    &lt;span class="p"&gt;}&lt;/span&gt;
-    &lt;span class="n"&gt;add&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;)(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="n"&gt;dlsym&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;dl&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;"add"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
-    &lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;dlerror&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="o"&gt;!=&lt;/span&gt; &lt;span class="nb"&gt;NULL&lt;/span&gt; &lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="p"&gt;{&lt;/span&gt;
-        &lt;span class="n"&gt;printf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"fun load error.&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
-        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-    &lt;span class="p"&gt;}&lt;/span&gt;
-    &lt;span class="n"&gt;printf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"%d&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;));&lt;/span&gt;
-    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;/pre&gt;
-
-
-&lt;p&gt;使用&lt;code&gt;gcc dyn_main.c -ldl -o dyn_test&lt;/code&gt;编译。&lt;/p&gt;
-&lt;p&gt;这时通过&lt;code&gt;readelf dyn_test -d&lt;/code&gt;可以发现，dyn_test不依赖libtest.so：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;readelf dyn_test -d
-
-Dynamic section at offset 0xe18 contains &lt;span class="m"&gt;25&lt;/span&gt; entries:
-  Tag        Type                         Name/Value
- 0x0000000000000001 &lt;span class="o"&gt;(&lt;/span&gt;NEEDED&lt;span class="o"&gt;)&lt;/span&gt;             Shared library: &lt;span class="o"&gt;[&lt;/span&gt;libdl.so.2&lt;span class="o"&gt;]&lt;/span&gt;
- 0x0000000000000001 &lt;span class="o"&gt;(&lt;/span&gt;NEEDED&lt;span class="o"&gt;)&lt;/span&gt;             Shared library: &lt;span class="o"&gt;[&lt;/span&gt;libc.so.6&lt;span class="o"&gt;]&lt;/span&gt;
-......
-&lt;/pre&gt;
-
-
-&lt;p&gt;dyn_test的dynamic symbols中也没有add：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;nm -D dyn_test 
-                 U dlerror
-                 U dlopen
-                 U dlsym
-                 w __gmon_start__
-                 w _ITM_deregisterTMCloneTable
-                 w _ITM_registerTMCloneTable
-                 w _Jv_RegisterClasses
-                 U __libc_start_main
-                 U &lt;span class="nb"&gt;printf&lt;/span&gt;
-&lt;span class="nb"&gt;                 &lt;/span&gt;U puts
-&lt;/pre&gt;
-
-
-&lt;p&gt;运行程序也不需要设置&lt;code&gt;LD_LIBRARY_PATH&lt;/code&gt;环境变量&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;./dyn_test 
-3
-&lt;/pre&gt;
-
-
-&lt;hr&gt;
-&lt;p&gt;参考资料：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;a href="http://hi.baidu.com/linuxlife/item/ed8e5d0c6e86b491a2df4366"&gt;Linux动态库的编译与使用 转载&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href="http://os.51cto.com/art/201003/186246.htm"&gt;详细分析Linux动态库的使用方式&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href="http://stackoverflow.com/questions/34732/how-do-i-list-the-symbols-in-a-so-file"&gt;How do I list the symbols in a .so file&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href="http://stackoverflow.com/questions/10480657/import-names-in-elf-binary"&gt;Import names in ELF binary&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;&lt;/div&gt;</description><category>C</category><category>Linux</category><category>Programming</category><guid>http://hbprotoss.github.io/posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html</guid><pubDate>Tue, 08 Oct 2013 01:18:31 GMT</pubDate></item></channel></rss>
+&lt;p&gt;&lt;a href="http://www.exploit-db.com/papers/13233/"&gt;Reverse Engineering with LD_PRELOAD&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</description><category>C</category><category>Hook</category><category>Linux</category><category>Security</category><guid>http://hbprotoss.github.io/posts/li-yong-ld_preloadjin-xing-hook.html</guid><pubDate>Wed, 09 Oct 2013 03:44:50 GMT</pubDate></item></channel></rss>

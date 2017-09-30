@@ -4,7 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>multipart/form-data的实现 | hbprotoss的博客</title>
-<link href="../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/colorbox.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/blog.css" rel="stylesheet" type="text/css">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
 <link rel="canonical" href="http://hbprotoss.github.io/posts/multipartform-datade-shi-xian.html">
 <!--[if lt IE 9]><script src="../assets/js/html5.js"></script><![endif]--><meta name="author" content="hbprotoss">
@@ -157,7 +162,7 @@ multipart/form-d">
 53
 54</pre></div></td>
 <td class="code">
-<pre class="code literal-block"><span class="c">#!/usr/bin/env python3</span>
+<pre class="code literal-block"><span></span><span class="ch">#!/usr/bin/env python3</span>
 
 <span class="kn">import</span> <span class="nn">urllib.request</span>
 <span class="kn">import</span> <span class="nn">urllib.parse</span>
@@ -170,44 +175,44 @@ multipart/form-d">
     <span class="sd">'''</span>
 <span class="sd">    Build a multipart/form-data body with generated random boundary.</span>
 <span class="sd">    '''</span>
-    <span class="n">boundary</span> <span class="o">=</span> <span class="s">'----------%s'</span> <span class="o">%</span> <span class="nb">hex</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">))</span>
+    <span class="n">boundary</span> <span class="o">=</span> <span class="s1">'----------</span><span class="si">%s</span><span class="s1">'</span> <span class="o">%</span> <span class="nb">hex</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">))</span>
     <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">params_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">'--%s'</span> <span class="o">%</span> <span class="n">boundary</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s">'read'</span><span class="p">):</span>
-        <span class="n">filename</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s">'name'</span><span class="p">,</span> <span class="s">''</span><span class="p">)</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'--</span><span class="si">%s</span><span class="s1">'</span> <span class="o">%</span> <span class="n">boundary</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s1">'read'</span><span class="p">):</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
         <span class="n">content</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-        <span class="n">decoded_content</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">'ISO-8859-1'</span><span class="p">)</span>
-        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">'Content-Disposition: form-data; name="%s"; filename="hidden"'</span> <span class="o">%</span> <span class="n">k</span><span class="p">)</span>
-        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">'Content-Type: application/octet-stream</span><span class="se">\r\n</span><span class="s">'</span><span class="p">)</span>
+        <span class="n">decoded_content</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">'ISO-8859-1'</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'Content-Disposition: form-data; name="</span><span class="si">%s</span><span class="s1">"; filename="hidden"'</span> <span class="o">%</span> <span class="n">k</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'Content-Type: application/octet-stream</span><span class="se">\r\n</span><span class="s1">'</span><span class="p">)</span>
         <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">decoded_content</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">'Content-Disposition: form-data; name="%s"</span><span class="se">\r\n</span><span class="s">'</span> <span class="o">%</span> <span class="n">k</span><span class="p">)</span>
-        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">'utf-8'</span><span class="p">))</span>
-    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">'--%s--</span><span class="se">\r\n</span><span class="s">'</span> <span class="o">%</span> <span class="n">boundary</span><span class="p">)</span>
-    <span class="k">return</span> <span class="s">'</span><span class="se">\r\n</span><span class="s">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">boundary</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'Content-Disposition: form-data; name="</span><span class="si">%s</span><span class="s1">"</span><span class="se">\r\n</span><span class="s1">'</span> <span class="o">%</span> <span class="n">k</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">'utf-8'</span><span class="p">))</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'--</span><span class="si">%s</span><span class="s1">--</span><span class="se">\r\n</span><span class="s1">'</span> <span class="o">%</span> <span class="n">boundary</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s1">'</span><span class="se">\r\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">boundary</span>
 
-<span class="c">#############################################################</span>
-<span class="n">url</span> <span class="o">=</span> <span class="s">'https://upload.api.weibo.com/2/statuses/upload.json'</span>
-<span class="n">access_token</span> <span class="o">=</span> <span class="s">'xxx'</span>
-<span class="n">file_name</span> <span class="o">=</span> <span class="s">'big.png'</span>
-<span class="n">path</span> <span class="o">=</span> <span class="s">'/home/xxx/Downloads/'</span> <span class="o">+</span> <span class="n">file_name</span>
-<span class="n">status</span> <span class="o">=</span> <span class="s">'1234567'</span>
+<span class="c1">#############################################################</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s1">'https://upload.api.weibo.com/2/statuses/upload.json'</span>
+<span class="n">access_token</span> <span class="o">=</span> <span class="s1">'xxx'</span>
+<span class="n">file_name</span> <span class="o">=</span> <span class="s1">'big.png'</span>
+<span class="n">path</span> <span class="o">=</span> <span class="s1">'/home/xxx/Downloads/'</span> <span class="o">+</span> <span class="n">file_name</span>
+<span class="n">status</span> <span class="o">=</span> <span class="s1">'1234567'</span>
 
 <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s">'access_token'</span><span class="p">:</span> <span class="n">access_token</span><span class="p">,</span>
-    <span class="s">'status'</span><span class="p">:</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">quote</span><span class="p">(</span><span class="n">status</span><span class="p">),</span>
-    <span class="s">'pic'</span><span class="p">:</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">'rb'</span><span class="p">)</span>
+    <span class="s1">'access_token'</span><span class="p">:</span> <span class="n">access_token</span><span class="p">,</span>
+    <span class="s1">'status'</span><span class="p">:</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">quote</span><span class="p">(</span><span class="n">status</span><span class="p">),</span>
+    <span class="s1">'pic'</span><span class="p">:</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">'rb'</span><span class="p">)</span>
 <span class="p">}</span>
 
 <span class="n">coded_params</span><span class="p">,</span> <span class="n">boundary</span> <span class="o">=</span> <span class="n">_encode_multipart</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
 
-<span class="c">#############################################################</span>
-<span class="n">req</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">coded_params</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">'ISO-8859-1'</span><span class="p">))</span>
-<span class="n">req</span><span class="o">.</span><span class="n">add_header</span><span class="p">(</span><span class="s">'Content-Type'</span><span class="p">,</span> <span class="s">'multipart/form-data; boundary=%s'</span> <span class="o">%</span> <span class="n">boundary</span><span class="p">)</span>
+<span class="c1">#############################################################</span>
+<span class="n">req</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">coded_params</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">'ISO-8859-1'</span><span class="p">))</span>
+<span class="n">req</span><span class="o">.</span><span class="n">add_header</span><span class="p">(</span><span class="s1">'Content-Type'</span><span class="p">,</span> <span class="s1">'multipart/form-data; boundary=</span><span class="si">%s</span><span class="s1">'</span> <span class="o">%</span> <span class="n">boundary</span><span class="p">)</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="n">resp</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
-    <span class="n">body</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">'utf-8'</span><span class="p">)</span>
+    <span class="n">body</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">'utf-8'</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
 <span class="k">except</span> <span class="n">urllib</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">HTTPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
@@ -277,9 +282,9 @@ multipart/form-d">
 </div>
 
 <footer class="blog-footer" id="footer"><a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png"></a><br>本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh">知识共享署名-非商业性使用-禁止演绎 3.0 未本地化版本许可协议</a>进行许可。
-<br>Contents © 2016 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
+<br>Contents © 2017 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
     
-</footer><script src="../assets/js/all-nocdn.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
+</footer><script src="../assets/js/jquery.min.js"></script><script src="../assets/js/bootstrap.min.js"></script><script src="../assets/js/moment-with-locales.min.js"></script><script src="../assets/js/fancydates.js"></script><script src="../assets/js/jquery.colorbox-min.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
     moment.locale("en");
     fancydates(0, "YYYY-MM-DD HH:mm");
     </script><!-- end fancy dates -->

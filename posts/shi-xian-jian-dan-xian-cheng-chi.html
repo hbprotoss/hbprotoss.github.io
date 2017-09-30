@@ -4,7 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>实现简单线程池 | hbprotoss的博客</title>
-<link href="../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/colorbox.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/blog.css" rel="stylesheet" type="text/css">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
 <link rel="canonical" href="http://hbprotoss.github.io/posts/shi-xian-jian-dan-xian-cheng-chi.html">
 <!--[if lt IE 9]><script src="../assets/js/html5.js"></script><![endif]--><meta name="author" content="hbprotoss">
@@ -188,17 +193,17 @@ startTask，先将task入队，然后看是否有空闲线程，如果有则在�
 84
 85</pre></div></td>
 <td class="code">
-<pre class="code literal-block"><span class="c">#!/usr/bin/env python3</span>
+<pre class="code literal-block"><span></span><span class="ch">#!/usr/bin/env python3</span>
 
 <span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">from</span> <span class="nn">PyQt4.QtCore</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">app</span> <span class="k">import</span> <span class="n">logger</span>
 
-<span class="n">log</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">Thread</span><span class="p">(</span><span class="n">QThread</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">manager</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">(</span><span class="n">Thread</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+    <span class="nb">super</span><span class="p">(</span><span class="n">Thread</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">manager</span> <span class="o">=</span> <span class="n">manager</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
 
@@ -206,7 +211,7 @@ startTask，先将task入队，然后看是否有空闲线程，如果有则在�
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="k">while</span> <span class="k">True</span><span class="p">:</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">queue</span><span class="p">))</span>
         <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">dequeueTask</span><span class="p">()</span>
@@ -214,8 +219,8 @@ startTask，先将task入队，然后看是否有空闲线程，如果有则在�
         <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="n">autoDelete</span><span class="p">():</span>
             <span class="k">del</span> <span class="n">task</span>
         <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-        <span class="c"># There is no task</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s">'No task, %s quiting'</span> <span class="o">%</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="c1"># There is no task</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">'No task, </span><span class="si">%s</span><span class="s1"> quiting'</span> <span class="o">%</span> <span class="bp">self</span><span class="p">)</span>
         <span class="k">break</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
@@ -226,7 +231,7 @@ startTask，先将task入队，然后看是否有空闲线程，如果有则在�
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_thread_count</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">max_thread_count</span> <span class="o">=</span> <span class="n">max_thread_count</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">threads</span> <span class="o">=</span> <span class="p">[</span><span class="n">Thread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">'thread_%d'</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_thread_count</span><span class="p">)]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">threads</span> <span class="o">=</span> <span class="p">[</span><span class="n">Thread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'thread_</span><span class="si">%d</span><span class="s1">'</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_thread_count</span><span class="p">)]</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">idle_threads</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">threads</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">idle_threads_mutex</span> <span class="o">=</span> <span class="n">QMutex</span><span class="p">()</span>
@@ -239,21 +244,21 @@ startTask，先将task入队，然后看是否有空闲线程，如果有则在�
     <span class="k">def</span> <span class="nf">setThreadIdle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">thread</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">idle_threads_mutex</span><span class="o">.</span><span class="n">lock</span><span class="p">()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">idle_threads</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">thread</span><span class="p">)</span>
-    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">'%s becomes idle'</span> <span class="o">%</span> <span class="n">thread</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'</span><span class="si">%s</span><span class="s1"> becomes idle'</span> <span class="o">%</span> <span class="n">thread</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">idle_threads_mutex</span><span class="o">.</span><span class="n">unlock</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">startTask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">enqueueTask</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
-    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">'%s enqueued'</span> <span class="o">%</span> <span class="n">task</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'</span><span class="si">%s</span><span class="s1"> enqueued'</span> <span class="o">%</span> <span class="n">task</span><span class="p">)</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">idle_threads_mutex</span><span class="o">.</span><span class="n">lock</span><span class="p">()</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">thread</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idle_threads</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
         <span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">'%s started'</span> <span class="o">%</span> <span class="n">task</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'</span><span class="si">%s</span><span class="s1"> started'</span> <span class="o">%</span> <span class="n">task</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-        <span class="c"># No idle thread</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">'No idle thread'</span><span class="p">)</span>
+        <span class="c1"># No idle thread</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'No idle thread'</span><span class="p">)</span>
         <span class="k">pass</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
@@ -271,7 +276,7 @@ startTask，先将task入队，然后看是否有空闲线程，如果有则在�
 
     <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">QRunnable</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">'Task must be QRunnable object.'</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">'Task must be QRunnable object.'</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">startTask</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
 </pre>
 </td>
@@ -337,9 +342,9 @@ startTask，先将task入队，然后看是否有空闲线程，如果有则在�
 </div>
 
 <footer class="blog-footer" id="footer"><a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png"></a><br>本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh">知识共享署名-非商业性使用-禁止演绎 3.0 未本地化版本许可协议</a>进行许可。
-<br>Contents © 2016 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
+<br>Contents © 2017 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
     
-</footer><script src="../assets/js/all-nocdn.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
+</footer><script src="../assets/js/jquery.min.js"></script><script src="../assets/js/bootstrap.min.js"></script><script src="../assets/js/moment-with-locales.min.js"></script><script src="../assets/js/fancydates.js"></script><script src="../assets/js/jquery.colorbox-min.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
     moment.locale("en");
     fancydates(0, "YYYY-MM-DD HH:mm");
     </script><!-- end fancy dates -->

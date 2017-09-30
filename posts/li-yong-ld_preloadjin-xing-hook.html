@@ -4,7 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>利用LD_PRELOAD进行hook | hbprotoss的博客</title>
-<link href="../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/colorbox.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/blog.css" rel="stylesheet" type="text/css">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
 <link rel="canonical" href="http://hbprotoss.github.io/posts/li-yong-ld_preloadjin-xing-hook.html">
 <!--[if lt IE 9]><script src="../assets/js/html5.js"></script><![endif]--><meta name="author" content="hbprotoss">
@@ -89,8 +94,8 @@ loader在进行动态链接的时候，会将有相同符号名的符号覆盖�
 <p>loader在进行动态链接的时候，会将有相同符号名的符号覆盖成LD_PRELOAD指定的so文件中的符号。换句话说，可以用我们自己的so库中的函数替换原来库里有的函数，从而达到hook的目的。这和Windows下通过修改import table来hook API很类似。相比较之下，LD_PRELOAD更方便了，都不用自己写代码了，系统的loader会帮我们搞定。但是LD_PRELOAD有个限制：只能hook动态链接的库，对静态链接的库无效，因为静态链接的代码都写到可执行文件里了嘛，没有坑让你填。</p>
 <p>上代码</p>
 <p>先是受害者，我们的主程序main.c，通过strcmp比较字符串是否相等：</p>
-<pre class="code literal-block"><span class="cp">#include &lt;stdio.h&gt;</span>
-<span class="cp">#include &lt;string.h&gt;</span>
+<pre class="code literal-block"><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp"></span>
 
 <span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
 <span class="p">{</span>
@@ -108,9 +113,9 @@ loader在进行动态链接的时候，会将有相同符号名的符号覆盖�
 
 
 <p>然后是用来hook的库hook.c：</p>
-<pre class="code literal-block"><span class="cp">#include &lt;stdio.h&gt;</span>
-<span class="cp">#include &lt;string.h&gt;</span>
-<span class="cp">#include &lt;dlfcn.h&gt;</span>
+<pre class="code literal-block"><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;dlfcn.h&gt;</span><span class="cp"></span>
 
 <span class="k">typedef</span> <span class="nf">int</span><span class="p">(</span><span class="o">*</span><span class="n">STRCMP</span><span class="p">)(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span><span class="p">);</span>
 
@@ -132,8 +137,8 @@ loader在进行动态链接的时候，会将有相同符号名的符号覆盖�
 
 <p>因为hook的目标是strcmp，所以typedef了一个STRCMP函数指针。由于hook的目的是要控制函数行为，所以需要从原库libc.so.6中拿到“正版”strcmp指针，保存成old_strcmp以备调用。</p>
 <p>Makefile：</p>
-<pre class="code literal-block"><span class="nb">test</span>: main.c hook.so
-    gcc -o <span class="nb">test </span>main.c
+<pre class="code literal-block"><span></span>test: main.c hook.so
+    gcc -o <span class="nb">test</span> main.c
 
 hook.so: hook.c
     gcc -fPIC -shared -o hook.so hook.c -ldl
@@ -141,12 +146,12 @@ hook.so: hook.c
 
 
 <p>执行：</p>
-<pre class="code literal-block"><span class="nv">$ LD_PRELOAD</span><span class="o">=</span>./hook.so ./test 123
-hack <span class="k">function</span> invoked. <span class="nv">s1</span><span class="o">=</span>&lt;123&gt; <span class="nv">s2</span><span class="o">=</span>&lt;<span class="nb">test</span>&gt;
+<pre class="code literal-block"><span></span>$ <span class="nv">LD_PRELOAD</span><span class="o">=</span>./hook.so ./test <span class="m">123</span>
+hack <span class="k">function</span> invoked. <span class="nv">s1</span><span class="o">=</span>&lt;<span class="m">123</span>&gt; <span class="nv">s2</span><span class="o">=</span>&lt;test&gt;
 Incorrect password
 
-<span class="nv">$ LD_PRELOAD</span><span class="o">=</span>./hook.so ./test <span class="nb">test</span>
-hack <span class="k">function</span> invoked. <span class="nv">s1</span><span class="o">=</span>&lt;<span class="nb">test</span>&gt; <span class="nv">s2</span><span class="o">=</span>&lt;<span class="nb">test</span>&gt;
+$ <span class="nv">LD_PRELOAD</span><span class="o">=</span>./hook.so ./test <span class="nb">test</span>
+hack <span class="k">function</span> invoked. <span class="nv">s1</span><span class="o">=</span>&lt;test&gt; <span class="nv">s2</span><span class="o">=</span>&lt;test&gt;
 Correct password
 </pre>
 
@@ -220,9 +225,9 @@ Correct password
 </div>
 
 <footer class="blog-footer" id="footer"><a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png"></a><br>本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh">知识共享署名-非商业性使用-禁止演绎 3.0 未本地化版本许可协议</a>进行许可。
-<br>Contents © 2016 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
+<br>Contents © 2017 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
     
-</footer><script src="../assets/js/all-nocdn.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
+</footer><script src="../assets/js/jquery.min.js"></script><script src="../assets/js/bootstrap.min.js"></script><script src="../assets/js/moment-with-locales.min.js"></script><script src="../assets/js/fancydates.js"></script><script src="../assets/js/jquery.colorbox-min.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
     moment.locale("en");
     fancydates(0, "YYYY-MM-DD HH:mm");
     </script><!-- end fancy dates -->

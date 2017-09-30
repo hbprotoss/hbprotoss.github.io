@@ -4,7 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Trie树的Python实现 | hbprotoss的博客</title>
-<link href="../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/colorbox.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/blog.css" rel="stylesheet" type="text/css">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
 <link rel="canonical" href="http://hbprotoss.github.io/posts/trieshu-de-pythonshi-xian.html">
 <!--[if lt IE 9]><script src="../assets/js/html5.js"></script><![endif]--><meta name="author" content="hbprotoss">
@@ -94,9 +99,9 @@
 <p>首先是<a href="http://zh.wikipedia.org/wiki/Trie">Trie树在维基百科上的定义</a>：在计算机科学中，trie，又称前缀树，是一种有序树，用于保存关联数组，其中的键通常是字符串。与二叉查找树不同，键不是直接保存在节点中，而是由节点在树中的位置决定。一个节点的所有子孙都有相同的前缀，也就是这个节点对应的字符串，而根节点对应空字符串。一般情况下，不是所有的节点都有对应的值，只有叶子节点和部分内部节点所对应的键才有相关的值。</p>
 <p>说白了就跟在字典里查单词一样：先拿第一个字母在根节点查找下一结点的位置，如果找到就拿第二个字母在刚刚找到的节点下继续往下查找；如果找不到就说明这个字符串在树中不存在。</p>
 <p>C语言实现的代码也在维基百科上：<a href="http://zh.wikipedia.org/wiki/Trie#.E5.AE.9E.E4.BE.8B">http://zh.wikipedia.org/wiki/Trie#.E5.AE.9E.E4.BE.8B</a></p>
-<pre class="code literal-block"><span class="cp">#include &lt;stdio.h&gt;</span>
-<span class="cp">#include &lt;stdlib.h&gt;</span>
-<span class="cp">#include &lt;string.h&gt;</span>
+<pre class="code literal-block"><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp"></span>
 
 <span class="cp">#define TREE_WIDTH 256</span>
 
@@ -211,7 +216,7 @@
 </ol>
 <p>Python版的关键改造就是节点的next表用dict代替，维护的是<code>字符-&gt;子节点</code>的映射。查找时，若待查询字符是next里的一个键就说明该字符在Trie树里，以这个键得到值就能找到下一节点。插入时也只要插入<code>字符-&gt;子节点</code>的映射就可以了。</p>
 <p>具体代码在：<a href="https://github.com/hbprotoss/codejam/blob/master/trie.py">https://github.com/hbprotoss/codejam/blob/master/trie.py</a></p>
-<pre class="code literal-block"><span class="c">#!/usr/bin/env python3</span>
+<pre class="code literal-block"><span></span><span class="ch">#!/usr/bin/env python3</span>
 
 <span class="k">class</span> <span class="nc">Trie</span><span class="p">:</span>
     <span class="n">root</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -247,7 +252,7 @@
 
     <span class="k">def</span> <span class="nf">printTree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">layer</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s">'</span><span class="se">\n</span><span class="s">'</span>
+            <span class="k">return</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span>
 
         <span class="n">rtns</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">items</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -255,20 +260,20 @@
         <span class="n">rtns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">printTree</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">layer</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
 
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
-            <span class="n">rtns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">'.'</span> <span class="o">*</span> <span class="n">layer</span><span class="p">)</span>
+            <span class="n">rtns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'.'</span> <span class="o">*</span> <span class="n">layer</span><span class="p">)</span>
             <span class="n">rtns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
             <span class="n">rtns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">printTree</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">layer</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
 
-        <span class="k">return</span> <span class="s">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rtns</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rtns</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">printTree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">'__main__'</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
     <span class="n">tree</span> <span class="o">=</span> <span class="n">Trie</span><span class="p">()</span>
     <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
         <span class="n">src</span> <span class="o">=</span> <span class="nb">input</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">src</span> <span class="o">==</span> <span class="s">''</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">src</span> <span class="o">==</span> <span class="s1">''</span><span class="p">:</span>
             <span class="k">break</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">tree</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
@@ -341,9 +346,9 @@
 </div>
 
 <footer class="blog-footer" id="footer"><a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png"></a><br>本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh">知识共享署名-非商业性使用-禁止演绎 3.0 未本地化版本许可协议</a>进行许可。
-<br>Contents © 2016 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
+<br>Contents © 2017 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
     
-</footer><script src="../assets/js/all-nocdn.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
+</footer><script src="../assets/js/jquery.min.js"></script><script src="../assets/js/bootstrap.min.js"></script><script src="../assets/js/moment-with-locales.min.js"></script><script src="../assets/js/fancydates.js"></script><script src="../assets/js/jquery.colorbox-min.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
     moment.locale("en");
     fancydates(0, "YYYY-MM-DD HH:mm");
     </script><!-- end fancy dates -->

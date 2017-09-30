@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>hbprotoss的博客 (Programming)</title><link>http://hbprotoss.github.io/</link><description></description><atom:link href="http://hbprotoss.github.io/categories/programming.xml" type="application/rss+xml" rel="self"></atom:link><language>en</language><lastBuildDate>Tue, 12 Apr 2016 06:44:00 GMT</lastBuildDate><generator>https://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Linux下编译链接动态库</title><link>http://hbprotoss.github.io/posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;p&gt;记录下Linux下编译和链接动态库的过程。&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>hbprotoss的博客 (Posts about Programming)</title><link>http://hbprotoss.github.io/</link><description></description><atom:link href="http://hbprotoss.github.io/categories/programming.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 30 Sep 2017 08:09:26 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Linux下编译链接动态库</title><link>http://hbprotoss.github.io/posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;p&gt;记录下Linux下编译和链接动态库的过程。&lt;/p&gt;
 &lt;h3&gt;一、 编写动态库&lt;/h3&gt;
 &lt;p&gt;头文件so.h：  &lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#ifndef  SO_H&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#ifndef  SO_H&lt;/span&gt;
 &lt;span class="cp"&gt;#define  SO_H&lt;/span&gt;
 
 &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
@@ -13,7 +13,7 @@
 
 
 &lt;p&gt;实现文件so.c：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#include "so.h"&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;"so.h"&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
 
 &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;span class="p"&gt;{&lt;/span&gt;
@@ -23,7 +23,7 @@
 
 
 &lt;h3&gt;二、编译动态库&lt;/h3&gt;
-&lt;pre class="code literal-block"&gt;gcc so.c -fPIC -shared -o libtest.so
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;gcc so.c -fPIC -shared -o libtest.so
 &lt;/pre&gt;
 
 
@@ -33,7 +33,7 @@
 &lt;li&gt;说明我们要生成的是动态库so(Shared Object)文件，从而进行动态链接。&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;通过&lt;code&gt;nm -g libtest.so&lt;/code&gt;可以看到，导出符号表中已经有&lt;code&gt;add&lt;/code&gt;这个符号了：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;nm -g libtest.so 
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ nm -g libtest.so 
 &lt;span class="m"&gt;0000000000000670&lt;/span&gt; T add
 &lt;span class="m"&gt;0000000000201030&lt;/span&gt; B __bss_start
                  w __cxa_finalize@@GLIBC_2.2.5
@@ -51,8 +51,8 @@
 &lt;h3&gt;三、使用动态库&lt;/h3&gt;
 &lt;h4&gt;1. 隐式链接(编译时链接)&lt;/h4&gt;
 &lt;p&gt;编写主程序main.c：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
-&lt;span class="cp"&gt;#include "so.h"&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;"so.h"&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
 
 &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;argc&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[])&lt;/span&gt;
 &lt;span class="p"&gt;{&lt;/span&gt;
@@ -68,7 +68,7 @@
 &lt;li&gt;-l：指定需要链接的库。该名称是处在头lib和后缀.so中的名称，如上动态库libtest.so的l参数为-l test&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;此时通过&lt;code&gt;readelf test -d&lt;/code&gt;已经能看到生成的可执行文件test的Dynamic section里依赖libtest.so了&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;readelf &lt;span class="nb"&gt;test&lt;/span&gt; -d
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ readelf &lt;span class="nb"&gt;test&lt;/span&gt; -d
 
 Dynamic section at offset 0xe18 contains &lt;span class="m"&gt;25&lt;/span&gt; entries:
   Tag        Type                         Name/Value
@@ -79,8 +79,8 @@ Dynamic section at offset 0xe18 contains &lt;span class="m"&gt;25&lt;/span&gt; e
 
 
 &lt;p&gt;dynamic symbols中也有一个undefined symbol(add)&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;nm -D &lt;span class="nb"&gt;test &lt;/span&gt;
-&lt;span class="nb"&gt;                 &lt;/span&gt;U add
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ nm -D &lt;span class="nb"&gt;test&lt;/span&gt; 
+                 U add
 &lt;span class="m"&gt;0000000000601048&lt;/span&gt; B __bss_start
 &lt;span class="m"&gt;0000000000601048&lt;/span&gt; D _edata
 &lt;span class="m"&gt;0000000000601050&lt;/span&gt; B _end
@@ -96,20 +96,20 @@ Dynamic section at offset 0xe18 contains &lt;span class="m"&gt;25&lt;/span&gt; e
 
 
 &lt;p&gt;在执行隐式链接的程序之前要注意设置&lt;code&gt;LD_LIBRARY_PATH&lt;/code&gt;环境变量，或者把前面生成的libtest.so复制到系统路径下，否则会找不到动态库。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;./test 
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ ./test 
 ./test: error &lt;span class="k"&gt;while&lt;/span&gt; loading shared libraries: libtest.so: cannot open shared object file: No such file or directory
 
-&lt;span class="nv"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;export &lt;/span&gt;&lt;span class="nv"&gt;LD_LIBRARY_PATH&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;.
+$ &lt;span class="nb"&gt;export&lt;/span&gt; &lt;span class="nv"&gt;LD_LIBRARY_PATH&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;.
 
-&lt;span class="nv"&gt;$ &lt;/span&gt;./test 
-3
+$ ./test 
+&lt;span class="m"&gt;3&lt;/span&gt;
 &lt;/pre&gt;
 
 
 &lt;h4&gt;2. 显式链接(运行时链接)&lt;/h4&gt;
 &lt;p&gt;编写主程序dyn_main.c&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
-&lt;span class="cp"&gt;#include &amp;lt;dlfcn.h&amp;gt;&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;dlfcn.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
 
 &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;argc&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[])&lt;/span&gt;
 &lt;span class="p"&gt;{&lt;/span&gt;
@@ -135,7 +135,7 @@ Dynamic section at offset 0xe18 contains &lt;span class="m"&gt;25&lt;/span&gt; e
 
 &lt;p&gt;使用&lt;code&gt;gcc dyn_main.c -ldl -o dyn_test&lt;/code&gt;编译。&lt;/p&gt;
 &lt;p&gt;这时通过&lt;code&gt;readelf dyn_test -d&lt;/code&gt;可以发现，dyn_test不依赖libtest.so：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;readelf dyn_test -d
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ readelf dyn_test -d
 
 Dynamic section at offset 0xe18 contains &lt;span class="m"&gt;25&lt;/span&gt; entries:
   Tag        Type                         Name/Value
@@ -146,7 +146,7 @@ Dynamic section at offset 0xe18 contains &lt;span class="m"&gt;25&lt;/span&gt; e
 
 
 &lt;p&gt;dyn_test的dynamic symbols中也没有add：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;nm -D dyn_test 
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ nm -D dyn_test 
                  U dlerror
                  U dlopen
                  U dlsym
@@ -156,13 +156,13 @@ Dynamic section at offset 0xe18 contains &lt;span class="m"&gt;25&lt;/span&gt; e
                  w _Jv_RegisterClasses
                  U __libc_start_main
                  U &lt;span class="nb"&gt;printf&lt;/span&gt;
-&lt;span class="nb"&gt;                 &lt;/span&gt;U puts
+                 U puts
 &lt;/pre&gt;
 
 
 &lt;p&gt;运行程序也不需要设置&lt;code&gt;LD_LIBRARY_PATH&lt;/code&gt;环境变量&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;./dyn_test 
-3
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ ./dyn_test 
+&lt;span class="m"&gt;3&lt;/span&gt;
 &lt;/pre&gt;
 
 

@@ -4,7 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Python垃圾回收机制 | hbprotoss的博客</title>
-<link href="../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/colorbox.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/blog.css" rel="stylesheet" type="text/css">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
 <link rel="canonical" href="http://hbprotoss.github.io/posts/pythonla-ji-hui-shou-ji-zhi.html">
 <!--[if lt IE 9]><script src="../assets/js/html5.js"></script><![endif]--><meta name="author" content="hbprotoss">
@@ -90,7 +95,7 @@ Python GC主要使用引用计数（reference counting）来跟踪和回收垃�
 <h3>引用计数</h3>
 <p>引用计数法在对象内部维护了一个被其他对象引用数的引用计数值，当这个引用计数值为0时，说明这个对象不再被其他对象引用，就可以被回收了。</p>
 <p>结合源码来看，所有Python对象的头部包含了这样一个结构PyObject（相当于继承自PyObject）：</p>
-<pre class="code literal-block"><span class="c1">// object.h</span>
+<pre class="code literal-block"><span></span><span class="c1">// object.h</span>
 <span class="k">struct</span> <span class="n">_object</span> <span class="p">{</span>
     <span class="n">Py_ssize_t</span> <span class="n">ob_refcnt</span><span class="p">;</span>
     <span class="k">struct</span> <span class="n">PyTypeObject</span> <span class="o">*</span><span class="n">ob_type</span><span class="p">;</span>
@@ -100,7 +105,7 @@ Python GC主要使用引用计数（reference counting）来跟踪和回收垃�
 
 <p>ob_refcnt就是引用计数值。</p>
 <p>例如，下面是int型对象的定义：</p>
-<pre class="code literal-block"><span class="c1">// intobject.h</span>
+<pre class="code literal-block"><span></span><span class="c1">// intobject.h</span>
 <span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
         <span class="n">PyObject_HEAD</span>
         <span class="kt">long</span> <span class="n">ob_ival</span><span class="p">;</span>
@@ -123,7 +128,7 @@ Python GC主要使用引用计数（reference counting）来跟踪和回收垃�
 <p>为了解决这两个致命弱点，Python又引入了以下两种GC机制。</p>
 <h3>标记-清除</h3>
 <p>“标记-清除”法是为了解决循环引用问题。可以包含其他对象引用的容器对象（如list, dict, set，甚至class）都可能产生循环引用，为此，在申请内存时，所有容器对象的头部又加上了<code>PyGC_Head</code>来实现“标记-清除”机制。</p>
-<pre class="code literal-block"><span class="c1">// objimpl.h</span>
+<pre class="code literal-block"><span></span><span class="c1">// objimpl.h</span>
 <span class="k">typedef</span> <span class="k">union</span> <span class="n">_gc_head</span> <span class="p">{</span>
     <span class="k">struct</span> <span class="p">{</span>
         <span class="k">union</span> <span class="n">_gc_head</span> <span class="o">*</span><span class="n">gc_next</span><span class="p">;</span>
@@ -136,7 +141,7 @@ Python GC主要使用引用计数（reference counting）来跟踪和回收垃�
 
 
 <p>在为对象申请内存的时候，可以明显看到，实际申请的内存数量已经加上了PyGC_Head的大小</p>
-<pre class="code literal-block"><span class="c1">// gcmodule.c</span>
+<pre class="code literal-block"><span></span><span class="c1">// gcmodule.c</span>
 <span class="n">PyObject</span> <span class="o">*</span>
 <span class="nf">_PyObject_GC_Malloc</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">basicsize</span><span class="p">)</span>
 <span class="p">{</span>
@@ -155,7 +160,7 @@ Python GC主要使用引用计数（reference counting）来跟踪和回收垃�
 
 
 <p>举例来说，从<code>list</code>对象的创建中，有如下主要逻辑：</p>
-<pre class="code literal-block"><span class="c1">// listobject.c</span>
+<pre class="code literal-block"><span></span><span class="c1">// listobject.c</span>
 <span class="n">PyObject</span> <span class="o">*</span>
 <span class="nf">PyList_New</span><span class="p">(</span><span class="n">Py_ssize_t</span> <span class="n">size</span><span class="p">)</span>
 <span class="p">{</span>
@@ -171,7 +176,7 @@ Python GC主要使用引用计数（reference counting）来跟踪和回收垃�
 
 <p><code>_PyObject_GC_TRACK</code>就将对象链接到了第0代对象集合中（后文详述分代回收）。</p>
 <p>垃圾标记时，先将集合中对象的引用计数复制一份副本(以免在操作过程中破坏真实的引用计数值)：</p>
-<pre class="code literal-block"><span class="c1">// gcmodule.c</span>
+<pre class="code literal-block"><span></span><span class="c1">// gcmodule.c</span>
 <span class="k">static</span> <span class="kt">void</span>
 <span class="nf">update_refs</span><span class="p">(</span><span class="n">PyGC_Head</span> <span class="o">*</span><span class="n">containers</span><span class="p">)</span>
 <span class="p">{</span>
@@ -186,7 +191,7 @@ Python GC主要使用引用计数（reference counting）来跟踪和回收垃�
 
 
 <p>然后操作这个副本，遍历对象集合，将被引用对象的引用计数副本值减1：</p>
-<pre class="code literal-block"><span class="c1">// gcmodule.c</span>
+<pre class="code literal-block"><span></span><span class="c1">// gcmodule.c</span>
 <span class="k">static</span> <span class="kt">void</span>
 <span class="nf">subtract_refs</span><span class="p">(</span><span class="n">PyGC_Head</span> <span class="o">*</span><span class="n">containers</span><span class="p">)</span>
 <span class="p">{</span>
@@ -204,7 +209,7 @@ Python GC主要使用引用计数（reference counting）来跟踪和回收垃�
 
 <p>这个<code>traverse</code>是对象类型定义的函数，用来遍历对象，通过传入的回调函数<code>visit_decref</code>来操作引用计数副本。</p>
 <p>例如<code>dict</code>就要在key和value上都用<code>visit_decref</code>操作一遍：</p>
-<pre class="code literal-block"><span class="c1">// dictobject.c</span>
+<pre class="code literal-block"><span></span><span class="c1">// dictobject.c</span>
 <span class="k">static</span> <span class="kt">int</span>
 <span class="nf">dict_traverse</span><span class="p">(</span><span class="n">PyObject</span> <span class="o">*</span><span class="n">op</span><span class="p">,</span> <span class="n">visitproc</span> <span class="n">visit</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">)</span>
 <span class="p">{</span>
@@ -222,7 +227,7 @@ Python GC主要使用引用计数（reference counting）来跟踪和回收垃�
 
 
 <p>然后根据引用计数副本值是否为0将集合内的对象分成两类，reachable和unreachable，其中unreachable是可以被回收的对象：</p>
-<pre class="code literal-block"><span class="c1">// gcmodule.c</span>
+<pre class="code literal-block"><span></span><span class="c1">// gcmodule.c</span>
 <span class="k">static</span> <span class="kt">void</span>
 <span class="nf">move_unreachable</span><span class="p">(</span><span class="n">PyGC_Head</span> <span class="o">*</span><span class="n">young</span><span class="p">,</span> <span class="n">PyGC_Head</span> <span class="o">*</span><span class="n">unreachable</span><span class="p">)</span>
 <span class="p">{</span>
@@ -254,7 +259,7 @@ Python GC主要使用引用计数（reference counting）来跟踪和回收垃�
 <h3>分代回收</h3>
 <p>分代回收的整体思想是：将系统中的所有内存块根据其存活时间划分为不同的集合，每个集合就成为一个“代”，垃圾收集频率随着“代”的存活时间的增大而减小，存活时间通常利用经过几次垃圾回收来度量。</p>
 <p>用来表示“代”的结构体是<code>gc_generation</code>， 包括了当前代链表表头、对象数量上限、当前对象数量：</p>
-<pre class="code literal-block"><span class="c1">// gcmodule.c</span>
+<pre class="code literal-block"><span></span><span class="c1">// gcmodule.c</span>
 <span class="k">struct</span> <span class="n">gc_generation</span> <span class="p">{</span>
     <span class="n">PyGC_Head</span> <span class="n">head</span><span class="p">;</span>
     <span class="kt">int</span> <span class="n">threshold</span><span class="p">;</span> <span class="cm">/* collection threshold */</span>
@@ -265,7 +270,7 @@ Python GC主要使用引用计数（reference counting）来跟踪和回收垃�
 
 
 <p>Python默认定义了三代对象集合，索引数越大，对象存活时间越长。</p>
-<pre class="code literal-block"><span class="cp">#define NUM_GENERATIONS 3</span>
+<pre class="code literal-block"><span></span><span class="cp">#define NUM_GENERATIONS 3</span>
 <span class="cp">#define GEN_HEAD(n) (&amp;generations[n].head)</span>
 
 <span class="cm">/* linked lists of container objects */</span>
@@ -279,7 +284,7 @@ Python GC主要使用引用计数（reference counting）来跟踪和回收垃�
 
 
 <p>新生成的对象会被加入第0代，前面<code>_PyObject_GC_Malloc</code>中省略的部分就是Python GC触发的时机。每新生成一个对象都会检查第0代有没有满，如果满了就开始着手进行垃圾回收：</p>
-<pre class="code literal-block"> <span class="n">g</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_refs</span> <span class="o">=</span> <span class="n">GC_UNTRACKED</span><span class="p">;</span>
+<pre class="code literal-block"><span></span> <span class="n">g</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_refs</span> <span class="o">=</span> <span class="n">GC_UNTRACKED</span><span class="p">;</span>
  <span class="n">generations</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">count</span><span class="o">++</span><span class="p">;</span> <span class="cm">/* number of allocated GC objects */</span>
  <span class="k">if</span> <span class="p">(</span><span class="n">generations</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">count</span> <span class="o">&gt;</span> <span class="n">generations</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">threshold</span> <span class="o">&amp;&amp;</span>
      <span class="n">enabled</span> <span class="o">&amp;&amp;</span>
@@ -361,9 +366,9 @@ Python GC主要使用引用计数（reference counting）来跟踪和回收垃�
 </div>
 
 <footer class="blog-footer" id="footer"><a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png"></a><br>本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh">知识共享署名-非商业性使用-禁止演绎 3.0 未本地化版本许可协议</a>进行许可。
-<br>Contents © 2016 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
+<br>Contents © 2017 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
     
-</footer><script src="../assets/js/all-nocdn.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
+</footer><script src="../assets/js/jquery.min.js"></script><script src="../assets/js/bootstrap.min.js"></script><script src="../assets/js/moment-with-locales.min.js"></script><script src="../assets/js/fancydates.js"></script><script src="../assets/js/jquery.colorbox-min.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
     moment.locale("en");
     fancydates(0, "YYYY-MM-DD HH:mm");
     </script><!-- end fancy dates -->

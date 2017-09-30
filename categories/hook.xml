@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>hbprotoss的博客 (Hook)</title><link>http://hbprotoss.github.io/</link><description></description><atom:link href="http://hbprotoss.github.io/categories/hook.xml" type="application/rss+xml" rel="self"></atom:link><language>en</language><lastBuildDate>Tue, 12 Apr 2016 06:44:00 GMT</lastBuildDate><generator>https://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>利用LD_PRELOAD进行hook</title><link>http://hbprotoss.github.io/posts/li-yong-ld_preloadjin-xing-hook.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;p&gt;好久没玩hook这种猥琐的东西里，今天在Linux下体验了一把。&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>hbprotoss的博客 (Posts about Hook)</title><link>http://hbprotoss.github.io/</link><description></description><atom:link href="http://hbprotoss.github.io/categories/hook.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 30 Sep 2017 08:09:26 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>利用LD_PRELOAD进行hook</title><link>http://hbprotoss.github.io/posts/li-yong-ld_preloadjin-xing-hook.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;p&gt;好久没玩hook这种猥琐的东西里，今天在Linux下体验了一把。&lt;/p&gt;
 &lt;p&gt;loader在进行动态链接的时候，会将有相同符号名的符号覆盖成LD_PRELOAD指定的so文件中的符号。换句话说，可以用我们自己的so库中的函数替换原来库里有的函数，从而达到hook的目的。这和Windows下通过修改import table来hook API很类似。相比较之下，LD_PRELOAD更方便了，都不用自己写代码了，系统的loader会帮我们搞定。但是LD_PRELOAD有个限制：只能hook动态链接的库，对静态链接的库无效，因为静态链接的代码都写到可执行文件里了嘛，没有坑让你填。&lt;/p&gt;
 &lt;p&gt;上代码&lt;/p&gt;
 &lt;p&gt;先是受害者，我们的主程序main.c，通过strcmp比较字符串是否相等：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
-&lt;span class="cp"&gt;#include &amp;lt;string.h&amp;gt;&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;string.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
 
 &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;argc&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[])&lt;/span&gt;
 &lt;span class="p"&gt;{&lt;/span&gt;
@@ -22,9 +22,9 @@
 
 
 &lt;p&gt;然后是用来hook的库hook.c：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
-&lt;span class="cp"&gt;#include &amp;lt;string.h&amp;gt;&lt;/span&gt;
-&lt;span class="cp"&gt;#include &amp;lt;dlfcn.h&amp;gt;&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;string.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;dlfcn.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
 
 &lt;span class="k"&gt;typedef&lt;/span&gt; &lt;span class="nf"&gt;int&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;STRCMP&lt;/span&gt;&lt;span class="p"&gt;)(&lt;/span&gt;&lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
 
@@ -46,8 +46,8 @@
 
 &lt;p&gt;因为hook的目标是strcmp，所以typedef了一个STRCMP函数指针。由于hook的目的是要控制函数行为，所以需要从原库libc.so.6中拿到“正版”strcmp指针，保存成old_strcmp以备调用。&lt;/p&gt;
 &lt;p&gt;Makefile：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;test&lt;/span&gt;: main.c hook.so
-    gcc -o &lt;span class="nb"&gt;test &lt;/span&gt;main.c
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;test: main.c hook.so
+    gcc -o &lt;span class="nb"&gt;test&lt;/span&gt; main.c
 
 hook.so: hook.c
     gcc -fPIC -shared -o hook.so hook.c -ldl
@@ -55,12 +55,12 @@ hook.so: hook.c
 
 
 &lt;p&gt;执行：&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$ LD_PRELOAD&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;./hook.so ./test 123
-hack &lt;span class="k"&gt;function&lt;/span&gt; invoked. &lt;span class="nv"&gt;s1&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;123&amp;gt; &lt;span class="nv"&gt;s2&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;&lt;span class="nb"&gt;test&lt;/span&gt;&amp;gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ &lt;span class="nv"&gt;LD_PRELOAD&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;./hook.so ./test &lt;span class="m"&gt;123&lt;/span&gt;
+hack &lt;span class="k"&gt;function&lt;/span&gt; invoked. &lt;span class="nv"&gt;s1&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;&lt;span class="m"&gt;123&lt;/span&gt;&amp;gt; &lt;span class="nv"&gt;s2&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;test&amp;gt;
 Incorrect password
 
-&lt;span class="nv"&gt;$ LD_PRELOAD&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;./hook.so ./test &lt;span class="nb"&gt;test&lt;/span&gt;
-hack &lt;span class="k"&gt;function&lt;/span&gt; invoked. &lt;span class="nv"&gt;s1&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;&lt;span class="nb"&gt;test&lt;/span&gt;&amp;gt; &lt;span class="nv"&gt;s2&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;&lt;span class="nb"&gt;test&lt;/span&gt;&amp;gt;
+$ &lt;span class="nv"&gt;LD_PRELOAD&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;./hook.so ./test &lt;span class="nb"&gt;test&lt;/span&gt;
+hack &lt;span class="k"&gt;function&lt;/span&gt; invoked. &lt;span class="nv"&gt;s1&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;test&amp;gt; &lt;span class="nv"&gt;s2&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;lt;test&amp;gt;
 Correct password
 &lt;/pre&gt;
 

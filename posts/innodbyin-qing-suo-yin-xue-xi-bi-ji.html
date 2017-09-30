@@ -4,7 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>InnoDB引擎索引学习笔记 | hbprotoss的博客</title>
-<link href="../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/colorbox.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/blog.css" rel="stylesheet" type="text/css">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
 <link rel="canonical" href="http://hbprotoss.github.io/posts/innodbyin-qing-suo-yin-xue-xi-bi-ji.html">
 <!--[if lt IE 9]><script src="../assets/js/html5.js"></script><![endif]--><meta name="author" content="hbprotoss">
@@ -101,7 +106,7 @@
 <h3>性能实测</h3>
 <p>下面结合实际例子阐述现象和内部结构的关系</p>
 <p>首先建立一个测试表：</p>
-<pre class="code literal-block"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">test</span> <span class="p">(</span>
+<pre class="code literal-block"><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">test</span> <span class="p">(</span>
      <span class="n">id</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="n">AUTO_INCREMENT</span><span class="p">,</span>
      <span class="n">a</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
      <span class="n">b</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
@@ -115,7 +120,7 @@
 <p>数据项为(a,b,c)在0~200之间的所有组合项，共计8000000行记录。为了消除几次实验中以query cache为代表的各种server cache对实验数据的影响，每次实验后均重启mysql服务。</p>
 <h4>索引对查询效率的影响</h4>
 <p>首先是建立KEY(a,b,c)索引前后的性能对比，能很明显地看到索引大幅提升查询速度。没有索引的时候需要做全表扫描，建立索引之后通过B-Tree搜索。</p>
-<pre class="code literal-block">没有索引（除主键，下同）
+<pre class="code literal-block"><span></span>没有索引（除主键，下同）
 [SQL]select * from test where a = 0 and b = 1;
 Affected rows: 0
 Time: 0.324s
@@ -128,21 +133,21 @@ Time: 0.004s
 
 
 <p>由于MySQL优化器的优化，where条件中的各个子条件顺序对索引的使用没有影响。</p>
-<pre class="code literal-block">[SQL]select * from test where b = 1 and a = 0;
+<pre class="code literal-block"><span></span>[SQL]select * from test where b = 1 and a = 0;
 Affected rows: 0
 Time: 0.002s
 </pre>
 
 
 <p>当使用的列非严格的索引最左前缀时，可以想象，只有a加速了索引搜索，找到所有符合a条件的记录的之后只能顺序扫描检查c是否符合条件。所以相比没有索引时要快，但是慢于使用严格索引最左前缀时的速度。</p>
-<pre class="code literal-block">[SQL]select * from test where a = 0 and c = 1;
+<pre class="code literal-block"><span></span>[SQL]select * from test where a = 0 and c = 1;
 Affected rows: 0
 Time: 0.043s
 </pre>
 
 
 <p>当没有使用到a列作为条件时完全没法使用索引，甚至比没有索引时还要慢。因为建表的时候a在前，b、c在后，并且数据节点有序。在没有索引的测试中，InnoDB引擎到a不为0时自动停止搜索。而在这个例子中需要扫描全表找出满足符合条件的b、c，达到完全没法忍受的16秒。</p>
-<pre class="code literal-block">[SQL]select * from test where b = 0 and c = 1;
+<pre class="code literal-block"><span></span>[SQL]select * from test where b = 0 and c = 1;
 Affected rows: 0
 Time: 16.023s
 </pre>
@@ -150,7 +155,7 @@ Time: 16.023s
 
 <h4>索引对排序效率的影响</h4>
 <p>只要能用到索引，并且ORDER BY后面的列在索引中，则顺序还是倒序排序对性能无影响。因为叶子节点是个双向链表，倒序可以从后向前遍历，与顺序的代价相同。</p>
-<pre class="code literal-block">[SQL]select * from test where a = 0 ORDER BY b;
+<pre class="code literal-block"><span></span>[SQL]select * from test where a = 0 ORDER BY b;
 Affected rows: 0
 Time: 0.085s
 
@@ -161,7 +166,7 @@ Time: 0.089s
 
 
 <p>但是，当有两个字段排序的顺序不同时，叶子节点的有序性就无法用在排序中，必须读出所有叶子节点之后再按指定的字段进行一趟排序，所以速度就慢了下来。</p>
-<pre class="code literal-block">[SQL]select * from test where a = 0 ORDER BY b DESC, c DESC;
+<pre class="code literal-block"><span></span>[SQL]select * from test where a = 0 ORDER BY b DESC, c DESC;
 Affected rows: 0
 Time: 0.089s
 
@@ -172,7 +177,7 @@ Time: 0.184s
 
 
 <p>同样，下面的例子中对索引左边的字段a进行范围选择的时候也没法运用索引，因为多个取值的a无法保证b和c字段有序，必须重新排序</p>
-<pre class="code literal-block">[SQL]select * from test where a &lt;= 0 ORDER BY b;
+<pre class="code literal-block"><span></span>[SQL]select * from test where a &lt;= 0 ORDER BY b;
 Affected rows: 0
 Time: 0.103s
 </pre>
@@ -244,9 +249,9 @@ Time: 0.103s
 </div>
 
 <footer class="blog-footer" id="footer"><a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png"></a><br>本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh">知识共享署名-非商业性使用-禁止演绎 3.0 未本地化版本许可协议</a>进行许可。
-<br>Contents © 2016 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
+<br>Contents © 2017 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
     
-</footer><script src="../assets/js/all-nocdn.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
+</footer><script src="../assets/js/jquery.min.js"></script><script src="../assets/js/bootstrap.min.js"></script><script src="../assets/js/moment-with-locales.min.js"></script><script src="../assets/js/fancydates.js"></script><script src="../assets/js/jquery.colorbox-min.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
     moment.locale("en");
     fancydates(0, "YYYY-MM-DD HH:mm");
     </script><!-- end fancy dates -->

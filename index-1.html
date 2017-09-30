@@ -4,7 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>hbprotoss的博客 (old posts, page 1) | hbprotoss的博客</title>
-<link href="assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="assets/css/colorbox.css" rel="stylesheet" type="text/css">
+<link href="assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="assets/css/blog.css" rel="stylesheet" type="text/css">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="rss.xml">
 <link rel="canonical" href="http://hbprotoss.github.io/index-1.html">
 <link rel="prev" href="index.html" type="text/html">
@@ -54,7 +59,197 @@
                 
 
 <div class="postindex">
-    <article class="blog-post h-entry post-text"><header><h2 class="p-name entry-title blog-post-title"><a href="posts/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.html" class="u-url">C语言宏的特殊用法和几个坑</a></h2>
+    <article class="blog-post h-entry post-text"><header><h2 class="p-name entry-title blog-post-title"><a href="posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html" class="u-url">Linux下编译链接动态库</a></h2>
+        <div class="metadata blog-post-meta">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html" rel="bookmark"><time class="published dt-published" datetime="2013-10-08T09:18:31+08:00" title="2013-10-08 09:18">2013-10-08 09:18</time></a></p>
+                <p class="commentline">
+        
+    <a href="posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html#disqus_thread" data-disqus-identifier="cache/posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html">Comments</a>
+
+
+        </p>
+</div>
+    </header><div class="e-content entry-content">
+    <div>
+<p>记录下Linux下编译和链接动态库的过程。</p>
+<h3>一、 编写动态库</h3>
+<p>头文件so.h：  </p>
+<pre class="code literal-block"><span></span><span class="cp">#ifndef  SO_H</span>
+<span class="cp">#define  SO_H</span>
+
+<span class="kt">int</span> <span class="nf">add</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">);</span>
+
+
+<span class="cp">#endif  </span><span class="cm">/*SO_H*/</span><span class="cp"></span>
+</pre>
+
+
+<p>实现文件so.c：</p>
+<pre class="code literal-block"><span></span><span class="cp">#include</span> <span class="cpf">"so.h"</span><span class="cp"></span>
+
+<span class="kt">int</span> <span class="nf">add</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+
+
+<h3>二、编译动态库</h3>
+<pre class="code literal-block"><span></span>gcc so.c -fPIC -shared -o libtest.so
+</pre>
+
+
+<p>解释一下各个参数含义：</p>
+<ol>
+<li>-fPIC：生成位置无关代码(<a href="http://en.wikipedia.org/wiki/Position-independent_code">Position Independent Code</a>)，只有生成PIC才能通过虚拟页映射达到可执行代码在进程间共享，从而节省内存的目的。</li>
+<li>说明我们要生成的是动态库so(Shared Object)文件，从而进行动态链接。</li>
+</ol>
+<p>通过<code>nm -g libtest.so</code>可以看到，导出符号表中已经有<code>add</code>这个符号了：</p>
+<pre class="code literal-block"><span></span>$ nm -g libtest.so 
+<span class="m">0000000000000670</span> T add
+<span class="m">0000000000201030</span> B __bss_start
+                 w __cxa_finalize@@GLIBC_2.2.5
+<span class="m">0000000000201030</span> D _edata
+<span class="m">0000000000201038</span> B _end
+<span class="m">0000000000000684</span> T _fini
+                 w __gmon_start__
+<span class="m">0000000000000540</span> T _init
+                 w _ITM_deregisterTMCloneTable
+                 w _ITM_registerTMCloneTable
+                 w _Jv_RegisterClasses
+</pre>
+
+
+<h3>三、使用动态库</h3>
+<h4>1. 隐式链接(编译时链接)</h4>
+<p>编写主程序main.c：</p>
+<pre class="code literal-block"><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">"so.h"</span><span class="cp"></span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+
+
+<p>使用<code>gcc main.c -L. -ltest -o test</code>进行编译。</p>
+<ul>
+<li>-L：添加库文件的搜索路径</li>
+<li>-l：指定需要链接的库。该名称是处在头lib和后缀.so中的名称，如上动态库libtest.so的l参数为-l test</li>
+</ul>
+<p>此时通过<code>readelf test -d</code>已经能看到生成的可执行文件test的Dynamic section里依赖libtest.so了</p>
+<pre class="code literal-block"><span></span>$ readelf <span class="nb">test</span> -d
+
+Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
+  Tag        Type                         Name/Value
+ 0x0000000000000001 <span class="o">(</span>NEEDED<span class="o">)</span>             Shared library: <span class="o">[</span>libtest.so<span class="o">]</span>
+ 0x0000000000000001 <span class="o">(</span>NEEDED<span class="o">)</span>             Shared library: <span class="o">[</span>libc.so.6<span class="o">]</span>
+......
+</pre>
+
+
+<p>dynamic symbols中也有一个undefined symbol(add)</p>
+<pre class="code literal-block"><span></span>$ nm -D <span class="nb">test</span> 
+                 U add
+<span class="m">0000000000601048</span> B __bss_start
+<span class="m">0000000000601048</span> D _edata
+<span class="m">0000000000601050</span> B _end
+00000000004007b4 T _fini
+                 w __gmon_start__
+<span class="m">0000000000400578</span> T _init
+                 w _ITM_deregisterTMCloneTable
+                 w _ITM_registerTMCloneTable
+                 w _Jv_RegisterClasses
+                 U __libc_start_main
+                 U <span class="nb">printf</span>
+</pre>
+
+
+<p>在执行隐式链接的程序之前要注意设置<code>LD_LIBRARY_PATH</code>环境变量，或者把前面生成的libtest.so复制到系统路径下，否则会找不到动态库。</p>
+<pre class="code literal-block"><span></span>$ ./test 
+./test: error <span class="k">while</span> loading shared libraries: libtest.so: cannot open shared object file: No such file or directory
+
+$ <span class="nb">export</span> <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>.
+
+$ ./test 
+<span class="m">3</span>
+</pre>
+
+
+<h4>2. 显式链接(运行时链接)</h4>
+<p>编写主程序dyn_main.c</p>
+<pre class="code literal-block"><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;dlfcn.h&gt;</span><span class="cp"></span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="n">dl</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">add</span><span class="p">)(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">);</span>
+    <span class="n">dl</span> <span class="o">=</span> <span class="n">dlopen</span><span class="p">(</span> <span class="s">"./libtest.so"</span><span class="p">,</span> <span class="n">RTLD_LAZY</span><span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span> <span class="n">dl</span> <span class="o">==</span> <span class="nb">NULL</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"so loading error.</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">add</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">(</span><span class="o">*</span><span class="p">)(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">))</span><span class="n">dlsym</span><span class="p">(</span><span class="n">dl</span><span class="p">,</span> <span class="s">"add"</span><span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span> <span class="n">dlerror</span><span class="p">()</span> <span class="o">!=</span> <span class="nb">NULL</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"fun load error.</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+
+
+<p>使用<code>gcc dyn_main.c -ldl -o dyn_test</code>编译。</p>
+<p>这时通过<code>readelf dyn_test -d</code>可以发现，dyn_test不依赖libtest.so：</p>
+<pre class="code literal-block"><span></span>$ readelf dyn_test -d
+
+Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
+  Tag        Type                         Name/Value
+ 0x0000000000000001 <span class="o">(</span>NEEDED<span class="o">)</span>             Shared library: <span class="o">[</span>libdl.so.2<span class="o">]</span>
+ 0x0000000000000001 <span class="o">(</span>NEEDED<span class="o">)</span>             Shared library: <span class="o">[</span>libc.so.6<span class="o">]</span>
+......
+</pre>
+
+
+<p>dyn_test的dynamic symbols中也没有add：</p>
+<pre class="code literal-block"><span></span>$ nm -D dyn_test 
+                 U dlerror
+                 U dlopen
+                 U dlsym
+                 w __gmon_start__
+                 w _ITM_deregisterTMCloneTable
+                 w _ITM_registerTMCloneTable
+                 w _Jv_RegisterClasses
+                 U __libc_start_main
+                 U <span class="nb">printf</span>
+                 U puts
+</pre>
+
+
+<p>运行程序也不需要设置<code>LD_LIBRARY_PATH</code>环境变量</p>
+<pre class="code literal-block"><span></span>$ ./dyn_test 
+<span class="m">3</span>
+</pre>
+
+
+<hr>
+<p>参考资料：</p>
+<ol>
+<li><a href="http://hi.baidu.com/linuxlife/item/ed8e5d0c6e86b491a2df4366">Linux动态库的编译与使用 转载</a></li>
+<li><a href="http://os.51cto.com/art/201003/186246.htm">详细分析Linux动态库的使用方式</a></li>
+<li><a href="http://stackoverflow.com/questions/34732/how-do-i-list-the-symbols-in-a-so-file">How do I list the symbols in a .so file</a></li>
+<li><a href="http://stackoverflow.com/questions/10480657/import-names-in-elf-binary">Import names in ELF binary</a></li>
+</ol>
+</div>
+    </div>
+    </article><article class="blog-post h-entry post-text"><header><h2 class="p-name entry-title blog-post-title"><a href="posts/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.html" class="u-url">C语言宏的特殊用法和几个坑</a></h2>
         <div class="metadata blog-post-meta">
             <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
             <p class="dateline"><a href="posts/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng.html" rel="bookmark"><time class="published dt-published" datetime="2013-07-13T14:25:31+08:00" title="2013-07-13 14:25">2013-07-13 14:25</time></a></p>
@@ -259,11 +454,11 @@
 <p>一次偶然发现，Python的对象竟然可以在运行期动态添加类定义时没有的属性，这又颠覆了我对Python OO机制的理解。Google了一把，顺着<code>__dict__</code>属性一路找到descriptor，揭开了隐藏在Python对象之后的内幕。</p>
 <p>本文主要记录Python的descriptor机制，以及其在Python对象的属性、方法绑定上的作用。</p>
 <p>先从本文的始作俑者，运行期动态添加对象属性开始讲起。</p>
-<pre class="code literal-block"><span class="k">class</span> <span class="nc">A</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s">'value'</span>
+<pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">A</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s1">'value'</span>
     <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">print</span><span class="p">(</span><span class="s">'function f'</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">'function f'</span><span class="p">)</span>
 <span class="n">a</span> <span class="o">=</span> <span class="n">A</span><span class="p">()</span>
 <span class="n">a</span><span class="o">.</span><span class="n">attr</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="k">print</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">attr</span><span class="p">)</span>
@@ -273,21 +468,21 @@
 <p>以上代码奇迹般的没有报错，而且还输出了1。这肯定会让写过C++/Java代码的童鞋表示吃惊，Python变量类型动态也就不稀奇了，对象属性还能动态添加的？Python到底在背后做了什么？</p>
 <h3>神奇的__dict__</h3>
 <p>在<code>a.attr = 1</code>前后分别加上一行<code>print(a.__dict__)</code>就会得到如下结果:  </p>
-<pre class="code literal-block"><span class="p">{</span><span class="s">'value'</span><span class="p">:</span> <span class="s">'value'</span><span class="p">}</span>  
+<pre class="code literal-block"><span></span><span class="p">{</span><span class="s1">'value'</span><span class="p">:</span> <span class="s1">'value'</span><span class="p">}</span>  
 <span class="mi">1</span>  
-<span class="p">{</span><span class="s">'value'</span><span class="p">:</span> <span class="s">'value'</span><span class="p">,</span> <span class="s">'attr'</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span> 
+<span class="p">{</span><span class="s1">'value'</span><span class="p">:</span> <span class="s1">'value'</span><span class="p">,</span> <span class="s1">'attr'</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span> 
 </pre>
 
 
 <p>显而易见，我们在运行期定义的属性和类定义时定义的属性都被放在了<code>__dict__</code>里。</p>
 <p>到这里有人可能就有疑问了，Python里的一切不都是对象麽？为什么成员函数<code>__init__</code>、<code>f</code>不在这个字典里？</p>
 <p>看看<code>A.__dict__</code>里有什么就明白了：  </p>
-<pre class="code literal-block"><span class="p">{</span><span class="s">'__dict__'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">attribute</span> <span class="s">'__dict__'</span> <span class="n">of</span> <span class="s">'A'</span> <span class="n">objects</span><span class="o">&gt;</span><span class="p">,</span>
- <span class="s">'__doc__'</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
- <span class="s">'__init__'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">__main__</span><span class="o">.</span><span class="n">__init__</span><span class="o">&gt;</span><span class="p">,</span>
- <span class="s">'__module__'</span><span class="p">:</span> <span class="s">'__main__'</span><span class="p">,</span>
- <span class="s">'__weakref__'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">attribute</span> <span class="s">'__weakref__'</span> <span class="n">of</span> <span class="s">'A'</span> <span class="n">objects</span><span class="o">&gt;</span><span class="p">,</span>
- <span class="s">'f'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">__main__</span><span class="o">.</span><span class="n">f</span><span class="o">&gt;</span><span class="p">}</span>
+<pre class="code literal-block"><span></span><span class="p">{</span><span class="s1">'__dict__'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">attribute</span> <span class="s1">'__dict__'</span> <span class="n">of</span> <span class="s1">'A'</span> <span class="n">objects</span><span class="o">&gt;</span><span class="p">,</span>
+ <span class="s1">'__doc__'</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+ <span class="s1">'__init__'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">__main__</span><span class="o">.</span><span class="fm">__init__</span><span class="o">&gt;</span><span class="p">,</span>
+ <span class="s1">'__module__'</span><span class="p">:</span> <span class="s1">'__main__'</span><span class="p">,</span>
+ <span class="s1">'__weakref__'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">attribute</span> <span class="s1">'__weakref__'</span> <span class="n">of</span> <span class="s1">'A'</span> <span class="n">objects</span><span class="o">&gt;</span><span class="p">,</span>
+ <span class="s1">'f'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">__main__</span><span class="o">.</span><span class="n">f</span><span class="o">&gt;</span><span class="p">}</span>
 </pre>
 
 
@@ -303,34 +498,34 @@
 <p>当以上三个步骤都没有找到要访问的属性的时候Python就只能抛出<code>AttributeError</code>异常了。</p>
 <h3>Descriptor是什么</h3>
 <p>讲了这么多，貌似跟descriptor半毛钱关系没有嘛。别急，接着往下看。</p>
-<pre class="code literal-block"><span class="k">class</span> <span class="nc">RevealAccess</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initval</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'var'</span><span class="p">):</span>
+<pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">RevealAccess</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initval</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'var'</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">val</span> <span class="o">=</span> <span class="n">initval</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
 
-    <span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">objtype</span><span class="p">):</span>
-        <span class="k">print</span> <span class="s">'Retrieving'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">objtype</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s1">'Retrieving'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">val</span>
 
-    <span class="k">def</span> <span class="nf">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
-        <span class="k">print</span> <span class="s">'Updating'</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">def</span> <span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s1">'Updating'</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">val</span> <span class="o">=</span> <span class="n">val</span>
 </pre>
 
 
 <p>来测试一下这个类</p>
-<pre class="code literal-block"><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">MyClass</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="n">RevealAccess</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="s">'var "x"'</span><span class="p">)</span>
+<pre class="code literal-block"><span></span><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">MyClass</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">RevealAccess</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="s1">'var "x"'</span><span class="p">)</span>
     <span class="n">y</span> <span class="o">=</span> <span class="mi">5</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">m</span> <span class="o">=</span> <span class="n">MyClass</span><span class="p">()</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">m</span><span class="o">.</span><span class="n">x</span>
-<span class="n">Retrieving</span> <span class="n">var</span> <span class="s">"x"</span>
+<span class="n">Retrieving</span> <span class="n">var</span> <span class="s2">"x"</span>
 <span class="mi">10</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">m</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">20</span>
-<span class="n">Updating</span> <span class="n">var</span> <span class="s">"x"</span>
+<span class="n">Updating</span> <span class="n">var</span> <span class="s2">"x"</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">m</span><span class="o">.</span><span class="n">x</span>
-<span class="n">Retrieving</span> <span class="n">var</span> <span class="s">"x"</span>
+<span class="n">Retrieving</span> <span class="n">var</span> <span class="s2">"x"</span>
 <span class="mi">20</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">m</span><span class="o">.</span><span class="n">y</span>
 <span class="mi">5</span>
@@ -342,7 +537,7 @@
 <h3>Method binding</h3>
 <p>有了以上两个概念，我们就能讨论Python的方法绑定了。</p>
 <p>还记得讨论<code>__dict__</code>时的成员函数<code>f</code>吗？按照我们的推测，<code>A.__dict__['f']</code>应该和<code>a.f</code>是一个东西。但是！！！</p>
-<pre class="code literal-block"><span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="s">'f'</span><span class="p">]</span>
+<pre class="code literal-block"><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s1">'f'</span><span class="p">]</span>
 <span class="o">&lt;</span><span class="n">function</span> <span class="n">__main__</span><span class="o">.</span><span class="n">f</span><span class="o">&gt;</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">f</span>
 <span class="o">&lt;</span><span class="n">bound</span> <span class="n">method</span> <span class="n">A</span><span class="o">.</span><span class="n">f</span> <span class="n">of</span> <span class="o">&lt;</span><span class="n">__main__</span><span class="o">.</span><span class="n">A</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x7f9d69cc5950</span><span class="o">&gt;&gt;</span>
@@ -350,7 +545,7 @@
 
 
 <p>这两个显然不是一个东西，一个是<code>function</code>，一个是<code>bound method</code>。这是什么情况？淡定，看下面</p>
-<pre class="code literal-block"><span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="s">'f'</span><span class="p">]</span><span class="o">.</span><span class="n">__get__</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">A</span><span class="p">)</span>
+<pre class="code literal-block"><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s1">'f'</span><span class="p">]</span><span class="o">.</span><span class="fm">__get__</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">A</span><span class="p">)</span>
 <span class="o">&lt;</span><span class="n">bound</span> <span class="n">method</span> <span class="n">A</span><span class="o">.</span><span class="n">f</span> <span class="n">of</span> <span class="o">&lt;</span><span class="n">__main__</span><span class="o">.</span><span class="n">A</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x7f9d69cc5950</span><span class="o">&gt;&gt;</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">f</span>
 <span class="o">&lt;</span><span class="n">bound</span> <span class="n">method</span> <span class="n">A</span><span class="o">.</span><span class="n">f</span> <span class="n">of</span> <span class="o">&lt;</span><span class="n">__main__</span><span class="o">.</span><span class="n">A</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x7f9d69cc5950</span><span class="o">&gt;&gt;</span>
@@ -360,31 +555,31 @@
 <p>这下放心了吧:D</p>
 <p>其实，类的成员函数就是一个descriptor，在实例化对象a的时候，Python就做了这么一个过程(伪码，详见Objects/funcobject.c)：<code>a.f = A.__dict__['f'].__get__(a, A)</code></p>
 <p>纯Python模拟的函数对象就像这样：</p>
-<pre class="code literal-block"><span class="k">class</span> <span class="nc">Function</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">Function</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="o">.</span> <span class="o">.</span> <span class="o">.</span>
-    <span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">objtype</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-        <span class="s">"Simulate func_descr_get() in Objects/funcobject.c"</span>
+    <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">objtype</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="s2">"Simulate func_descr_get() in Objects/funcobject.c"</span>
         <span class="k">return</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">objtype</span><span class="p">)</span>
 </pre>
 
 
 <p>然后就好理解<code>staticmethod</code>和<code>classmethod</code>这两个decorator了吧。<code>staticmethod</code>无视了传入的第一个self参数，<code>classmethod</code>手工加了一个类对象参数进去。它们的纯Python模拟就像下面所示：</p>
-<pre class="code literal-block"><span class="k">class</span> <span class="nc">StaticMethod</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
- <span class="s">"Emulate PyStaticMethod_Type() in Objects/funcobject.c"</span>
+<pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">StaticMethod</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+ <span class="s2">"Emulate PyStaticMethod_Type() in Objects/funcobject.c"</span>
 
- <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+ <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
       <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="n">f</span>
 
- <span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">objtype</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+ <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">objtype</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
       <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span>
 
 <span class="k">class</span> <span class="nc">ClassMethod</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-     <span class="s">"Emulate PyClassMethod_Type() in Objects/funcobject.c"</span>
+     <span class="s2">"Emulate PyClassMethod_Type() in Objects/funcobject.c"</span>
 
-     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
           <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="n">f</span>
 
-     <span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">klass</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+     <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">klass</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
           <span class="k">if</span> <span class="n">klass</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
                <span class="n">klass</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
           <span class="k">def</span> <span class="nf">newfunc</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
@@ -428,9 +623,9 @@
 <p>首先是<a href="http://zh.wikipedia.org/wiki/Trie">Trie树在维基百科上的定义</a>：在计算机科学中，trie，又称前缀树，是一种有序树，用于保存关联数组，其中的键通常是字符串。与二叉查找树不同，键不是直接保存在节点中，而是由节点在树中的位置决定。一个节点的所有子孙都有相同的前缀，也就是这个节点对应的字符串，而根节点对应空字符串。一般情况下，不是所有的节点都有对应的值，只有叶子节点和部分内部节点所对应的键才有相关的值。</p>
 <p>说白了就跟在字典里查单词一样：先拿第一个字母在根节点查找下一结点的位置，如果找到就拿第二个字母在刚刚找到的节点下继续往下查找；如果找不到就说明这个字符串在树中不存在。</p>
 <p>C语言实现的代码也在维基百科上：<a href="http://zh.wikipedia.org/wiki/Trie#.E5.AE.9E.E4.BE.8B">http://zh.wikipedia.org/wiki/Trie#.E5.AE.9E.E4.BE.8B</a></p>
-<pre class="code literal-block"><span class="cp">#include &lt;stdio.h&gt;</span>
-<span class="cp">#include &lt;stdlib.h&gt;</span>
-<span class="cp">#include &lt;string.h&gt;</span>
+<pre class="code literal-block"><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp"></span>
 
 <span class="cp">#define TREE_WIDTH 256</span>
 
@@ -545,7 +740,7 @@
 </ol>
 <p>Python版的关键改造就是节点的next表用dict代替，维护的是<code>字符-&gt;子节点</code>的映射。查找时，若待查询字符是next里的一个键就说明该字符在Trie树里，以这个键得到值就能找到下一节点。插入时也只要插入<code>字符-&gt;子节点</code>的映射就可以了。</p>
 <p>具体代码在：<a href="https://github.com/hbprotoss/codejam/blob/master/trie.py">https://github.com/hbprotoss/codejam/blob/master/trie.py</a></p>
-<pre class="code literal-block"><span class="c">#!/usr/bin/env python3</span>
+<pre class="code literal-block"><span></span><span class="ch">#!/usr/bin/env python3</span>
 
 <span class="k">class</span> <span class="nc">Trie</span><span class="p">:</span>
     <span class="n">root</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -581,7 +776,7 @@
 
     <span class="k">def</span> <span class="nf">printTree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">layer</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s">'</span><span class="se">\n</span><span class="s">'</span>
+            <span class="k">return</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span>
 
         <span class="n">rtns</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">items</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -589,20 +784,20 @@
         <span class="n">rtns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">printTree</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">layer</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
 
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
-            <span class="n">rtns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">'.'</span> <span class="o">*</span> <span class="n">layer</span><span class="p">)</span>
+            <span class="n">rtns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'.'</span> <span class="o">*</span> <span class="n">layer</span><span class="p">)</span>
             <span class="n">rtns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
             <span class="n">rtns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">printTree</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">layer</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
 
-        <span class="k">return</span> <span class="s">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rtns</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rtns</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">printTree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">'__main__'</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
     <span class="n">tree</span> <span class="o">=</span> <span class="n">Trie</span><span class="p">()</span>
     <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
         <span class="n">src</span> <span class="o">=</span> <span class="nb">input</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">src</span> <span class="o">==</span> <span class="s">''</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">src</span> <span class="o">==</span> <span class="s1">''</span><span class="p">:</span>
             <span class="k">break</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">tree</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
@@ -685,7 +880,7 @@ Python语言内建支持decorator模式。由于语法不是本文重点，对�
 </ul>
 <p>异常可能来自访问API过程中的网络问题，以及解析json发现服务器返回了错误代码（比如API访问过于频繁，access token有问题等）。在写头几个API的时候做法很自然，用try-except块包裹可能出异常的代码，将各种标准库的异常或者服务器返回的错误信息封装成自己的exception，raise一下告诉主程序有异常需要处理。<br>
 但是写了几个方法后发现，每个方法的异常处理流程几乎一模一样，特别是封装标准库的异常，唯一不同的就是解析服务器返回的错误信息。伪码如下：  </p>
-<pre class="code literal-block">def method(xxx):
+<pre class="code literal-block"><span></span>def method(xxx):
     try:
         f = urllib.request.urlopen(url, data, headers)
         raw_data = f.read().decode('utf-8')
@@ -705,7 +900,7 @@ Python语言内建支持decorator模式。由于语法不是本文重点，对�
 <p>出于懒的原因（说得好听点，出于代码复用的目的:D)，得想个办法把这些重复性的工作提取出来。<br>
 仔细观察可以发现，这些方法在except处理完异常之后都没有额外的工作需要进行。换句话说，可以认为这些代码都位于核心处理代码之后，这是自然就想到了decorator模式，将异常处理放在decorator里，再decorate一下各个方法就可以了。<br>
 Decorator如下：  </p>
-<pre class="code literal-block">def sinaMethod(func):
+<pre class="code literal-block"><span></span>def sinaMethod(func):
     def func_wrapper(*args, **kwargs):
         try:
             raw_rtn = func(*args, **kwargs)
@@ -820,7 +1015,7 @@ Decorator如下：  </p>
 53
 54</pre></div></td>
 <td class="code">
-<pre class="code literal-block"><span class="c">#!/usr/bin/env python3</span>
+<pre class="code literal-block"><span></span><span class="ch">#!/usr/bin/env python3</span>
 
 <span class="kn">import</span> <span class="nn">urllib.request</span>
 <span class="kn">import</span> <span class="nn">urllib.parse</span>
@@ -833,44 +1028,44 @@ Decorator如下：  </p>
     <span class="sd">'''</span>
 <span class="sd">    Build a multipart/form-data body with generated random boundary.</span>
 <span class="sd">    '''</span>
-    <span class="n">boundary</span> <span class="o">=</span> <span class="s">'----------%s'</span> <span class="o">%</span> <span class="nb">hex</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">))</span>
+    <span class="n">boundary</span> <span class="o">=</span> <span class="s1">'----------</span><span class="si">%s</span><span class="s1">'</span> <span class="o">%</span> <span class="nb">hex</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">))</span>
     <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">params_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">'--%s'</span> <span class="o">%</span> <span class="n">boundary</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s">'read'</span><span class="p">):</span>
-        <span class="n">filename</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s">'name'</span><span class="p">,</span> <span class="s">''</span><span class="p">)</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'--</span><span class="si">%s</span><span class="s1">'</span> <span class="o">%</span> <span class="n">boundary</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s1">'read'</span><span class="p">):</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
         <span class="n">content</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-        <span class="n">decoded_content</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">'ISO-8859-1'</span><span class="p">)</span>
-        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">'Content-Disposition: form-data; name="%s"; filename="hidden"'</span> <span class="o">%</span> <span class="n">k</span><span class="p">)</span>
-        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">'Content-Type: application/octet-stream</span><span class="se">\r\n</span><span class="s">'</span><span class="p">)</span>
+        <span class="n">decoded_content</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">'ISO-8859-1'</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'Content-Disposition: form-data; name="</span><span class="si">%s</span><span class="s1">"; filename="hidden"'</span> <span class="o">%</span> <span class="n">k</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'Content-Type: application/octet-stream</span><span class="se">\r\n</span><span class="s1">'</span><span class="p">)</span>
         <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">decoded_content</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">'Content-Disposition: form-data; name="%s"</span><span class="se">\r\n</span><span class="s">'</span> <span class="o">%</span> <span class="n">k</span><span class="p">)</span>
-        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">'utf-8'</span><span class="p">))</span>
-    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">'--%s--</span><span class="se">\r\n</span><span class="s">'</span> <span class="o">%</span> <span class="n">boundary</span><span class="p">)</span>
-    <span class="k">return</span> <span class="s">'</span><span class="se">\r\n</span><span class="s">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">boundary</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'Content-Disposition: form-data; name="</span><span class="si">%s</span><span class="s1">"</span><span class="se">\r\n</span><span class="s1">'</span> <span class="o">%</span> <span class="n">k</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">'utf-8'</span><span class="p">))</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'--</span><span class="si">%s</span><span class="s1">--</span><span class="se">\r\n</span><span class="s1">'</span> <span class="o">%</span> <span class="n">boundary</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s1">'</span><span class="se">\r\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">boundary</span>
 
-<span class="c">#############################################################</span>
-<span class="n">url</span> <span class="o">=</span> <span class="s">'https://upload.api.weibo.com/2/statuses/upload.json'</span>
-<span class="n">access_token</span> <span class="o">=</span> <span class="s">'xxx'</span>
-<span class="n">file_name</span> <span class="o">=</span> <span class="s">'big.png'</span>
-<span class="n">path</span> <span class="o">=</span> <span class="s">'/home/xxx/Downloads/'</span> <span class="o">+</span> <span class="n">file_name</span>
-<span class="n">status</span> <span class="o">=</span> <span class="s">'1234567'</span>
+<span class="c1">#############################################################</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s1">'https://upload.api.weibo.com/2/statuses/upload.json'</span>
+<span class="n">access_token</span> <span class="o">=</span> <span class="s1">'xxx'</span>
+<span class="n">file_name</span> <span class="o">=</span> <span class="s1">'big.png'</span>
+<span class="n">path</span> <span class="o">=</span> <span class="s1">'/home/xxx/Downloads/'</span> <span class="o">+</span> <span class="n">file_name</span>
+<span class="n">status</span> <span class="o">=</span> <span class="s1">'1234567'</span>
 
 <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s">'access_token'</span><span class="p">:</span> <span class="n">access_token</span><span class="p">,</span>
-    <span class="s">'status'</span><span class="p">:</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">quote</span><span class="p">(</span><span class="n">status</span><span class="p">),</span>
-    <span class="s">'pic'</span><span class="p">:</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">'rb'</span><span class="p">)</span>
+    <span class="s1">'access_token'</span><span class="p">:</span> <span class="n">access_token</span><span class="p">,</span>
+    <span class="s1">'status'</span><span class="p">:</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">quote</span><span class="p">(</span><span class="n">status</span><span class="p">),</span>
+    <span class="s1">'pic'</span><span class="p">:</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">'rb'</span><span class="p">)</span>
 <span class="p">}</span>
 
 <span class="n">coded_params</span><span class="p">,</span> <span class="n">boundary</span> <span class="o">=</span> <span class="n">_encode_multipart</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
 
-<span class="c">#############################################################</span>
-<span class="n">req</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">coded_params</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">'ISO-8859-1'</span><span class="p">))</span>
-<span class="n">req</span><span class="o">.</span><span class="n">add_header</span><span class="p">(</span><span class="s">'Content-Type'</span><span class="p">,</span> <span class="s">'multipart/form-data; boundary=%s'</span> <span class="o">%</span> <span class="n">boundary</span><span class="p">)</span>
+<span class="c1">#############################################################</span>
+<span class="n">req</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">coded_params</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">'ISO-8859-1'</span><span class="p">))</span>
+<span class="n">req</span><span class="o">.</span><span class="n">add_header</span><span class="p">(</span><span class="s1">'Content-Type'</span><span class="p">,</span> <span class="s1">'multipart/form-data; boundary=</span><span class="si">%s</span><span class="s1">'</span> <span class="o">%</span> <span class="n">boundary</span><span class="p">)</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="n">resp</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
-    <span class="n">body</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">'utf-8'</span><span class="p">)</span>
+    <span class="n">body</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">'utf-8'</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
 <span class="k">except</span> <span class="n">urllib</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">HTTPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
@@ -907,7 +1102,7 @@ nikola官网：<a href="http://nikola.ralsina.com.ar/">http://nikola.ralsina.com
 1.  官网上的<a href="http://nikola.ralsina.com.ar/handbook.html#installing-nikola">安装指导</a>中，如果你是Ubuntu用户的话，<a href="http://makotemplates.org/">Mako</a>一定要用pip安装或自己去下，Ubuntu官方源上的版本太旧，运行会出问题。<br>
 2.  喜欢用markdown的童鞋除了更改nikola生成的站点根目录下的从conf.py之外，新建博文的时候要注意加上<code>-f markdown</code>参数：<code>nikola new_post -f markdown</code><br>
 3.  喜欢用markdown的童鞋还得<strong>注意</strong>一下(==!)，官方0.5.4有个bug。在<code>/usr/local/lib/python2.7/dist-packages/nikola/plugins/compile_markdown/__init__.py</code>文件中，在73~81行的字符串前加个字母u。  </p>
-<pre class="code literal-block">    with codecs.open(path, "wb+", "utf8") as fd:
+<pre class="code literal-block"><span></span>    with codecs.open(path, "wb+", "utf8") as fd:
         if onefile:
             fd.write('&lt;!-- \n')
             fd.write('.. title: {0}\n'.format(title))
@@ -922,7 +1117,7 @@ nikola官网：<a href="http://nikola.ralsina.com.ar/">http://nikola.ralsina.com
 
 
 <p>改成  </p>
-<pre class="code literal-block">    with codecs.open(path, "wb+", "utf8") as fd:
+<pre class="code literal-block"><span></span>    with codecs.open(path, "wb+", "utf8") as fd:
         if onefile:
             fd.write(u'&lt;!-- \n')
             fd.write(u'.. title: {0}\n'.format(title))
@@ -938,7 +1133,7 @@ nikola官网：<a href="http://nikola.ralsina.com.ar/">http://nikola.ralsina.com
 
 <p>因为不加u就是str对象，写入的是utf-8编码的文件，当title等参数里出现非英文字母的时候会出先解码异常。（马上提交个pull request去）<br>
 4. 要快速部署到gitpage，在站点conf.py里添加：</p>
-<pre class="code literal-block">DEPLOY_COMMANDS = [
+<pre class="code literal-block"><span></span>DEPLOY_COMMANDS = [
 'git --git-dir=output/.git --work-tree=output add -A ',
 'git --git-dir=output/.git --work-tree=output commit -m "latest auto deploy build"',
 'git --git-dir=output/.git --work-tree=output push origin master'
@@ -968,7 +1163,7 @@ nikola官网：<a href="http://nikola.ralsina.com.ar/">http://nikola.ralsina.com
         A.py  </p>
 </blockquote>
 <hr>
-<pre class="code literal-block"># A.py
+<pre class="code literal-block"><span></span># A.py
 a = 1
 print(a)
 a += 1
@@ -976,13 +1171,13 @@ a += 1
 
 
 <hr>
-<pre class="code literal-block"><span class="c"># test.py</span>
-<span class="c">#!/usr/bin/env python3</span>
+<pre class="code literal-block"><span></span><span class="c1"># test.py</span>
+<span class="c1">#!/usr/bin/env python3</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">mo.A</span>
 <span class="kn">import</span> <span class="nn">mo.A</span>
-<span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s">'./mo'</span><span class="p">)</span>
+<span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">'./mo'</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 <span class="kn">import</span> <span class="nn">A</span>
@@ -1112,17 +1307,17 @@ startTask，先将task入队，然后看是否有空闲线程，如果有则在�
 84
 85</pre></div></td>
 <td class="code">
-<pre class="code literal-block"><span class="c">#!/usr/bin/env python3</span>
+<pre class="code literal-block"><span></span><span class="ch">#!/usr/bin/env python3</span>
 
 <span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">from</span> <span class="nn">PyQt4.QtCore</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">app</span> <span class="k">import</span> <span class="n">logger</span>
 
-<span class="n">log</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">Thread</span><span class="p">(</span><span class="n">QThread</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">manager</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">(</span><span class="n">Thread</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+    <span class="nb">super</span><span class="p">(</span><span class="n">Thread</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">manager</span> <span class="o">=</span> <span class="n">manager</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
 
@@ -1130,7 +1325,7 @@ startTask，先将task入队，然后看是否有空闲线程，如果有则在�
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="k">while</span> <span class="k">True</span><span class="p">:</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">queue</span><span class="p">))</span>
         <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">dequeueTask</span><span class="p">()</span>
@@ -1138,8 +1333,8 @@ startTask，先将task入队，然后看是否有空闲线程，如果有则在�
         <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="n">autoDelete</span><span class="p">():</span>
             <span class="k">del</span> <span class="n">task</span>
         <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-        <span class="c"># There is no task</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s">'No task, %s quiting'</span> <span class="o">%</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="c1"># There is no task</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">'No task, </span><span class="si">%s</span><span class="s1"> quiting'</span> <span class="o">%</span> <span class="bp">self</span><span class="p">)</span>
         <span class="k">break</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
@@ -1150,7 +1345,7 @@ startTask，先将task入队，然后看是否有空闲线程，如果有则在�
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_thread_count</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">max_thread_count</span> <span class="o">=</span> <span class="n">max_thread_count</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">threads</span> <span class="o">=</span> <span class="p">[</span><span class="n">Thread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">'thread_%d'</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_thread_count</span><span class="p">)]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">threads</span> <span class="o">=</span> <span class="p">[</span><span class="n">Thread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'thread_</span><span class="si">%d</span><span class="s1">'</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_thread_count</span><span class="p">)]</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">idle_threads</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">threads</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">idle_threads_mutex</span> <span class="o">=</span> <span class="n">QMutex</span><span class="p">()</span>
@@ -1163,21 +1358,21 @@ startTask，先将task入队，然后看是否有空闲线程，如果有则在�
     <span class="k">def</span> <span class="nf">setThreadIdle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">thread</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">idle_threads_mutex</span><span class="o">.</span><span class="n">lock</span><span class="p">()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">idle_threads</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">thread</span><span class="p">)</span>
-    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">'%s becomes idle'</span> <span class="o">%</span> <span class="n">thread</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'</span><span class="si">%s</span><span class="s1"> becomes idle'</span> <span class="o">%</span> <span class="n">thread</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">idle_threads_mutex</span><span class="o">.</span><span class="n">unlock</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">startTask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">enqueueTask</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
-    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">'%s enqueued'</span> <span class="o">%</span> <span class="n">task</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'</span><span class="si">%s</span><span class="s1"> enqueued'</span> <span class="o">%</span> <span class="n">task</span><span class="p">)</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">idle_threads_mutex</span><span class="o">.</span><span class="n">lock</span><span class="p">()</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">thread</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idle_threads</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
         <span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">'%s started'</span> <span class="o">%</span> <span class="n">task</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'</span><span class="si">%s</span><span class="s1"> started'</span> <span class="o">%</span> <span class="n">task</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-        <span class="c"># No idle thread</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">'No idle thread'</span><span class="p">)</span>
+        <span class="c1"># No idle thread</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'No idle thread'</span><span class="p">)</span>
         <span class="k">pass</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
@@ -1195,7 +1390,7 @@ startTask，先将task入队，然后看是否有空闲线程，如果有则在�
 
     <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">QRunnable</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">'Task must be QRunnable object.'</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">'Task must be QRunnable object.'</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">startTask</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
 </pre>
 </td>
@@ -1237,9 +1432,9 @@ startTask，先将task入队，然后看是否有空闲线程，如果有则在�
 </div>
 
 <footer class="blog-footer" id="footer"><a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png"></a><br>本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh">知识共享署名-非商业性使用-禁止演绎 3.0 未本地化版本许可协议</a>进行许可。
-<br>Contents © 2016 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
+<br>Contents © 2017 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
     
-</footer><script src="assets/js/all-nocdn.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
+</footer><script src="assets/js/jquery.min.js"></script><script src="assets/js/bootstrap.min.js"></script><script src="assets/js/moment-with-locales.min.js"></script><script src="assets/js/fancydates.js"></script><script src="assets/js/jquery.colorbox-min.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
     moment.locale("en");
     fancydates(0, "YYYY-MM-DD HH:mm");
     </script><!-- end fancy dates -->

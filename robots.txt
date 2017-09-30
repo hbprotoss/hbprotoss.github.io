@@ -1,2 +1,4 @@
 Sitemap: http://hbprotoss.github.io/sitemapindex.xml
 
+User-Agent: *
+Host: hbprotoss.github.io

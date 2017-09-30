@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>hbprotoss的博客 (翻墙)</title><link>http://hbprotoss.github.io/</link><description></description><atom:link href="http://hbprotoss.github.io/categories/fan-qiang.xml" type="application/rss+xml" rel="self"></atom:link><language>en</language><lastBuildDate>Tue, 12 Apr 2016 06:44:00 GMT</lastBuildDate><generator>https://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>搭建智能翻墙路由器</title><link>http://hbprotoss.github.io/posts/da-jian-zhi-neng-fan-qiang-lu-you-qi.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;p&gt;本文着重介绍如何搭建智能翻墙路由器，实现避免DNS污染，并且自动根据是否是国内IP来决定是否翻墙，从而使任何连接路由器的设备无障碍穿墙出去。&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>hbprotoss的博客 (Posts about 翻墙)</title><link>http://hbprotoss.github.io/</link><description></description><atom:link href="http://hbprotoss.github.io/categories/fan-qiang.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 30 Sep 2017 08:09:26 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>搭建智能翻墙路由器</title><link>http://hbprotoss.github.io/posts/da-jian-zhi-neng-fan-qiang-lu-you-qi.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;p&gt;本文着重介绍如何搭建智能翻墙路由器，实现避免DNS污染，并且自动根据是否是国内IP来决定是否翻墙，从而使任何连接路由器的设备无障碍穿墙出去。&lt;/p&gt;
 &lt;p&gt;思路是，用shadowsocks建立起翻墙代理服务，用shadowsocks的udp relay模式转发DNS请求，解决DNS污染，再配置iptables根据IP决定是否走shadowsocks来翻墙。&lt;/p&gt;
 &lt;h2&gt;准备材料&lt;/h2&gt;
 &lt;ul&gt;
@@ -14,7 +14,7 @@
 &lt;h3&gt;shadowsocks server&lt;/h3&gt;
 &lt;p&gt;shadowsocks-libev的安装参考&lt;a href="http://shadowsocks.org/en/download/servers.html"&gt;http://shadowsocks.org/en/download/servers.html&lt;/a&gt;中的“C with libev”一节&lt;/p&gt;
 &lt;p&gt;安装完成之后将如下配置写入config.json&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;{
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;{
     "server":"0.0.0.0",
     "server_port":8025,
     "password":"123456",
@@ -45,17 +45,17 @@
 &lt;h3&gt;iptables&lt;/h3&gt;
 &lt;p&gt;前面的准备工作完成之后，只要配置一下iptables，将国内TCP流量直接放行，国外TCP流量转发到ss-redir起的端口就行，判断依据是IP。&lt;/p&gt;
 &lt;p&gt;在nat表中新建一个SHADOWSOCKS链&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;iptables -t nat -N SHADOWSOCKS
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;iptables -t nat -N SHADOWSOCKS
 &lt;/pre&gt;
 
 
 &lt;p&gt;远程VPS流量直接放行&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;iptables -t nat -A SHADOWSOCKS -d xxx.xxx.xx.xxx -j RETURN
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;iptables -t nat -A SHADOWSOCKS -d xxx.xxx.xx.xxx -j RETURN
 &lt;/pre&gt;
 
 
 &lt;p&gt;内网流量直接放行&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;iptables -t nat -A SHADOWSOCKS -d 0.0.0.0/8 -j RETURN
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;iptables -t nat -A SHADOWSOCKS -d 0.0.0.0/8 -j RETURN
 iptables -t nat -A SHADOWSOCKS -d 10.0.0.0/8 -j RETURN
 iptables -t nat -A SHADOWSOCKS -d 127.0.0.0/8 -j RETURN
 iptables -t nat -A SHADOWSOCKS -d 169.254.0.0/16 -j RETURN
@@ -68,7 +68,7 @@ iptables -t nat -A SHADOWSOCKS -d 240.0.0.0/4 -j RETURN
 
 &lt;p&gt;国内IP流量直接放行(列表较长，这里不列举了，网上随便搜搜就有)&lt;/p&gt;
 &lt;p&gt;剩下的TCP流量转发到ss-redir端口&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;iptables -t nat -A SHADOWSOCKS -p tcp -j REDIRECT --to-ports xxx
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;iptables -t nat -A SHADOWSOCKS -p tcp -j REDIRECT --to-ports xxx
 &lt;/pre&gt;
 
 

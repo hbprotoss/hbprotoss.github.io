@@ -4,11 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>hbprotoss的博客 | hbprotoss的博客</title>
-<link href="assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="assets/css/colorbox.css" rel="stylesheet" type="text/css">
+<link href="assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="assets/css/blog.css" rel="stylesheet" type="text/css">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="rss.xml">
 <link rel="canonical" href="http://hbprotoss.github.io/index.html">
 <link rel="next" href="index-1.html" type="text/html">
-<!--[if lt IE 9]><script src="assets/js/html5.js"></script><![endif]--><link rel="prefetch" href="posts/classpath-vs-classpath-in-spring.html" type="text/html">
+<!--[if lt IE 9]><script src="assets/js/html5.js"></script><![endif]--><link rel="prefetch" href="posts/shang-chuan-pythonbao-dao-pypi.html" type="text/html">
 </head>
 <body>
 <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
@@ -54,7 +59,101 @@
                 
 
 <div class="postindex">
-    <article class="blog-post h-entry post-text"><header><h2 class="p-name entry-title blog-post-title"><a href="posts/classpath-vs-classpath-in-spring.html" class="u-url">classpath* vs classpath in spring</a></h2>
+    <article class="blog-post h-entry post-text"><header><h2 class="p-name entry-title blog-post-title"><a href="posts/shang-chuan-pythonbao-dao-pypi.html" class="u-url">上传python包到pypi</a></h2>
+        <div class="metadata blog-post-meta">
+            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
+            <p class="dateline"><a href="posts/shang-chuan-pythonbao-dao-pypi.html" rel="bookmark"><time class="published dt-published" datetime="2017-09-30T15:51:05+08:00" title="2017-09-30 15:51">2017-09-30 15:51</time></a></p>
+                <p class="commentline">
+        
+    <a href="posts/shang-chuan-pythonbao-dao-pypi.html#disqus_thread" data-disqus-identifier="cache/posts/shang-chuan-pythonbao-dao-pypi.html">Comments</a>
+
+
+        </p>
+</div>
+    </header><div class="e-content entry-content">
+    <div>
+<h3>注册账号</h3>
+<ul>
+<li>正式仓库: <a href="https://pypi.python.org/pypi?%3Aaction=register_form">PyPI Live</a>
+</li>
+<li>测试仓库: <a href="https://testpypi.python.org/pypi?%3Aaction=register_form">PyPI Test</a>
+</li>
+</ul>
+<h3>创建.pypirc文件</h3>
+<pre class="code literal-block"><span></span><span class="k">[distutils]</span>
+<span class="na">index-servers</span> <span class="o">=</span><span class="s"></span>
+<span class="s">  pypi</span>
+<span class="s">  pypitest</span>
+
+<span class="k">[pypi]</span>
+<span class="na">repository</span><span class="o">=</span><span class="s">https://upload.pypi.org/legacy/</span>
+<span class="na">username</span><span class="o">=</span><span class="s">your_username</span>
+<span class="na">password</span><span class="o">=</span><span class="s">your_password</span>
+
+<span class="k">[pypitest]</span>
+<span class="na">repository</span><span class="o">=</span><span class="s">https://test.pypi.org/legacy/</span>
+<span class="na">username</span><span class="o">=</span><span class="s">your_username</span>
+<span class="na">password</span><span class="o">=</span><span class="s">your_password</span>
+</pre>
+
+
+<p>保存到<code>~/.pypirc</code></p>
+<pre class="code literal-block"><span></span>chmod 600 ~/.pypirc
+</pre>
+
+
+<h3>准备工作</h3>
+<p>工作目录结构</p>
+<pre class="code literal-block"><span></span>root-dir/   # arbitrary working directory name
+  setup.py
+  setup.cfg
+  LICENSE.txt
+  README.md
+  protoss-pypi/
+    __init__.py
+    foo.py
+    bar.py
+    baz.py
+</pre>
+
+
+<h4>setup.py</h4>
+<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">distutils.core</span> <span class="kn">import</span> <span class="n">setup</span>
+<span class="n">setup</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">'protoss-pypi'</span><span class="p">,</span>
+    <span class="n">packages</span><span class="o">=</span><span class="p">[</span><span class="s1">'protoss-pypi'</span><span class="p">],</span>
+    <span class="n">version</span><span class="o">=</span><span class="s1">'0.1.1'</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s1">'A random test lib'</span><span class="p">,</span>
+    <span class="n">author</span><span class="o">=</span><span class="s1">'hbprotoss'</span><span class="p">,</span>
+    <span class="n">author_email</span><span class="o">=</span><span class="s1">'gamespy1991@gmail.com'</span><span class="p">,</span>
+    <span class="n">url</span><span class="o">=</span><span class="s1">'https://github.com/hbprotoss/pypitest'</span><span class="p">,</span>
+    <span class="n">download_url</span><span class="o">=</span><span class="s1">'https://github.com/hbprotoss/pypitest/archive/master.zip'</span><span class="p">,</span>
+    <span class="n">keywords</span><span class="o">=</span><span class="p">[</span><span class="s1">'testing'</span><span class="p">,</span> <span class="s1">'logging'</span><span class="p">,</span> <span class="s1">'example'</span><span class="p">],</span>  <span class="c1"># arbitrary keywords</span>
+    <span class="n">classifiers</span><span class="o">=</span><span class="p">[],</span>
+<span class="p">)</span>
+</pre>
+
+
+<p>name和packages保持一致，url写git仓库地址，download_url写源码包地址</p>
+<h4>setup.cfg</h4>
+<p>markdown写的readme文件需要显示指定</p>
+<pre class="code literal-block"><span></span><span class="k">[metadata]</span>
+<span class="na">description-file</span> <span class="o">=</span> <span class="s">README.md</span>
+</pre>
+
+
+<h3>打包上传</h3>
+<h4>正式</h4>
+<pre class="code literal-block"><span></span>python setup.py sdist upload -r pypi
+</pre>
+
+
+<h4>测试</h4>
+<pre class="code literal-block"><span></span>python setup.py sdist upload -r pypitest
+</pre>
+</div>
+    </div>
+    </article><article class="blog-post h-entry post-text"><header><h2 class="p-name entry-title blog-post-title"><a href="posts/classpath-vs-classpath-in-spring.html" class="u-url">classpath* vs classpath in spring</a></h2>
         <div class="metadata blog-post-meta">
             <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
             <p class="dateline"><a href="posts/classpath-vs-classpath-in-spring.html" rel="bookmark"><time class="published dt-published" datetime="2016-07-06T09:12:52+08:00" title="2016-07-06 09:12">2016-07-06 09:12</time></a></p>
@@ -292,7 +391,7 @@
 <h3>shadowsocks server</h3>
 <p>shadowsocks-libev的安装参考<a href="http://shadowsocks.org/en/download/servers.html">http://shadowsocks.org/en/download/servers.html</a>中的“C with libev”一节</p>
 <p>安装完成之后将如下配置写入config.json</p>
-<pre class="code literal-block">{
+<pre class="code literal-block"><span></span>{
     "server":"0.0.0.0",
     "server_port":8025,
     "password":"123456",
@@ -323,17 +422,17 @@
 <h3>iptables</h3>
 <p>前面的准备工作完成之后，只要配置一下iptables，将国内TCP流量直接放行，国外TCP流量转发到ss-redir起的端口就行，判断依据是IP。</p>
 <p>在nat表中新建一个SHADOWSOCKS链</p>
-<pre class="code literal-block">iptables -t nat -N SHADOWSOCKS
+<pre class="code literal-block"><span></span>iptables -t nat -N SHADOWSOCKS
 </pre>
 
 
 <p>远程VPS流量直接放行</p>
-<pre class="code literal-block">iptables -t nat -A SHADOWSOCKS -d xxx.xxx.xx.xxx -j RETURN
+<pre class="code literal-block"><span></span>iptables -t nat -A SHADOWSOCKS -d xxx.xxx.xx.xxx -j RETURN
 </pre>
 
 
 <p>内网流量直接放行</p>
-<pre class="code literal-block">iptables -t nat -A SHADOWSOCKS -d 0.0.0.0/8 -j RETURN
+<pre class="code literal-block"><span></span>iptables -t nat -A SHADOWSOCKS -d 0.0.0.0/8 -j RETURN
 iptables -t nat -A SHADOWSOCKS -d 10.0.0.0/8 -j RETURN
 iptables -t nat -A SHADOWSOCKS -d 127.0.0.0/8 -j RETURN
 iptables -t nat -A SHADOWSOCKS -d 169.254.0.0/16 -j RETURN
@@ -346,7 +445,7 @@ iptables -t nat -A SHADOWSOCKS -d 240.0.0.0/4 -j RETURN
 
 <p>国内IP流量直接放行(列表较长，这里不列举了，网上随便搜搜就有)</p>
 <p>剩下的TCP流量转发到ss-redir端口</p>
-<pre class="code literal-block">iptables -t nat -A SHADOWSOCKS -p tcp -j REDIRECT --to-ports xxx
+<pre class="code literal-block"><span></span>iptables -t nat -A SHADOWSOCKS -p tcp -j REDIRECT --to-ports xxx
 </pre>
 
 
@@ -368,18 +467,18 @@ iptables -t nat -A SHADOWSOCKS -d 240.0.0.0/4 -j RETURN
 </div>
     </header><div class="e-content entry-content">
     <div>
-<pre class="code literal-block"><span class="k">def</span> <span class="nf">f</span><span class="p">():</span>
+<pre class="code literal-block"><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">():</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">print</span> <span class="s">'try'</span>
+        <span class="k">print</span> <span class="s1">'try'</span>
         <span class="k">raise</span> <span class="ne">NameError</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">print</span> <span class="s">'except'</span>
+        <span class="k">print</span> <span class="s1">'except'</span>
         <span class="k">raise</span> <span class="ne">KeyError</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">print</span> <span class="s">'else'</span>
+        <span class="k">print</span> <span class="s1">'else'</span>
         <span class="k">raise</span> <span class="ne">IOError</span>
     <span class="k">finally</span><span class="p">:</span>
-        <span class="k">print</span> <span class="s">'finally'</span>
+        <span class="k">print</span> <span class="s1">'finally'</span>
         <span class="k">raise</span> <span class="ne">ValueError</span>
 </pre>
 
@@ -394,7 +493,7 @@ iptables -t nat -A SHADOWSOCKS -d 240.0.0.0/4 -j RETURN
 <li>blockstack：也是一个栈，隶属于一个frame。每当遇到循环或者try异常处理块都会压入一个block对象，块流程完了弹出</li>
 <li>traceback：一个链表，记录发生异常时候的调用栈信息</li>
 </ol>
-<pre class="code literal-block"><span class="n">PyObject</span> <span class="o">*</span>
+<pre class="code literal-block"><span></span><span class="n">PyObject</span> <span class="o">*</span>
 <span class="nf">PyEval_EvalFrameEx</span><span class="p">(</span><span class="n">PyFrameObject</span> <span class="o">*</span><span class="n">f</span><span class="p">,</span> <span class="kt">int</span> <span class="n">throwflag</span><span class="p">)</span>
 <span class="p">{</span>
 
@@ -480,7 +579,7 @@ iptables -t nat -A SHADOWSOCKS -d 240.0.0.0/4 -j RETURN
 
 <p>补充一点：</p>
 <p>dis模块可以“反汇编”Python字节码变成“Python汇编语言”，下面就是示例代码的反汇编结果：</p>
-<pre class="code literal-block">  6           0 SETUP_FINALLY           63 (to 66)
+<pre class="code literal-block"><span></span>  6           0 SETUP_FINALLY           63 (to 66)
               3 SETUP_EXCEPT            15 (to 21)
 
   7           6 LOAD_CONST               1 ('try')
@@ -559,7 +658,7 @@ iptables -t nat -A SHADOWSOCKS -d 240.0.0.0/4 -j RETURN
 <h3>性能实测</h3>
 <p>下面结合实际例子阐述现象和内部结构的关系</p>
 <p>首先建立一个测试表：</p>
-<pre class="code literal-block"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">test</span> <span class="p">(</span>
+<pre class="code literal-block"><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">test</span> <span class="p">(</span>
      <span class="n">id</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="n">AUTO_INCREMENT</span><span class="p">,</span>
      <span class="n">a</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
      <span class="n">b</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
@@ -573,7 +672,7 @@ iptables -t nat -A SHADOWSOCKS -d 240.0.0.0/4 -j RETURN
 <p>数据项为(a,b,c)在0~200之间的所有组合项，共计8000000行记录。为了消除几次实验中以query cache为代表的各种server cache对实验数据的影响，每次实验后均重启mysql服务。</p>
 <h4>索引对查询效率的影响</h4>
 <p>首先是建立KEY(a,b,c)索引前后的性能对比，能很明显地看到索引大幅提升查询速度。没有索引的时候需要做全表扫描，建立索引之后通过B-Tree搜索。</p>
-<pre class="code literal-block">没有索引（除主键，下同）
+<pre class="code literal-block"><span></span>没有索引（除主键，下同）
 [SQL]select * from test where a = 0 and b = 1;
 Affected rows: 0
 Time: 0.324s
@@ -586,21 +685,21 @@ Time: 0.004s
 
 
 <p>由于MySQL优化器的优化，where条件中的各个子条件顺序对索引的使用没有影响。</p>
-<pre class="code literal-block">[SQL]select * from test where b = 1 and a = 0;
+<pre class="code literal-block"><span></span>[SQL]select * from test where b = 1 and a = 0;
 Affected rows: 0
 Time: 0.002s
 </pre>
 
 
 <p>当使用的列非严格的索引最左前缀时，可以想象，只有a加速了索引搜索，找到所有符合a条件的记录的之后只能顺序扫描检查c是否符合条件。所以相比没有索引时要快，但是慢于使用严格索引最左前缀时的速度。</p>
-<pre class="code literal-block">[SQL]select * from test where a = 0 and c = 1;
+<pre class="code literal-block"><span></span>[SQL]select * from test where a = 0 and c = 1;
 Affected rows: 0
 Time: 0.043s
 </pre>
 
 
 <p>当没有使用到a列作为条件时完全没法使用索引，甚至比没有索引时还要慢。因为建表的时候a在前，b、c在后，并且数据节点有序。在没有索引的测试中，InnoDB引擎到a不为0时自动停止搜索。而在这个例子中需要扫描全表找出满足符合条件的b、c，达到完全没法忍受的16秒。</p>
-<pre class="code literal-block">[SQL]select * from test where b = 0 and c = 1;
+<pre class="code literal-block"><span></span>[SQL]select * from test where b = 0 and c = 1;
 Affected rows: 0
 Time: 16.023s
 </pre>
@@ -608,7 +707,7 @@ Time: 16.023s
 
 <h4>索引对排序效率的影响</h4>
 <p>只要能用到索引，并且ORDER BY后面的列在索引中，则顺序还是倒序排序对性能无影响。因为叶子节点是个双向链表，倒序可以从后向前遍历，与顺序的代价相同。</p>
-<pre class="code literal-block">[SQL]select * from test where a = 0 ORDER BY b;
+<pre class="code literal-block"><span></span>[SQL]select * from test where a = 0 ORDER BY b;
 Affected rows: 0
 Time: 0.085s
 
@@ -619,7 +718,7 @@ Time: 0.089s
 
 
 <p>但是，当有两个字段排序的顺序不同时，叶子节点的有序性就无法用在排序中，必须读出所有叶子节点之后再按指定的字段进行一趟排序，所以速度就慢了下来。</p>
-<pre class="code literal-block">[SQL]select * from test where a = 0 ORDER BY b DESC, c DESC;
+<pre class="code literal-block"><span></span>[SQL]select * from test where a = 0 ORDER BY b DESC, c DESC;
 Affected rows: 0
 Time: 0.089s
 
@@ -630,7 +729,7 @@ Time: 0.184s
 
 
 <p>同样，下面的例子中对索引左边的字段a进行范围选择的时候也没法运用索引，因为多个取值的a无法保证b和c字段有序，必须重新排序</p>
-<pre class="code literal-block">[SQL]select * from test where a &lt;= 0 ORDER BY b;
+<pre class="code literal-block"><span></span>[SQL]select * from test where a &lt;= 0 ORDER BY b;
 Affected rows: 0
 Time: 0.103s
 </pre>
@@ -662,7 +761,7 @@ Time: 0.103s
 <h3>引用计数</h3>
 <p>引用计数法在对象内部维护了一个被其他对象引用数的引用计数值，当这个引用计数值为0时，说明这个对象不再被其他对象引用，就可以被回收了。</p>
 <p>结合源码来看，所有Python对象的头部包含了这样一个结构PyObject（相当于继承自PyObject）：</p>
-<pre class="code literal-block"><span class="c1">// object.h</span>
+<pre class="code literal-block"><span></span><span class="c1">// object.h</span>
 <span class="k">struct</span> <span class="n">_object</span> <span class="p">{</span>
     <span class="n">Py_ssize_t</span> <span class="n">ob_refcnt</span><span class="p">;</span>
     <span class="k">struct</span> <span class="n">PyTypeObject</span> <span class="o">*</span><span class="n">ob_type</span><span class="p">;</span>
@@ -672,7 +771,7 @@ Time: 0.103s
 
 <p>ob_refcnt就是引用计数值。</p>
 <p>例如，下面是int型对象的定义：</p>
-<pre class="code literal-block"><span class="c1">// intobject.h</span>
+<pre class="code literal-block"><span></span><span class="c1">// intobject.h</span>
 <span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
         <span class="n">PyObject_HEAD</span>
         <span class="kt">long</span> <span class="n">ob_ival</span><span class="p">;</span>
@@ -695,7 +794,7 @@ Time: 0.103s
 <p>为了解决这两个致命弱点，Python又引入了以下两种GC机制。</p>
 <h3>标记-清除</h3>
 <p>“标记-清除”法是为了解决循环引用问题。可以包含其他对象引用的容器对象（如list, dict, set，甚至class）都可能产生循环引用，为此，在申请内存时，所有容器对象的头部又加上了<code>PyGC_Head</code>来实现“标记-清除”机制。</p>
-<pre class="code literal-block"><span class="c1">// objimpl.h</span>
+<pre class="code literal-block"><span></span><span class="c1">// objimpl.h</span>
 <span class="k">typedef</span> <span class="k">union</span> <span class="n">_gc_head</span> <span class="p">{</span>
     <span class="k">struct</span> <span class="p">{</span>
         <span class="k">union</span> <span class="n">_gc_head</span> <span class="o">*</span><span class="n">gc_next</span><span class="p">;</span>
@@ -708,7 +807,7 @@ Time: 0.103s
 
 
 <p>在为对象申请内存的时候，可以明显看到，实际申请的内存数量已经加上了PyGC_Head的大小</p>
-<pre class="code literal-block"><span class="c1">// gcmodule.c</span>
+<pre class="code literal-block"><span></span><span class="c1">// gcmodule.c</span>
 <span class="n">PyObject</span> <span class="o">*</span>
 <span class="nf">_PyObject_GC_Malloc</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">basicsize</span><span class="p">)</span>
 <span class="p">{</span>
@@ -727,7 +826,7 @@ Time: 0.103s
 
 
 <p>举例来说，从<code>list</code>对象的创建中，有如下主要逻辑：</p>
-<pre class="code literal-block"><span class="c1">// listobject.c</span>
+<pre class="code literal-block"><span></span><span class="c1">// listobject.c</span>
 <span class="n">PyObject</span> <span class="o">*</span>
 <span class="nf">PyList_New</span><span class="p">(</span><span class="n">Py_ssize_t</span> <span class="n">size</span><span class="p">)</span>
 <span class="p">{</span>
@@ -743,7 +842,7 @@ Time: 0.103s
 
 <p><code>_PyObject_GC_TRACK</code>就将对象链接到了第0代对象集合中（后文详述分代回收）。</p>
 <p>垃圾标记时，先将集合中对象的引用计数复制一份副本(以免在操作过程中破坏真实的引用计数值)：</p>
-<pre class="code literal-block"><span class="c1">// gcmodule.c</span>
+<pre class="code literal-block"><span></span><span class="c1">// gcmodule.c</span>
 <span class="k">static</span> <span class="kt">void</span>
 <span class="nf">update_refs</span><span class="p">(</span><span class="n">PyGC_Head</span> <span class="o">*</span><span class="n">containers</span><span class="p">)</span>
 <span class="p">{</span>
@@ -758,7 +857,7 @@ Time: 0.103s
 
 
 <p>然后操作这个副本，遍历对象集合，将被引用对象的引用计数副本值减1：</p>
-<pre class="code literal-block"><span class="c1">// gcmodule.c</span>
+<pre class="code literal-block"><span></span><span class="c1">// gcmodule.c</span>
 <span class="k">static</span> <span class="kt">void</span>
 <span class="nf">subtract_refs</span><span class="p">(</span><span class="n">PyGC_Head</span> <span class="o">*</span><span class="n">containers</span><span class="p">)</span>
 <span class="p">{</span>
@@ -776,7 +875,7 @@ Time: 0.103s
 
 <p>这个<code>traverse</code>是对象类型定义的函数，用来遍历对象，通过传入的回调函数<code>visit_decref</code>来操作引用计数副本。</p>
 <p>例如<code>dict</code>就要在key和value上都用<code>visit_decref</code>操作一遍：</p>
-<pre class="code literal-block"><span class="c1">// dictobject.c</span>
+<pre class="code literal-block"><span></span><span class="c1">// dictobject.c</span>
 <span class="k">static</span> <span class="kt">int</span>
 <span class="nf">dict_traverse</span><span class="p">(</span><span class="n">PyObject</span> <span class="o">*</span><span class="n">op</span><span class="p">,</span> <span class="n">visitproc</span> <span class="n">visit</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">)</span>
 <span class="p">{</span>
@@ -794,7 +893,7 @@ Time: 0.103s
 
 
 <p>然后根据引用计数副本值是否为0将集合内的对象分成两类，reachable和unreachable，其中unreachable是可以被回收的对象：</p>
-<pre class="code literal-block"><span class="c1">// gcmodule.c</span>
+<pre class="code literal-block"><span></span><span class="c1">// gcmodule.c</span>
 <span class="k">static</span> <span class="kt">void</span>
 <span class="nf">move_unreachable</span><span class="p">(</span><span class="n">PyGC_Head</span> <span class="o">*</span><span class="n">young</span><span class="p">,</span> <span class="n">PyGC_Head</span> <span class="o">*</span><span class="n">unreachable</span><span class="p">)</span>
 <span class="p">{</span>
@@ -826,7 +925,7 @@ Time: 0.103s
 <h3>分代回收</h3>
 <p>分代回收的整体思想是：将系统中的所有内存块根据其存活时间划分为不同的集合，每个集合就成为一个“代”，垃圾收集频率随着“代”的存活时间的增大而减小，存活时间通常利用经过几次垃圾回收来度量。</p>
 <p>用来表示“代”的结构体是<code>gc_generation</code>， 包括了当前代链表表头、对象数量上限、当前对象数量：</p>
-<pre class="code literal-block"><span class="c1">// gcmodule.c</span>
+<pre class="code literal-block"><span></span><span class="c1">// gcmodule.c</span>
 <span class="k">struct</span> <span class="n">gc_generation</span> <span class="p">{</span>
     <span class="n">PyGC_Head</span> <span class="n">head</span><span class="p">;</span>
     <span class="kt">int</span> <span class="n">threshold</span><span class="p">;</span> <span class="cm">/* collection threshold */</span>
@@ -837,7 +936,7 @@ Time: 0.103s
 
 
 <p>Python默认定义了三代对象集合，索引数越大，对象存活时间越长。</p>
-<pre class="code literal-block"><span class="cp">#define NUM_GENERATIONS 3</span>
+<pre class="code literal-block"><span></span><span class="cp">#define NUM_GENERATIONS 3</span>
 <span class="cp">#define GEN_HEAD(n) (&amp;generations[n].head)</span>
 
 <span class="cm">/* linked lists of container objects */</span>
@@ -851,7 +950,7 @@ Time: 0.103s
 
 
 <p>新生成的对象会被加入第0代，前面<code>_PyObject_GC_Malloc</code>中省略的部分就是Python GC触发的时机。每新生成一个对象都会检查第0代有没有满，如果满了就开始着手进行垃圾回收：</p>
-<pre class="code literal-block"> <span class="n">g</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_refs</span> <span class="o">=</span> <span class="n">GC_UNTRACKED</span><span class="p">;</span>
+<pre class="code literal-block"><span></span> <span class="n">g</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">.</span><span class="n">gc_refs</span> <span class="o">=</span> <span class="n">GC_UNTRACKED</span><span class="p">;</span>
  <span class="n">generations</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">count</span><span class="o">++</span><span class="p">;</span> <span class="cm">/* number of allocated GC objects */</span>
  <span class="k">if</span> <span class="p">(</span><span class="n">generations</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">count</span> <span class="o">&gt;</span> <span class="n">generations</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">threshold</span> <span class="o">&amp;&amp;</span>
      <span class="n">enabled</span> <span class="o">&amp;&amp;</span>
@@ -893,8 +992,8 @@ Time: 0.103s
 <p>loader在进行动态链接的时候，会将有相同符号名的符号覆盖成LD_PRELOAD指定的so文件中的符号。换句话说，可以用我们自己的so库中的函数替换原来库里有的函数，从而达到hook的目的。这和Windows下通过修改import table来hook API很类似。相比较之下，LD_PRELOAD更方便了，都不用自己写代码了，系统的loader会帮我们搞定。但是LD_PRELOAD有个限制：只能hook动态链接的库，对静态链接的库无效，因为静态链接的代码都写到可执行文件里了嘛，没有坑让你填。</p>
 <p>上代码</p>
 <p>先是受害者，我们的主程序main.c，通过strcmp比较字符串是否相等：</p>
-<pre class="code literal-block"><span class="cp">#include &lt;stdio.h&gt;</span>
-<span class="cp">#include &lt;string.h&gt;</span>
+<pre class="code literal-block"><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp"></span>
 
 <span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
 <span class="p">{</span>
@@ -912,9 +1011,9 @@ Time: 0.103s
 
 
 <p>然后是用来hook的库hook.c：</p>
-<pre class="code literal-block"><span class="cp">#include &lt;stdio.h&gt;</span>
-<span class="cp">#include &lt;string.h&gt;</span>
-<span class="cp">#include &lt;dlfcn.h&gt;</span>
+<pre class="code literal-block"><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;dlfcn.h&gt;</span><span class="cp"></span>
 
 <span class="k">typedef</span> <span class="nf">int</span><span class="p">(</span><span class="o">*</span><span class="n">STRCMP</span><span class="p">)(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span><span class="p">);</span>
 
@@ -936,8 +1035,8 @@ Time: 0.103s
 
 <p>因为hook的目标是strcmp，所以typedef了一个STRCMP函数指针。由于hook的目的是要控制函数行为，所以需要从原库libc.so.6中拿到“正版”strcmp指针，保存成old_strcmp以备调用。</p>
 <p>Makefile：</p>
-<pre class="code literal-block"><span class="nb">test</span>: main.c hook.so
-    gcc -o <span class="nb">test </span>main.c
+<pre class="code literal-block"><span></span>test: main.c hook.so
+    gcc -o <span class="nb">test</span> main.c
 
 hook.so: hook.c
     gcc -fPIC -shared -o hook.so hook.c -ldl
@@ -945,12 +1044,12 @@ hook.so: hook.c
 
 
 <p>执行：</p>
-<pre class="code literal-block"><span class="nv">$ LD_PRELOAD</span><span class="o">=</span>./hook.so ./test 123
-hack <span class="k">function</span> invoked. <span class="nv">s1</span><span class="o">=</span>&lt;123&gt; <span class="nv">s2</span><span class="o">=</span>&lt;<span class="nb">test</span>&gt;
+<pre class="code literal-block"><span></span>$ <span class="nv">LD_PRELOAD</span><span class="o">=</span>./hook.so ./test <span class="m">123</span>
+hack <span class="k">function</span> invoked. <span class="nv">s1</span><span class="o">=</span>&lt;<span class="m">123</span>&gt; <span class="nv">s2</span><span class="o">=</span>&lt;test&gt;
 Incorrect password
 
-<span class="nv">$ LD_PRELOAD</span><span class="o">=</span>./hook.so ./test <span class="nb">test</span>
-hack <span class="k">function</span> invoked. <span class="nv">s1</span><span class="o">=</span>&lt;<span class="nb">test</span>&gt; <span class="nv">s2</span><span class="o">=</span>&lt;<span class="nb">test</span>&gt;
+$ <span class="nv">LD_PRELOAD</span><span class="o">=</span>./hook.so ./test <span class="nb">test</span>
+hack <span class="k">function</span> invoked. <span class="nv">s1</span><span class="o">=</span>&lt;test&gt; <span class="nv">s2</span><span class="o">=</span>&lt;test&gt;
 Correct password
 </pre>
 
@@ -959,196 +1058,6 @@ Correct password
 <hr>
 <p>参考资料：</p>
 <p><a href="http://www.exploit-db.com/papers/13233/">Reverse Engineering with LD_PRELOAD</a></p>
-</div>
-    </div>
-    </article><article class="blog-post h-entry post-text"><header><h2 class="p-name entry-title blog-post-title"><a href="posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html" class="u-url">Linux下编译链接动态库</a></h2>
-        <div class="metadata blog-post-meta">
-            <p class="byline author vcard"><span class="byline-name fn">hbprotoss</span></p>
-            <p class="dateline"><a href="posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html" rel="bookmark"><time class="published dt-published" datetime="2013-10-08T09:18:31+08:00" title="2013-10-08 09:18">2013-10-08 09:18</time></a></p>
-                <p class="commentline">
-        
-    <a href="posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html#disqus_thread" data-disqus-identifier="cache/posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html">Comments</a>
-
-
-        </p>
-</div>
-    </header><div class="e-content entry-content">
-    <div>
-<p>记录下Linux下编译和链接动态库的过程。</p>
-<h3>一、 编写动态库</h3>
-<p>头文件so.h：  </p>
-<pre class="code literal-block"><span class="cp">#ifndef  SO_H</span>
-<span class="cp">#define  SO_H</span>
-
-<span class="kt">int</span> <span class="nf">add</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">);</span>
-
-
-<span class="cp">#endif  </span><span class="cm">/*SO_H*/</span><span class="cp"></span>
-</pre>
-
-
-<p>实现文件so.c：</p>
-<pre class="code literal-block"><span class="cp">#include "so.h"</span>
-
-<span class="kt">int</span> <span class="nf">add</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">;</span>
-<span class="p">}</span>
-</pre>
-
-
-<h3>二、编译动态库</h3>
-<pre class="code literal-block">gcc so.c -fPIC -shared -o libtest.so
-</pre>
-
-
-<p>解释一下各个参数含义：</p>
-<ol>
-<li>-fPIC：生成位置无关代码(<a href="http://en.wikipedia.org/wiki/Position-independent_code">Position Independent Code</a>)，只有生成PIC才能通过虚拟页映射达到可执行代码在进程间共享，从而节省内存的目的。</li>
-<li>说明我们要生成的是动态库so(Shared Object)文件，从而进行动态链接。</li>
-</ol>
-<p>通过<code>nm -g libtest.so</code>可以看到，导出符号表中已经有<code>add</code>这个符号了：</p>
-<pre class="code literal-block"><span class="nv">$ </span>nm -g libtest.so 
-<span class="m">0000000000000670</span> T add
-<span class="m">0000000000201030</span> B __bss_start
-                 w __cxa_finalize@@GLIBC_2.2.5
-<span class="m">0000000000201030</span> D _edata
-<span class="m">0000000000201038</span> B _end
-<span class="m">0000000000000684</span> T _fini
-                 w __gmon_start__
-<span class="m">0000000000000540</span> T _init
-                 w _ITM_deregisterTMCloneTable
-                 w _ITM_registerTMCloneTable
-                 w _Jv_RegisterClasses
-</pre>
-
-
-<h3>三、使用动态库</h3>
-<h4>1. 隐式链接(编译时链接)</h4>
-<p>编写主程序main.c：</p>
-<pre class="code literal-block"><span class="cp">#include &lt;stdio.h&gt;</span>
-<span class="cp">#include "so.h"</span>
-
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
-<span class="p">{</span>
-    <span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span>
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
-</pre>
-
-
-<p>使用<code>gcc main.c -L. -ltest -o test</code>进行编译。</p>
-<ul>
-<li>-L：添加库文件的搜索路径</li>
-<li>-l：指定需要链接的库。该名称是处在头lib和后缀.so中的名称，如上动态库libtest.so的l参数为-l test</li>
-</ul>
-<p>此时通过<code>readelf test -d</code>已经能看到生成的可执行文件test的Dynamic section里依赖libtest.so了</p>
-<pre class="code literal-block"><span class="nv">$ </span>readelf <span class="nb">test</span> -d
-
-Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
-  Tag        Type                         Name/Value
- 0x0000000000000001 <span class="o">(</span>NEEDED<span class="o">)</span>             Shared library: <span class="o">[</span>libtest.so<span class="o">]</span>
- 0x0000000000000001 <span class="o">(</span>NEEDED<span class="o">)</span>             Shared library: <span class="o">[</span>libc.so.6<span class="o">]</span>
-......
-</pre>
-
-
-<p>dynamic symbols中也有一个undefined symbol(add)</p>
-<pre class="code literal-block"><span class="nv">$ </span>nm -D <span class="nb">test </span>
-<span class="nb">                 </span>U add
-<span class="m">0000000000601048</span> B __bss_start
-<span class="m">0000000000601048</span> D _edata
-<span class="m">0000000000601050</span> B _end
-00000000004007b4 T _fini
-                 w __gmon_start__
-<span class="m">0000000000400578</span> T _init
-                 w _ITM_deregisterTMCloneTable
-                 w _ITM_registerTMCloneTable
-                 w _Jv_RegisterClasses
-                 U __libc_start_main
-                 U <span class="nb">printf</span>
-</pre>
-
-
-<p>在执行隐式链接的程序之前要注意设置<code>LD_LIBRARY_PATH</code>环境变量，或者把前面生成的libtest.so复制到系统路径下，否则会找不到动态库。</p>
-<pre class="code literal-block"><span class="nv">$ </span>./test 
-./test: error <span class="k">while</span> loading shared libraries: libtest.so: cannot open shared object file: No such file or directory
-
-<span class="nv">$ </span><span class="nb">export </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>.
-
-<span class="nv">$ </span>./test 
-3
-</pre>
-
-
-<h4>2. 显式链接(运行时链接)</h4>
-<p>编写主程序dyn_main.c</p>
-<pre class="code literal-block"><span class="cp">#include &lt;stdio.h&gt;</span>
-<span class="cp">#include &lt;dlfcn.h&gt;</span>
-
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
-<span class="p">{</span>
-    <span class="kt">void</span> <span class="o">*</span><span class="n">dl</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
-    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">add</span><span class="p">)(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">);</span>
-    <span class="n">dl</span> <span class="o">=</span> <span class="n">dlopen</span><span class="p">(</span> <span class="s">"./libtest.so"</span><span class="p">,</span> <span class="n">RTLD_LAZY</span><span class="p">);</span>
-    <span class="k">if</span><span class="p">(</span> <span class="n">dl</span> <span class="o">==</span> <span class="nb">NULL</span> <span class="p">)</span>
-    <span class="p">{</span>
-        <span class="n">printf</span><span class="p">(</span><span class="s">"so loading error.</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
-        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
-    <span class="p">}</span>
-    <span class="n">add</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">(</span><span class="o">*</span><span class="p">)(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">))</span><span class="n">dlsym</span><span class="p">(</span><span class="n">dl</span><span class="p">,</span> <span class="s">"add"</span><span class="p">);</span>
-    <span class="k">if</span><span class="p">(</span> <span class="n">dlerror</span><span class="p">()</span> <span class="o">!=</span> <span class="nb">NULL</span> <span class="p">)</span>
-    <span class="p">{</span>
-        <span class="n">printf</span><span class="p">(</span><span class="s">"fun load error.</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
-        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
-    <span class="p">}</span>
-    <span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span>
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
-</pre>
-
-
-<p>使用<code>gcc dyn_main.c -ldl -o dyn_test</code>编译。</p>
-<p>这时通过<code>readelf dyn_test -d</code>可以发现，dyn_test不依赖libtest.so：</p>
-<pre class="code literal-block"><span class="nv">$ </span>readelf dyn_test -d
-
-Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
-  Tag        Type                         Name/Value
- 0x0000000000000001 <span class="o">(</span>NEEDED<span class="o">)</span>             Shared library: <span class="o">[</span>libdl.so.2<span class="o">]</span>
- 0x0000000000000001 <span class="o">(</span>NEEDED<span class="o">)</span>             Shared library: <span class="o">[</span>libc.so.6<span class="o">]</span>
-......
-</pre>
-
-
-<p>dyn_test的dynamic symbols中也没有add：</p>
-<pre class="code literal-block"><span class="nv">$ </span>nm -D dyn_test 
-                 U dlerror
-                 U dlopen
-                 U dlsym
-                 w __gmon_start__
-                 w _ITM_deregisterTMCloneTable
-                 w _ITM_registerTMCloneTable
-                 w _Jv_RegisterClasses
-                 U __libc_start_main
-                 U <span class="nb">printf</span>
-<span class="nb">                 </span>U puts
-</pre>
-
-
-<p>运行程序也不需要设置<code>LD_LIBRARY_PATH</code>环境变量</p>
-<pre class="code literal-block"><span class="nv">$ </span>./dyn_test 
-3
-</pre>
-
-
-<hr>
-<p>参考资料：</p>
-<ol>
-<li><a href="http://hi.baidu.com/linuxlife/item/ed8e5d0c6e86b491a2df4366">Linux动态库的编译与使用 转载</a></li>
-<li><a href="http://os.51cto.com/art/201003/186246.htm">详细分析Linux动态库的使用方式</a></li>
-<li><a href="http://stackoverflow.com/questions/34732/how-do-i-list-the-symbols-in-a-so-file">How do I list the symbols in a .so file</a></li>
-<li><a href="http://stackoverflow.com/questions/10480657/import-names-in-elf-binary">Import names in ELF binary</a></li>
-</ol>
 </div>
     </div>
     </article>
@@ -1186,9 +1095,9 @@ Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
 </div>
 
 <footer class="blog-footer" id="footer"><a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png"></a><br>本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh">知识共享署名-非商业性使用-禁止演绎 3.0 未本地化版本许可协议</a>进行许可。
-<br>Contents © 2016 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
+<br>Contents © 2017 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
     
-</footer><script src="assets/js/all-nocdn.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
+</footer><script src="assets/js/jquery.min.js"></script><script src="assets/js/bootstrap.min.js"></script><script src="assets/js/moment-with-locales.min.js"></script><script src="assets/js/fancydates.js"></script><script src="assets/js/jquery.colorbox-min.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
     moment.locale("en");
     fancydates(0, "YYYY-MM-DD HH:mm");
     </script><!-- end fancy dates -->

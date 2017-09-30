@@ -4,7 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Linux下编译链接动态库 | hbprotoss的博客</title>
-<link href="../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/colorbox.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/blog.css" rel="stylesheet" type="text/css">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
 <link rel="canonical" href="http://hbprotoss.github.io/posts/linuxxia-bian-yi-lian-jie-dong-tai-ku.html">
 <!--[if lt IE 9]><script src="../assets/js/html5.js"></script><![endif]--><meta name="author" content="hbprotoss">
@@ -110,7 +115,7 @@ gc'>
 <p>记录下Linux下编译和链接动态库的过程。</p>
 <h3>一、 编写动态库</h3>
 <p>头文件so.h：  </p>
-<pre class="code literal-block"><span class="cp">#ifndef  SO_H</span>
+<pre class="code literal-block"><span></span><span class="cp">#ifndef  SO_H</span>
 <span class="cp">#define  SO_H</span>
 
 <span class="kt">int</span> <span class="nf">add</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">);</span>
@@ -121,7 +126,7 @@ gc'>
 
 
 <p>实现文件so.c：</p>
-<pre class="code literal-block"><span class="cp">#include "so.h"</span>
+<pre class="code literal-block"><span></span><span class="cp">#include</span> <span class="cpf">"so.h"</span><span class="cp"></span>
 
 <span class="kt">int</span> <span class="nf">add</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span>
 <span class="p">{</span>
@@ -131,7 +136,7 @@ gc'>
 
 
 <h3>二、编译动态库</h3>
-<pre class="code literal-block">gcc so.c -fPIC -shared -o libtest.so
+<pre class="code literal-block"><span></span>gcc so.c -fPIC -shared -o libtest.so
 </pre>
 
 
@@ -141,7 +146,7 @@ gc'>
 <li>说明我们要生成的是动态库so(Shared Object)文件，从而进行动态链接。</li>
 </ol>
 <p>通过<code>nm -g libtest.so</code>可以看到，导出符号表中已经有<code>add</code>这个符号了：</p>
-<pre class="code literal-block"><span class="nv">$ </span>nm -g libtest.so 
+<pre class="code literal-block"><span></span>$ nm -g libtest.so 
 <span class="m">0000000000000670</span> T add
 <span class="m">0000000000201030</span> B __bss_start
                  w __cxa_finalize@@GLIBC_2.2.5
@@ -159,8 +164,8 @@ gc'>
 <h3>三、使用动态库</h3>
 <h4>1. 隐式链接(编译时链接)</h4>
 <p>编写主程序main.c：</p>
-<pre class="code literal-block"><span class="cp">#include &lt;stdio.h&gt;</span>
-<span class="cp">#include "so.h"</span>
+<pre class="code literal-block"><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">"so.h"</span><span class="cp"></span>
 
 <span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
 <span class="p">{</span>
@@ -176,7 +181,7 @@ gc'>
 <li>-l：指定需要链接的库。该名称是处在头lib和后缀.so中的名称，如上动态库libtest.so的l参数为-l test</li>
 </ul>
 <p>此时通过<code>readelf test -d</code>已经能看到生成的可执行文件test的Dynamic section里依赖libtest.so了</p>
-<pre class="code literal-block"><span class="nv">$ </span>readelf <span class="nb">test</span> -d
+<pre class="code literal-block"><span></span>$ readelf <span class="nb">test</span> -d
 
 Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
   Tag        Type                         Name/Value
@@ -187,8 +192,8 @@ Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
 
 
 <p>dynamic symbols中也有一个undefined symbol(add)</p>
-<pre class="code literal-block"><span class="nv">$ </span>nm -D <span class="nb">test </span>
-<span class="nb">                 </span>U add
+<pre class="code literal-block"><span></span>$ nm -D <span class="nb">test</span> 
+                 U add
 <span class="m">0000000000601048</span> B __bss_start
 <span class="m">0000000000601048</span> D _edata
 <span class="m">0000000000601050</span> B _end
@@ -204,20 +209,20 @@ Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
 
 
 <p>在执行隐式链接的程序之前要注意设置<code>LD_LIBRARY_PATH</code>环境变量，或者把前面生成的libtest.so复制到系统路径下，否则会找不到动态库。</p>
-<pre class="code literal-block"><span class="nv">$ </span>./test 
+<pre class="code literal-block"><span></span>$ ./test 
 ./test: error <span class="k">while</span> loading shared libraries: libtest.so: cannot open shared object file: No such file or directory
 
-<span class="nv">$ </span><span class="nb">export </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>.
+$ <span class="nb">export</span> <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>.
 
-<span class="nv">$ </span>./test 
-3
+$ ./test 
+<span class="m">3</span>
 </pre>
 
 
 <h4>2. 显式链接(运行时链接)</h4>
 <p>编写主程序dyn_main.c</p>
-<pre class="code literal-block"><span class="cp">#include &lt;stdio.h&gt;</span>
-<span class="cp">#include &lt;dlfcn.h&gt;</span>
+<pre class="code literal-block"><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;dlfcn.h&gt;</span><span class="cp"></span>
 
 <span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
 <span class="p">{</span>
@@ -243,7 +248,7 @@ Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
 
 <p>使用<code>gcc dyn_main.c -ldl -o dyn_test</code>编译。</p>
 <p>这时通过<code>readelf dyn_test -d</code>可以发现，dyn_test不依赖libtest.so：</p>
-<pre class="code literal-block"><span class="nv">$ </span>readelf dyn_test -d
+<pre class="code literal-block"><span></span>$ readelf dyn_test -d
 
 Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
   Tag        Type                         Name/Value
@@ -254,7 +259,7 @@ Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
 
 
 <p>dyn_test的dynamic symbols中也没有add：</p>
-<pre class="code literal-block"><span class="nv">$ </span>nm -D dyn_test 
+<pre class="code literal-block"><span></span>$ nm -D dyn_test 
                  U dlerror
                  U dlopen
                  U dlsym
@@ -264,13 +269,13 @@ Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
                  w _Jv_RegisterClasses
                  U __libc_start_main
                  U <span class="nb">printf</span>
-<span class="nb">                 </span>U puts
+                 U puts
 </pre>
 
 
 <p>运行程序也不需要设置<code>LD_LIBRARY_PATH</code>环境变量</p>
-<pre class="code literal-block"><span class="nv">$ </span>./dyn_test 
-3
+<pre class="code literal-block"><span></span>$ ./dyn_test 
+<span class="m">3</span>
 </pre>
 
 
@@ -346,9 +351,9 @@ Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
 </div>
 
 <footer class="blog-footer" id="footer"><a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png"></a><br>本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh">知识共享署名-非商业性使用-禁止演绎 3.0 未本地化版本许可协议</a>进行许可。
-<br>Contents © 2016 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
+<br>Contents © 2017 <a href="mailto:">hbprotoss</a> - Powered by <a href="http://nikola.ralsina.com.ar">Nikola</a>
     
-</footer><script src="../assets/js/all-nocdn.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
+</footer><script src="../assets/js/jquery.min.js"></script><script src="../assets/js/bootstrap.min.js"></script><script src="../assets/js/moment-with-locales.min.js"></script><script src="../assets/js/fancydates.js"></script><script src="../assets/js/jquery.colorbox-min.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
     moment.locale("en");
     fancydates(0, "YYYY-MM-DD HH:mm");
     </script><!-- end fancy dates -->
