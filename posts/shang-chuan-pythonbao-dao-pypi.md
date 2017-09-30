@@ -100,3 +100,9 @@ python setup.py sdist upload -r pypi
 ```shell
 python setup.py sdist upload -r pypitest
 ```
+
+---
+
+参考资料：
+
+[http://peterdowns.com/posts/first-time-with-pypi.html](http://peterdowns.com/posts/first-time-with-pypi.html)
