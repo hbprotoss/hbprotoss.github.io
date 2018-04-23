@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>hbprotoss的博客 (Posts about Selenium)</title><link>http://hbprotoss.github.io/</link><description></description><atom:link href="http://hbprotoss.github.io/categories/selenium.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 23 Apr 2018 13:06:45 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>破解geetest验证码</title><link>http://hbprotoss.github.io/posts/po-jie-geetestyan-zheng-ma.html</link><dc:creator>hbprotoss</dc:creator><description>&lt;div&gt;&lt;p&gt;本文所述内容仅用于实验学习之用，任何因非法商业用途造成的法律纠纷作者概不负责&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2&gt;破解geetest验证码&lt;/h2&gt;
+&lt;p&gt;写过爬虫的基本都碰到过验证码问题，滑动验证码是其中一类略微高级的验证码类型。国内的滑动验证码基本由geetest提供，本文主要叙述如何绕过（破解）geetest滑动验证码&lt;/p&gt;
+&lt;h3&gt;1. 依赖&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;python 3.6&lt;/li&gt;
+&lt;li&gt;selenium，模拟浏览器请求/渲染&lt;/li&gt;
+&lt;li&gt;lxml，html页面处理&lt;/li&gt;
+&lt;li&gt;pillow，python图像库&lt;/li&gt;
+&lt;li&gt;numpy+peakutils，数学运算&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;2. 过程&lt;/h3&gt;
+&lt;p&gt;以国内某著名二次元网站为例(不是我说的啊！)，登陆界面如图所示，点击验证码的滑块就会弹出验证码，你需要将滑块滑到对应的空缺位置上即可验证成功&lt;/p&gt;
+&lt;p&gt;&lt;img alt="login" src="http://hbprotoss.github.io/galleries/geetest/login.png"&gt;&lt;/p&gt;
+&lt;h4&gt;2.1 dom解析&lt;/h4&gt;
+&lt;p&gt;主要dom如图所示&lt;/p&gt;
+&lt;p&gt;&lt;img alt="dom" src="http://hbprotoss.github.io/galleries/geetest/dom.png"&gt;&lt;/p&gt;
+&lt;p&gt;你所看到的图不是原图，原图经过切片乱序之后由css拼成的，如图所示&lt;/p&gt;
+&lt;p&gt;&lt;img alt="disordered_image" src="http://hbprotoss.github.io/galleries/geetest/disordered_image.png"&gt;&lt;/p&gt;
+&lt;h4&gt;2.2 还原原图&lt;/h4&gt;
+&lt;p&gt;观察可得，乱序图有&lt;code&gt;(parts_per_line=26)*2=52&lt;/code&gt;块切片，每块切片的宽度&lt;code&gt;part_width&lt;/code&gt;和高度可以自行计算得&lt;code&gt;part_height&lt;/code&gt;，查阅css手册得&lt;code&gt;background-position&lt;/code&gt;的坐标系第一象限在右下角。&lt;/p&gt;
+&lt;p&gt;对第&lt;code&gt;idx&lt;/code&gt;个切片来说，它在乱序图中的位置为&lt;code&gt;background-position&lt;/code&gt;取负&lt;/p&gt;
+&lt;p&gt;它在原图中的位置&lt;code&gt;dest_x=(idx % parts_per_line) * part_width&lt;/code&gt;，&lt;code&gt;dest_y=(idx // parts_per_line) * part_height&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;有了计算公式，可以用pillow的方法切割和拼接图片&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# 切割&lt;/span&gt;
+&lt;span class="n"&gt;image&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;crop&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;w&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;h&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="c1"&gt;# 拼接&lt;/span&gt;
+&lt;span class="n"&gt;image&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;paste&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;target_image&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;dest_x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;dest_y&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;h4&gt;2.3 获取待验证图片&lt;/h4&gt;
+&lt;p&gt;鼠标悬停在滑块上并不会显示待验证位置在哪，需要点击之后才会显示，需要让selenium执行鼠标点击并且不放这个动作&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# 获得滑块对象&lt;/span&gt;
+&lt;span class="n"&gt;drag&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;driver&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;find_element_by_css_selector&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'.gt_slider_knob.gt_show'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="c1"&gt;# 执行点击并且不放的动作&lt;/span&gt;
+&lt;span class="n"&gt;action&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;ActionChains&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;driver&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;action&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;click_and_hold&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;drag&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;perform&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;这个时候浏览器中应该是这个样子&lt;/p&gt;
+&lt;p&gt;&lt;img alt="click_hold" src="http://hbprotoss.github.io/galleries/geetest/click_hold.png"&gt;&lt;/p&gt;
+&lt;p&gt;之后截取待验证的图片&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# selenium截图&lt;/span&gt;
+&lt;span class="n"&gt;image_to_verify&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Image&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;open&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;io&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;BytesIO&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;driver&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_screenshot_as_png&lt;/span&gt;&lt;span class="p"&gt;()))&lt;/span&gt;
+&lt;span class="c1"&gt;# 调用浏览器，执行js后返回框内图片相对于窗口的坐标&lt;/span&gt;
+&lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;driver&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;execute_script&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'return $("div.gt_cut_fullbg")[0].getBoundingClientRect().left'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;y&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;driver&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;execute_script&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'return $("div.gt_cut_fullbg")[0].getBoundingClientRect().top'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="c1"&gt;# 切割（同上）&lt;/span&gt;
+&lt;span class="n"&gt;image&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;crop&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;...&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;h4&gt;2.4 获取拼图块大小&lt;/h4&gt;
+&lt;p&gt;拼图块的dom&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;div&lt;/span&gt; &lt;span class="na"&gt;class&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"gt_slice gt_show"&lt;/span&gt; &lt;span class="na"&gt;style&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"left: 0px; background-image: url(&amp;amp;quot;https://static.geetest.com/pictures/gt/375495539/slice/1d4a39f5d.png&amp;amp;quot;); width: 53px; height: 52px; top: 47px;"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;div&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;大小都写在style上了，&lt;code&gt;slice_width=53, slice_height=52&lt;/code&gt;&lt;/p&gt;
+&lt;h4&gt;2.5 图像处理&lt;/h4&gt;
+&lt;p&gt;这块是破解的核心逻辑，主要思路就是尽可能过滤掉图像中相同的像素，留下的就是不同的，我们主要是去找由两块拼图块垂直方向上的边缘。&lt;/p&gt;
+&lt;p&gt;我的做法是用自带滤波函数找到图像中的边缘，然后转灰度图，设置恰当阈值，做二值化&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;image&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;filter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ImageFilter&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;FIND_EDGES&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;convert&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'L'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;point&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="mi"&gt;120&lt;/span&gt; &lt;span class="k"&gt;else&lt;/span&gt; &lt;span class="mi"&gt;255&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;这里二值化的分界阈值是120，你可以试试别的，看看最终效果。&lt;/p&gt;
+&lt;p&gt;从右往左，扫描垂直方向上，两幅图里的像素差异，并记录差异像素个数&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;x_diff&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;origin_image&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;width&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;origin_image&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;width&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="n"&gt;diff_count&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
+        &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;j&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;origin_image&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;height&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+            &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;origin_image_grey&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;getpixel&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;j&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="o"&gt;!=&lt;/span&gt; &lt;span class="n"&gt;image_to_verify_grey&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;getpixel&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;j&lt;/span&gt;&lt;span class="p"&gt;)):&lt;/span&gt;
+                &lt;span class="n"&gt;diff_count&lt;/span&gt; &lt;span class="o"&gt;+=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+        &lt;span class="n"&gt;x_diff&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;diff_count&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;将这个&lt;code&gt;x_diff&lt;/code&gt;用excel绘制成折线图后，能很明显发现四个波峰&lt;/p&gt;
+&lt;p&gt;&lt;img alt="waves" src="http://hbprotoss.github.io/galleries/geetest/waves.png"&gt;&lt;/p&gt;
+&lt;p&gt;接下去要做的是从这个一维数组中提取四个波峰，这里用到了&lt;code&gt;peakutils&lt;/code&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;numpy&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;np&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;peakutils.peak&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;indexes&lt;/span&gt;
+&lt;span class="n"&gt;waves&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;indexes&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;array&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x_diff&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="n"&gt;thres&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;7.0&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nb"&gt;max&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x_diff&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="n"&gt;min_dist&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;20&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;ul&gt;
+&lt;li&gt;thres，振幅阈值，振幅超过这个值才会被认为是波峰(不是很理解这个参数，求大佬解答)&lt;/li&gt;
+&lt;li&gt;min_dist，波峰之间的最小间隔，理论上要接近拼图块宽度才比较合适，但是我试了效果并不好，不知道为什么&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;2.6 移动滑块&lt;/h4&gt;
+&lt;p&gt;计算要移动的距离&lt;code&gt;offset=waves[2] - waves[0]&lt;/code&gt;，并移动滑块&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;action&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;ActionChains&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;driver&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;action&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;drag_and_drop_by_offset&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;drag&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;perform&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;h4&gt;2.7 完成&lt;/h4&gt;
+&lt;p&gt;效果如图&lt;/p&gt;
+&lt;p&gt;&lt;img alt="show" src="http://hbprotoss.github.io/galleries/geetest/show.gif"&gt;&lt;/p&gt;
+&lt;h3&gt;附&lt;/h3&gt;
+&lt;p&gt;源码：&lt;a href="https://github.com/hbprotoss/geetest-crack"&gt;https://github.com/hbprotoss/geetest-crack&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</description><category>Python</category><category>Selenium</category><category>破解</category><category>验证码</category><guid>http://hbprotoss.github.io/posts/po-jie-geetestyan-zheng-ma.html</guid><pubDate>Mon, 23 Apr 2018 11:42:46 GMT</pubDate></item></channel></rss>
