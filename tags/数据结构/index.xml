@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>数据结构 on hbprotoss的博客</title>
+    <link>http://hbprotoss.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/</link>
+    <description>Recent content in 数据结构 on hbprotoss的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Tue, 21 May 2013 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="http://hbprotoss.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Trie树的Python实现</title>
+      <link>http://hbprotoss.github.io/post/trieshu-de-pythonshi-xian/</link>
+      <pubDate>Tue, 21 May 2013 00:00:00 +0000</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/trieshu-de-pythonshi-xian/</guid>
+      <description>又是一个由需求驱动的算法学习的例子。 最近weii需要实现一个这样的功能：在发送AT好友的时候能给出自动补全的列表。 最先想到的是当我给出一个用</description>
+    </item>
+    
+  </channel>
+</rss>

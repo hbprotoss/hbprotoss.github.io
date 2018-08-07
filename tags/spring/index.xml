@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Spring on hbprotoss的博客</title>
+    <link>http://hbprotoss.github.io/tags/spring/</link>
+    <description>Recent content in Spring on hbprotoss的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 06 Jul 2016 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="http://hbprotoss.github.io/tags/spring/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>classpath* vs classpath in spring</title>
+      <link>http://hbprotoss.github.io/post/classpath-vs-classpath-in-spring/</link>
+      <pubDate>Wed, 06 Jul 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/classpath-vs-classpath-in-spring/</guid>
+      <description>记录一下spring里读取资源时的classpath*和classpath表达式的区别。不想看细节的可以直接跳到最后直接看结论。 读取资源的主</description>
+    </item>
+    
+    <item>
+      <title>thymeleaf的坑一记</title>
+      <link>http://hbprotoss.github.io/post/thymeleafde-keng-yi-ji/</link>
+      <pubDate>Tue, 31 May 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/thymeleafde-keng-yi-ji/</guid>
+      <description>记录下thymeleaf 3.0新增的th:field与th:each中生成的变量结合使用时的坑。 代码就是官方例子https://github</description>
+    </item>
+    
+  </channel>
+</rss>

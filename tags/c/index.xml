@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>C on hbprotoss的博客</title>
+    <link>http://hbprotoss.github.io/tags/c/</link>
+    <description>Recent content in C on hbprotoss的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 09 Oct 2013 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="http://hbprotoss.github.io/tags/c/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>利用LD_PRELOAD进行hook</title>
+      <link>http://hbprotoss.github.io/post/li-yong-ld_preloadjin-xing-hook/</link>
+      <pubDate>Wed, 09 Oct 2013 00:00:00 +0000</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/li-yong-ld_preloadjin-xing-hook/</guid>
+      <description>好久没玩hook这种猥琐的东西里，今天在Linux下体验了一把。 loader在进行动态链接的时候，会将有相同符号名的符号覆盖成LD_PREL</description>
+    </item>
+    
+    <item>
+      <title>Linux下编译链接动态库</title>
+      <link>http://hbprotoss.github.io/post/linuxxia-bian-yi-lian-jie-dong-tai-ku/</link>
+      <pubDate>Tue, 08 Oct 2013 00:00:00 +0000</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/linuxxia-bian-yi-lian-jie-dong-tai-ku/</guid>
+      <description>记录下Linux下编译和链接动态库的过程。 ##一、 编写动态库 头文件so.h： #ifndef SO_H #define SO_H int add(int a, int b); #endif /*SO_H*/ 实现文件so.c： #include &amp;quot;so.h&amp;quot; int add(int a, int b) { return a + b;</description>
+    </item>
+    
+    <item>
+      <title>C语言宏的特殊用法和几个坑</title>
+      <link>http://hbprotoss.github.io/post/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng/</link>
+      <pubDate>Sat, 13 Jul 2013 00:00:00 +0000</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng/</guid>
+      <description>总结一下C语言中宏的一些特殊用法和几个容易踩的坑。由于本文主要参考GCC文档，某些细节（如宏参数中的空格是否处理之类）在别的编译器可能有细微</description>
+    </item>
+    
+  </channel>
+</rss>

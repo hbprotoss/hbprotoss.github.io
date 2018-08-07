@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>通俗演绎KMP - hbprotoss的博客</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="hbprotoss" />
+  <meta name="description" content="最近要实现关键字过滤功能，小看了一些经典的字符串匹配算法。 本文要介绍的是KMP算法（Knuth–Morris–Pratt Algorithm）" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.46" />
+
+
+<link rel="canonical" href="http://hbprotoss.github.io/post/tong-su-yan-yi-kmp/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="通俗演绎KMP" />
+<meta property="og:description" content="最近要实现关键字过滤功能，小看了一些经典的字符串匹配算法。 本文要介绍的是KMP算法（Knuth–Morris–Pratt Algorithm）" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://hbprotoss.github.io/post/tong-su-yan-yi-kmp/" />
+
+
+
+<meta property="article:published_time" content="2013-05-07T00:00:00&#43;00:00"/>
+
+<meta property="article:modified_time" content="2013-05-07T00:00:00&#43;00:00"/>
+
+
+
+
+
+
+
+
+
+
+
+<meta itemprop="name" content="通俗演绎KMP">
+<meta itemprop="description" content="最近要实现关键字过滤功能，小看了一些经典的字符串匹配算法。 本文要介绍的是KMP算法（Knuth–Morris–Pratt Algorithm）">
+
+
+<meta itemprop="datePublished" content="2013-05-07T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2013-05-07T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="1111">
+
+
+
+<meta itemprop="keywords" content="算法,字符串," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="通俗演绎KMP"/>
+<meta name="twitter:description" content="最近要实现关键字过滤功能，小看了一些经典的字符串匹配算法。 本文要介绍的是KMP算法（Knuth–Morris–Pratt Algorithm）"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">hbprotoss的博客</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">hbprotoss的博客</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">通俗演绎KMP</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2013-05-07 </span>
+        
+        <span class="more-meta"> 1111 words </span>
+        <span class="more-meta"> 3 mins read </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  
+  <div class="post-toc-content always-active">
+    
+  </div>
+</div>
+
+    
+    
+
+    
+    <div class="post-content">
+      <p>最近要实现关键字过滤功能，小看了一些经典的字符串匹配算法。<br />
+本文要介绍的是KMP算法（<strong>Knuth–Morris–Pratt Algorithm</strong>）,那个Knuth应该再熟悉不过了。</p>
+
+<p>KMP算法是从朴素匹配算法改进而来。回忆一下朴素的匹配算法是怎么完成字符串的匹配的呢？<br />
+1. 将原串和模式串左对齐，然后一位一位比较，直到有一个字符不匹配<br />
+<img src="../galleries/KMP/KMP1.png" alt="KMP1.png" /><br />
+2. 发现第二位的B和C不匹配，模式串右移一位<br />
+<img src="../galleries/KMP/KMP2.png" alt="KMP2.png" /><br />
+3. 重复这个流程，直到找到完全匹配的子串或者匹配失败。</p>
+
+<p>但这过程中显然有多比较的地方。如，原串为ABCDEABCDF，模式串为ABCDF。第一轮可以发现E和F不匹配<br />
+<img src="../galleries/KMP/KMP3.png" alt="KMP3.png" /><br />
+很显然右移一位必定不匹配，这时模式串可以直接右移4位跳过ABCD，从E开始再次比较<br />
+<img src="../galleries/KMP/KMP4.png" alt="KMP4.png" /></p>
+
+<p>那是不是跳过的长度就是前面相同部分的长度呢？其实不是这样的，这种直接跳过前面相同部分的做法在某些情况下会有问题。如，原串为ABCDABCDABF，模式串为ABCDABF，直接跳过相同部分就会遗漏匹配的串<br />
+<img src="../galleries/KMP/KMP5.png" alt="KMP5.png" /><br />
+所以跳过的长度并不是前面完全匹配的部分，可以跳过的长度一般存储在模式串的partial match table中，即KMP算法需要对模式串进行预处理。</p>
+
+<p>先来看看这个partial match table在跳过的过程中是怎么用的，然后再来考察计算partial match table的算法。<br />
+ABCDABF的partial match table如下：<br />
+<img src="../galleries/KMP/KMP6.png" alt="KMP6.png" /><br />
+可以跳过的长度 = 当前已匹配长度 - 最后一个字母在partial match table中的值。例如：<br />
+<img src="../galleries/KMP/KMP7.png" alt="KMP7.png" /><br />
+当发现C和F不匹配时，根据公式，当前已匹配串ABCDAB长度为6, 最后一个字母B在partial match table中的对应值为2，所以可以跳过的长度 = 6 - 2 = 4，即：<br />
+<img src="../galleries/KMP/KMP8.png" alt="KMP8.png" /><br />
+这样就能正确匹配了。</p>
+
+<p>partial match table中每个位置i记录的其实就是从0到i的子串中，同时出现在子串前缀和后缀中的最大长度。还是以上面那个例子为例：</p>
+
+<ul>
+<li>A没有前缀或后缀，所以长度为0</li>
+<li>AB前缀为A，后缀为B，没有相同部分，长度为0</li>
+<li>ABC前缀为A、AB，后缀为BC、C，没有相同部分，长度为0</li>
+<li>ABCD前缀为A、AB、ABC，后缀为BCD、CD、D，没有相同部分，长度为0</li>
+<li>ABCDA前缀为A、AB、ABC、ABCD，后缀为BCDA、CDA、DA、A，相同部分为A，长度为1</li>
+<li>ABCDAB前缀为A、AB、ABC、ABCD、ABCDA，后缀为BCDAB、CDAB、DAB、AB、B，相同部分为AB，长度为2</li>
+<li>ABCDABF前缀为A、AB、ABC、ABCD、ABCDA、ABCDAB，后缀为BCDABF、BCDAB、CDAB、DAB、AB、B，没有相同部分，长度为0</li>
+</ul>
+
+<p>具体代码参考<a href="https://github.com/hbprotoss/codejam/blob/master/kmp.py">https://github.com/hbprotoss/codejam/blob/master/kmp.py</a></p>
+
+<p>全文完。</p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">hbprotoss</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2013-05-07</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png" /></a><br />本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh">知识共享署名-非商业性使用-禁止演绎 3.0 未本地化版本许可协议</a>进行许可。</span>
+  </p>
+</div>
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/%E7%AE%97%E6%B3%95/">算法</a>
+          
+          <a href="/tags/%E5%AD%97%E7%AC%A6%E4%B8%B2/">字符串</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/trieshu-de-pythonshi-xian/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Trie树的Python实现</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/python-decoratorde-ying-yong/">
+            <span class="next-text nav-default">Python decorator的应用</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'hbprotoss';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://weibo.com/hbprotoss" class="iconfont icon-weibo" title="weibo"></a>
+  <a href="http://hbprotoss.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2018
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">hbprotoss</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script><script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox-3.1.20.min.js"></script>
+
+
+<script type="text/javascript" src="/dist/even.min.js?v=3.2.0"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

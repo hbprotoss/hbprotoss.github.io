@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Thymeleaf on hbprotoss的博客</title>
+    <link>http://hbprotoss.github.io/tags/thymeleaf/</link>
+    <description>Recent content in Thymeleaf on hbprotoss的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Tue, 31 May 2016 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="http://hbprotoss.github.io/tags/thymeleaf/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>thymeleaf的坑一记</title>
+      <link>http://hbprotoss.github.io/post/thymeleafde-keng-yi-ji/</link>
+      <pubDate>Tue, 31 May 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/thymeleafde-keng-yi-ji/</guid>
+      <description>记录下thymeleaf 3.0新增的th:field与th:each中生成的变量结合使用时的坑。 代码就是官方例子https://github</description>
+    </item>
+    
+  </channel>
+</rss>

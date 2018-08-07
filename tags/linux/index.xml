@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Linux on hbprotoss的博客</title>
+    <link>http://hbprotoss.github.io/tags/linux/</link>
+    <description>Recent content in Linux on hbprotoss的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 09 Oct 2013 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="http://hbprotoss.github.io/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>利用LD_PRELOAD进行hook</title>
+      <link>http://hbprotoss.github.io/post/li-yong-ld_preloadjin-xing-hook/</link>
+      <pubDate>Wed, 09 Oct 2013 00:00:00 +0000</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/li-yong-ld_preloadjin-xing-hook/</guid>
+      <description>好久没玩hook这种猥琐的东西里，今天在Linux下体验了一把。 loader在进行动态链接的时候，会将有相同符号名的符号覆盖成LD_PREL</description>
+    </item>
+    
+    <item>
+      <title>Linux下编译链接动态库</title>
+      <link>http://hbprotoss.github.io/post/linuxxia-bian-yi-lian-jie-dong-tai-ku/</link>
+      <pubDate>Tue, 08 Oct 2013 00:00:00 +0000</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/linuxxia-bian-yi-lian-jie-dong-tai-ku/</guid>
+      <description>记录下Linux下编译和链接动态库的过程。 ##一、 编写动态库 头文件so.h： #ifndef SO_H #define SO_H int add(int a, int b); #endif /*SO_H*/ 实现文件so.c： #include &amp;quot;so.h&amp;quot; int add(int a, int b) { return a + b;</description>
+    </item>
+    
+  </channel>
+</rss>

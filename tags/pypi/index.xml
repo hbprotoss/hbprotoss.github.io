@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>PyPi on hbprotoss的博客</title>
+    <link>http://hbprotoss.github.io/tags/pypi/</link>
+    <description>Recent content in PyPi on hbprotoss的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 30 Sep 2017 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="http://hbprotoss.github.io/tags/pypi/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>上传python包到pypi</title>
+      <link>http://hbprotoss.github.io/post/shang-chuan-pythonbao-dao-pypi/</link>
+      <pubDate>Sat, 30 Sep 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/shang-chuan-pythonbao-dao-pypi/</guid>
+      <description>注册账号 正式仓库: PyPI Live 测试仓库: PyPI Test 创建.pypirc文件 [distutils] index-servers = pypi pypitest [pypi] repository=https://upload.pypi.org/legacy/ username=your_username password=your_password [pypitest] repository=https://test.pypi.org/legacy/ username=your_username password=your_password 保存到~/.pypirc chmod 600 ~/.pypirc 准备工作 工作目录结构 root-dir/ # arbitrary</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Crawler on hbprotoss的博客</title>
+    <link>http://hbprotoss.github.io/tags/crawler/</link>
+    <description>Recent content in Crawler on hbprotoss的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Tue, 12 Apr 2016 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="http://hbprotoss.github.io/tags/crawler/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>XPath备忘</title>
+      <link>http://hbprotoss.github.io/post/xpathbei-wang/</link>
+      <pubDate>Tue, 12 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/xpathbei-wang/</guid>
+      <description>最近写了几个scrapy的爬虫程序，里面用到了xpath，写个日志记录一下用法。 XPath是什么 XPath是一种用于xml、html等结构化</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Python on hbprotoss的博客</title>
+    <link>http://hbprotoss.github.io/tags/python/</link>
+    <description>Recent content in Python on hbprotoss的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 23 Apr 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="http://hbprotoss.github.io/tags/python/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>破解geetest验证码</title>
+      <link>http://hbprotoss.github.io/post/po-jie-geetestyan-zheng-ma/</link>
+      <pubDate>Mon, 23 Apr 2018 00:00:00 +0000</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/po-jie-geetestyan-zheng-ma/</guid>
+      <description>本文所述内容仅用于实验学习之用，任何因非法商业用途造成的法律纠纷作者概不负责 破解geetest验证码 写过爬虫的基本都碰到过验证码问题，滑动验</description>
+    </item>
+    
+    <item>
+      <title>上传python包到pypi</title>
+      <link>http://hbprotoss.github.io/post/shang-chuan-pythonbao-dao-pypi/</link>
+      <pubDate>Sat, 30 Sep 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/shang-chuan-pythonbao-dao-pypi/</guid>
+      <description>注册账号 正式仓库: PyPI Live 测试仓库: PyPI Test 创建.pypirc文件 [distutils] index-servers = pypi pypitest [pypi] repository=https://upload.pypi.org/legacy/ username=your_username password=your_password [pypitest] repository=https://test.pypi.org/legacy/ username=your_username password=your_password 保存到~/.pypirc chmod 600 ~/.pypirc 准备工作 工作目录结构 root-dir/ # arbitrary</description>
+    </item>
+    
+    <item>
+      <title>XPath备忘</title>
+      <link>http://hbprotoss.github.io/post/xpathbei-wang/</link>
+      <pubDate>Tue, 12 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/xpathbei-wang/</guid>
+      <description>最近写了几个scrapy的爬虫程序，里面用到了xpath，写个日志记录一下用法。 XPath是什么 XPath是一种用于xml、html等结构化</description>
+    </item>
+    
+    <item>
+      <title>Python descriptor</title>
+      <link>http://hbprotoss.github.io/post/python-descriptor/</link>
+      <pubDate>Wed, 12 Jun 2013 00:00:00 +0000</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/python-descriptor/</guid>
+      <description>一次偶然发现，Python的对象竟然可以在运行期动态添加类定义时没有的属性，这又颠覆了我对Python OO机制的理解。Google了一把，顺</description>
+    </item>
+    
+    <item>
+      <title>Trie树的Python实现</title>
+      <link>http://hbprotoss.github.io/post/trieshu-de-pythonshi-xian/</link>
+      <pubDate>Tue, 21 May 2013 00:00:00 +0000</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/trieshu-de-pythonshi-xian/</guid>
+      <description>又是一个由需求驱动的算法学习的例子。 最近weii需要实现一个这样的功能：在发送AT好友的时候能给出自动补全的列表。 最先想到的是当我给出一个用</description>
+    </item>
+    
+    <item>
+      <title>Python decorator的应用</title>
+      <link>http://hbprotoss.github.io/post/python-decoratorde-ying-yong/</link>
+      <pubDate>Wed, 03 Apr 2013 00:00:00 +0000</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/python-decoratorde-ying-yong/</guid>
+      <description>Decorator是23种设计模式之一，提出的目的是为了在不改变现有代码的前提下，通过在头部或尾部添加代码来扩展功能。 Python语言内建支</description>
+    </item>
+    
+    <item>
+      <title>multipart/form-data的实现</title>
+      <link>http://hbprotoss.github.io/post/multipartform-datade-shi-xian/</link>
+      <pubDate>Fri, 29 Mar 2013 00:00:00 +0000</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/multipartform-datade-shi-xian/</guid>
+      <description>写之前先吐槽几句：Python社区太懒了，Python3都推出多少年了，那么多第三方库还不port到Python3。不能安于现状啊！ 下面是正</description>
+    </item>
+    
+    <item>
+      <title>python的import机制</title>
+      <link>http://hbprotoss.github.io/post/pythonde-importji-zhi/</link>
+      <pubDate>Mon, 18 Mar 2013 00:00:00 +0000</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/pythonde-importji-zhi/</guid>
+      <description>同一个模块以相同的模块名被导入时，模块内的代码只执行一遍（模块名必须相同）。 例： import/ test.py mo/ A.py # A.py a = 1 print(a) a += 1 # test.py #!/usr/bin/env python3 import os import sys import mo.A import mo.A path = os.path.abspath(&#39;./mo&#39;) print(path) sys.path.append(path)</description>
+    </item>
+    
+    <item>
+      <title>实现简单线程池</title>
+      <link>http://hbprotoss.github.io/post/shi-xian-jian-dan-xian-cheng-chi/</link>
+      <pubDate>Mon, 18 Mar 2013 00:00:00 +0000</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/shi-xian-jian-dan-xian-cheng-chi/</guid>
+      <description>前段时间在写代码的时候（用了Qt）出现了似乎跟线程池有关的bug，在不确定是否是Qt线程池库QThreadPool的bug的情况下，自己实现</description>
+    </item>
+    
+  </channel>
+</rss>

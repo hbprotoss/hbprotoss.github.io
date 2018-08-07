@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>线程池 on hbprotoss的博客</title>
+    <link>http://hbprotoss.github.io/tags/%E7%BA%BF%E7%A8%8B%E6%B1%A0/</link>
+    <description>Recent content in 线程池 on hbprotoss的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 18 Mar 2013 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="http://hbprotoss.github.io/tags/%E7%BA%BF%E7%A8%8B%E6%B1%A0/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>实现简单线程池</title>
+      <link>http://hbprotoss.github.io/post/shi-xian-jian-dan-xian-cheng-chi/</link>
+      <pubDate>Mon, 18 Mar 2013 00:00:00 +0000</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/shi-xian-jian-dan-xian-cheng-chi/</guid>
+      <description>前段时间在写代码的时候（用了Qt）出现了似乎跟线程池有关的bug，在不确定是否是Qt线程池库QThreadPool的bug的情况下，自己实现</description>
+    </item>
+    
+  </channel>
+</rss>

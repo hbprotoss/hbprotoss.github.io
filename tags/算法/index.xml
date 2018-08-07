@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>算法 on hbprotoss的博客</title>
+    <link>http://hbprotoss.github.io/tags/%E7%AE%97%E6%B3%95/</link>
+    <description>Recent content in 算法 on hbprotoss的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Tue, 21 May 2013 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="http://hbprotoss.github.io/tags/%E7%AE%97%E6%B3%95/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Trie树的Python实现</title>
+      <link>http://hbprotoss.github.io/post/trieshu-de-pythonshi-xian/</link>
+      <pubDate>Tue, 21 May 2013 00:00:00 +0000</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/trieshu-de-pythonshi-xian/</guid>
+      <description>又是一个由需求驱动的算法学习的例子。 最近weii需要实现一个这样的功能：在发送AT好友的时候能给出自动补全的列表。 最先想到的是当我给出一个用</description>
+    </item>
+    
+    <item>
+      <title>通俗演绎KMP</title>
+      <link>http://hbprotoss.github.io/post/tong-su-yan-yi-kmp/</link>
+      <pubDate>Tue, 07 May 2013 00:00:00 +0000</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/tong-su-yan-yi-kmp/</guid>
+      <description>最近要实现关键字过滤功能，小看了一些经典的字符串匹配算法。 本文要介绍的是KMP算法（Knuth–Morris–Pratt Algorithm）</description>
+    </item>
+    
+  </channel>
+</rss>

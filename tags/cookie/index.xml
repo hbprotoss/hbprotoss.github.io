@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Cookie on hbprotoss的博客</title>
+    <link>http://hbprotoss.github.io/tags/cookie/</link>
+    <description>Recent content in Cookie on hbprotoss的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 04 Jul 2016 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="http://hbprotoss.github.io/tags/cookie/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Cookie坑一记</title>
+      <link>http://hbprotoss.github.io/post/cookiekeng-yi-ji/</link>
+      <pubDate>Mon, 04 Jul 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/cookiekeng-yi-ji/</guid>
+      <description>关于Cookie的domain属性，RFC6265上是这么说的： 如果domain属性缺失，那么该cookie只能对当前host可见。比如，x</description>
+    </item>
+    
+  </channel>
+</rss>

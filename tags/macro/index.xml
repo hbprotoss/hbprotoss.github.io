@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Macro on hbprotoss的博客</title>
+    <link>http://hbprotoss.github.io/tags/macro/</link>
+    <description>Recent content in Macro on hbprotoss的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 13 Jul 2013 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="http://hbprotoss.github.io/tags/macro/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>C语言宏的特殊用法和几个坑</title>
+      <link>http://hbprotoss.github.io/post/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng/</link>
+      <pubDate>Sat, 13 Jul 2013 00:00:00 +0000</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng/</guid>
+      <description>总结一下C语言中宏的一些特殊用法和几个容易踩的坑。由于本文主要参考GCC文档，某些细节（如宏参数中的空格是否处理之类）在别的编译器可能有细微</description>
+    </item>
+    
+  </channel>
+</rss>

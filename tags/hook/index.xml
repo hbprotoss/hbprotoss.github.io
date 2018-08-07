@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Hook on hbprotoss的博客</title>
+    <link>http://hbprotoss.github.io/tags/hook/</link>
+    <description>Recent content in Hook on hbprotoss的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 09 Oct 2013 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="http://hbprotoss.github.io/tags/hook/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>利用LD_PRELOAD进行hook</title>
+      <link>http://hbprotoss.github.io/post/li-yong-ld_preloadjin-xing-hook/</link>
+      <pubDate>Wed, 09 Oct 2013 00:00:00 +0000</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/li-yong-ld_preloadjin-xing-hook/</guid>
+      <description>好久没玩hook这种猥琐的东西里，今天在Linux下体验了一把。 loader在进行动态链接的时候，会将有相同符号名的符号覆盖成LD_PREL</description>
+    </item>
+    
+  </channel>
+</rss>

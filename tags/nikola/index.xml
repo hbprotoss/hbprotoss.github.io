@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Nikola on hbprotoss的博客</title>
+    <link>http://hbprotoss.github.io/tags/nikola/</link>
+    <description>Recent content in Nikola on hbprotoss的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 18 Mar 2013 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="http://hbprotoss.github.io/tags/nikola/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>nikola&#43;gitpage搭建博客</title>
+      <link>http://hbprotoss.github.io/post/nikolagitpageda-jian-bo-ke/</link>
+      <pubDate>Mon, 18 Mar 2013 00:00:00 +0000</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/nikolagitpageda-jian-bo-ke/</guid>
+      <description>本来博客是在CSDN上的http://blog.csdn.net/digimon，但最近CSDN在我这一直无法登录，已经在Evernote上</description>
+    </item>
+    
+  </channel>
+</rss>
