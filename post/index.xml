@@ -6,10 +6,19 @@
     <description>Recent content in Posts on hbprotoss的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 23 Apr 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 08 Aug 2018 14:17:19 +0800</lastBuildDate>
     
 	<atom:link href="http://hbprotoss.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>IO多路复用</title>
+      <link>http://hbprotoss.github.io/post/io%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/</link>
+      <pubDate>Wed, 08 Aug 2018 14:17:19 +0800</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/io%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/</guid>
+      <description>以简单的echo server举例说明三种不同方式IO的原理和影响，示例代码仅做演示说明之用，有些异常处理和elegant quit都未实现，错</description>
+    </item>
     
     <item>
       <title>破解geetest验证码</title>
