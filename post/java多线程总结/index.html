@@ -17,7 +17,7 @@
 
 
 <meta name="author" content="hbprotoss" />
-  <meta name="description" content="Java多线程 零散笔记的流水账式总结，有错误之处请指正😂 部分图片资源来自网络，侵删 1. 内存模型 1.1 硬件内存模型 CPU不能直接对内存进行操作，必须" />
+  <meta name="description" content="零散笔记的流水账式总结，有错误之处请指正😂 部分图片资源来自网络，侵删 1. 内存模型 1.1 硬件内存模型 CPU不能直接对内存进行操作，必须将内存中的值读" />
 
   <meta name="keywords" content="Hugo, theme, even" />
 
@@ -50,7 +50,7 @@
 
 
 <meta property="og:title" content="Java多线程" />
-<meta property="og:description" content="Java多线程 零散笔记的流水账式总结，有错误之处请指正😂 部分图片资源来自网络，侵删 1. 内存模型 1.1 硬件内存模型 CPU不能直接对内存进行操作，必须" />
+<meta property="og:description" content="零散笔记的流水账式总结，有错误之处请指正😂 部分图片资源来自网络，侵删 1. 内存模型 1.1 硬件内存模型 CPU不能直接对内存进行操作，必须将内存中的值读" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="http://hbprotoss.github.io/post/java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%80%BB%E7%BB%93/" />
 
@@ -71,19 +71,19 @@
 
 
 <meta itemprop="name" content="Java多线程">
-<meta itemprop="description" content="Java多线程 零散笔记的流水账式总结，有错误之处请指正😂 部分图片资源来自网络，侵删 1. 内存模型 1.1 硬件内存模型 CPU不能直接对内存进行操作，必须">
+<meta itemprop="description" content="零散笔记的流水账式总结，有错误之处请指正😂 部分图片资源来自网络，侵删 1. 内存模型 1.1 硬件内存模型 CPU不能直接对内存进行操作，必须将内存中的值读">
 
 
 <meta itemprop="datePublished" content="2018-09-27T09:51:48&#43;08:00" />
 <meta itemprop="dateModified" content="2018-09-27T09:51:48&#43;08:00" />
-<meta itemprop="wordCount" content="7247">
+<meta itemprop="wordCount" content="7240">
 
 
 
 <meta itemprop="keywords" content="Java,Concurrent," />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Java多线程"/>
-<meta name="twitter:description" content="Java多线程 零散笔记的流水账式总结，有错误之处请指正😂 部分图片资源来自网络，侵删 1. 内存模型 1.1 硬件内存模型 CPU不能直接对内存进行操作，必须"/>
+<meta name="twitter:description" content="零散笔记的流水账式总结，有错误之处请指正😂 部分图片资源来自网络，侵删 1. 内存模型 1.1 硬件内存模型 CPU不能直接对内存进行操作，必须将内存中的值读"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -151,7 +151,7 @@
       <div class="post-meta">
         <span class="post-time"> 2018-09-27 </span>
         
-        <span class="more-meta"> 7247 words </span>
+        <span class="more-meta"> 7240 words </span>
         <span class="more-meta"> 15 mins read </span>
         
       </div>
@@ -164,8 +164,6 @@
   
   <div class="post-toc-content always-active">
     <nav id="TableOfContents">
-<ul>
-<li><a href="#java多线程">Java多线程</a>
 <ul>
 <li><a href="#1-内存模型">1. 内存模型</a>
 <ul>
@@ -227,7 +225,6 @@
 <li><a href="#使用">使用</a></li>
 <li><a href="#实现">实现</a></li>
 </ul></li>
-</ul></li>
 </ul>
 </nav>
   </div>
@@ -240,27 +237,25 @@
     <div class="post-content">
       
 
-<h1 id="java多线程">Java多线程</h1>
-
 <p>零散笔记的流水账式总结，有错误之处请指正😂</p>
 
 <p>部分图片资源来自网络，侵删</p>
 
-<h2 id="1-内存模型">1. 内存模型</h2>
+<h1 id="1-内存模型">1. 内存模型</h1>
 
-<h3 id="1-1-硬件内存模型">1.1 硬件内存模型</h3>
+<h2 id="1-1-硬件内存模型">1.1 硬件内存模型</h2>
 
 <p><img src="https://i.imgur.com/vOCieKM.png" alt="Modern hardware memory architecture." /></p>
 
 <p>CPU不能直接对内存进行操作，必须将内存中的值读到cache/寄存器中进行操作，然后写回内存</p>
 
-<h3 id="1-2-jvm内存模型">1.2 JVM内存模型</h3>
+<h2 id="1-2-jvm内存模型">1.2 JVM内存模型</h2>
 
 <p><img src="https://i.imgur.com/7kEU2P3.jpg" alt="" /></p>
 
 <p>JVM模型和OS的内存模型一样，分栈和堆</p>
 
-<h4 id="1-2-1-线程栈">1.2.1 线程栈</h4>
+<h3 id="1-2-1-线程栈">1.2.1 线程栈</h3>
 
 <p>每个线程会分配一个线程栈，用于存储方法调用过程中的局部变量，主要用来存储</p>
 
@@ -269,13 +264,13 @@
 <li>堆对象引用</li>
 </ul>
 
-<h4 id="1-2-2-堆">1.2.2 堆</h4>
+<h3 id="1-2-2-堆">1.2.2 堆</h3>
 
 <p>Java对象的主要存储区域，new出来的对象都在堆区</p>
 
-<h2 id="2-volatile关键字">2. volatile关键字</h2>
+<h1 id="2-volatile关键字">2. volatile关键字</h1>
 
-<h3 id="2-1-变量可见性">2.1 变量可见性</h3>
+<h2 id="2-1-变量可见性">2.1 变量可见性</h2>
 
 <p>两个线程同时引用堆中的对象，想修改对象中某个字段的值，在通过jvm最终都会执行到硬件层面，cpu同样需要从内存把数据读到cache里，操作完成之后写回内存</p>
 
@@ -287,7 +282,7 @@
 
 <p>volatile有个额外的保证，当t1写回一个volatile变量时，所有对t1可见的变量都会被写回内存</p>
 
-<h3 id="2-2-乱序执行">2.2 乱序执行</h3>
+<h2 id="2-2-乱序执行">2.2 乱序执行</h2>
 
 <p>以下代码</p>
 
@@ -343,11 +338,11 @@ b += 1;
 
 <p>解决办法就是给<code>_instance</code>加volatile关键字，因为volatile关键字除了可见性保证之外还有另一个保证：写入volatile变量之前的操作&rdquo;happens before&rdquo;写入操作本身，即1/2这两条语句作为一个整体不能和3乱序，1/2两个之间是否乱序由乱序规则规定，通过生成汇编内存屏障指令实现</p>
 
-<h3 id="2-3-volatile不是什么">2.3 volatile不是什么</h3>
+<h2 id="2-3-volatile不是什么">2.3 volatile不是什么</h2>
 
 <p>volatile不是原子操作，即volatile不提供CAS逻辑的原子性，要实现CAS的原子性必须用<code>Unsafe</code>类通过cpu指令实现</p>
 
-<h2 id="3-synchronized关键字-monitor">3. synchronized关键字(Monitor)</h2>
+<h1 id="3-synchronized关键字-monitor">3. synchronized关键字(Monitor)</h1>
 
 <p>synchronized关键字实现了monitor语义，monitor是：</p>
 
@@ -363,7 +358,7 @@ b += 1;
 
 <p>被<code>notifyAll</code>唤醒的所有线程都必须等待monitor退出之后才能竞争monitor，按线程优先级、等待时间等条件计算哪个线程能获得monitor，得到monitor之后才能继续执行</p>
 
-<h2 id="4-lock">4. Lock</h2>
+<h1 id="4-lock">4. Lock</h1>
 
 <p><code>Lock</code>是Java标准库提供的比monitor更加灵活的同步机制，有相同也有不同。</p>
 
@@ -376,33 +371,33 @@ b += 1;
 
 <p>不同之处在于，一个Lock可以关联多个Condition对象</p>
 
-<h3 id="4-1-常见的lock">4.1 常见的Lock</h3>
+<h2 id="4-1-常见的lock">4.1 常见的Lock</h2>
 
-<h4 id="4-1-1-reentrantlock">4.1.1 ReentrantLock</h4>
+<h3 id="4-1-1-reentrantlock">4.1.1 ReentrantLock</h3>
 
 <p>可重入锁：已获得锁的线程可以再次获得锁而不阻塞，当锁拥有者数量为0时才释放锁</p>
 
-<h4 id="4-1-2-readwritelock-interface">4.1.2 ReadWriteLock(interface)</h4>
+<h3 id="4-1-2-readwritelock-interface">4.1.2 ReadWriteLock(interface)</h3>
 
 <p>读写锁：允许多个reader同时获得ReadLock，或者一个writer获得WriteLock。没有writer线程并且没有writer request时，可以允许成为reader。没有writer和reader时，允许成为writer。</p>
 
 <p>这只是个interface，由<code>ReentrantReadWriteLock</code>实现</p>
 
-<h4 id="4-1-3-reentrantreadwritelock">4.1.3 ReentrantReadWriteLock</h4>
+<h3 id="4-1-3-reentrantreadwritelock">4.1.3 ReentrantReadWriteLock</h3>
 
 <p>可重入读写锁：已获得ReadLock的线程，在没有其他reader并且没有writer的情况下，允许获得writer锁。已获得WriteLock的线程，如果已经是reader或者没有其他writer request的情况下，允许获得reader锁</p>
 
-<h3 id="4-2-lock实现">4.2 Lock实现</h3>
+<h2 id="4-2-lock实现">4.2 Lock实现</h2>
 
 <p><strong>篇幅所限，详细内容要新开一篇</strong></p>
 
-<h4 id="4-2-1-通用实现">4.2.1 通用实现</h4>
+<h3 id="4-2-1-通用实现">4.2.1 通用实现</h3>
 
-<h5 id="aqs">AQS</h5>
+<h4 id="aqs">AQS</h4>
 
 <p>整个lock框架底层由<code>AbstractQueuedSynchronizer</code>提供实现，<code>AbstractQueuedSynchronizer</code>由<code>Unsafe</code>的CAS提供锁的实现，当线程没有抢到锁时，会进入基于链表的等待队列。</p>
 
-<h5 id="获得锁">获得锁</h5>
+<h4 id="获得锁">获得锁</h4>
 
 <pre><code class="language-java">public final void acquire(int arg) {
 	if (!tryAcquire(arg) &amp;&amp;
@@ -415,7 +410,7 @@ b += 1;
 
 <p><code>acquireQueued</code>当尝试获取锁失败时，将当前线程包装后加入等待队列</p>
 
-<h5 id="释放锁">释放锁</h5>
+<h4 id="释放锁">释放锁</h4>
 
 <pre><code class="language-java">public final boolean release(int arg) {
 	if (tryRelease(arg)) {
@@ -432,7 +427,7 @@ b += 1;
 
 <p>然后从等待队列中拿出头部节点的线程，唤醒之</p>
 
-<h4 id="4-2-2-reentrantlock实现">4.2.2 ReentrantLock实现</h4>
+<h3 id="4-2-2-reentrantlock实现">4.2.2 ReentrantLock实现</h3>
 
 <p>ReentrantLock依赖内部一个成员变量sync，继承于AQS。fair和non-fair模式的锁取决于用的是哪个sync子类。</p>
 
@@ -440,7 +435,7 @@ b += 1;
 
 <p><img src="https://i.imgur.com/OkLnU4q.png" alt="image-20180929154724854" /></p>
 
-<h5 id="nonfairsync">NonfairSync</h5>
+<h4 id="nonfairsync">NonfairSync</h4>
 
 <p>非公平锁实现，<code>tryAcquire</code>方法最终会调用到这个方法</p>
 
@@ -466,7 +461,7 @@ b += 1;
 
 <p>意思就是，如果没人占用这个锁(1⃣️)，那么尝试抢占(2⃣️)，如果成功了，就成功了，失败了就返回到AQS的<code>acquire</code>方法进等待队列并挂起。如果已经被占用了，并且自己就是占用者(3⃣️)，那么增加计数state</p>
 
-<h5 id="fairsync">FairSync</h5>
+<h4 id="fairsync">FairSync</h4>
 
 <p>公平锁实现</p>
 
@@ -493,7 +488,7 @@ b += 1;
 
 <p>这比非公平锁只多了1⃣️这行，公平锁在尝试抢占之前，会看一眼等待队列里有没有线程已经在等待，如果有，乖乖返回AQS的<code>acquire</code>方法进等待队列。这样的好处是，不会导致等待队列里的线程饿死。坏处是，略微降低了吞吐量(TODO: 需要测试数据支撑)</p>
 
-<h4 id="4-2-3-reentrantreadwritelock实现">4.2.3 ReentrantReadWriteLock实现</h4>
+<h3 id="4-2-3-reentrantreadwritelock实现">4.2.3 ReentrantReadWriteLock实现</h3>
 
 <p>其中包含<code>ReadLock</code>和<code>WriteLock</code>，这两个最终又依赖继承于<code>AbstractQueuedSynchronizer</code>的实现Sync</p>
 
@@ -537,7 +532,7 @@ b += 1;
 <pre><code class="language-java">// todo 篇幅较长，考虑独立
 </code></pre>
 
-<h5 id="nonfairsync-fairsync">NonfairSync &amp; FairSync</h5>
+<h4 id="nonfairsync-fairsync">NonfairSync &amp; FairSync</h4>
 
 <p>由于主要工作都在父类<code>Sync</code>里完成了，这两个子类仅实现reader或者writer是否需要主动阻塞的逻辑</p>
 
@@ -551,13 +546,13 @@ b += 1;
 
 <p>读写线程都会先看看等待队列里有没有线程在等待，有就去排队，主动阻塞</p>
 
-<h3 id="4-3-condition实现">4.3 Condition实现</h3>
+<h2 id="4-3-condition实现">4.3 Condition实现</h2>
 
 <p><code>Condition</code>是<code>ReentrantLock</code>派生出来的，可以在获得锁之后在线程间同步的机制。跟<code>ReentrantLock</code>关联，必须在获得锁之后使用。</p>
 
 <p><code>Condition</code>有<code>await</code>和<code>signal</code>方法，作用和Object的<code>wait</code>/<code>notify</code>一样。内部实现上，关联了生成它的<code>ReentrantLock</code>对象，自身也有类似<code>ReentrantLock</code>等待队列的条件队列。当await的时候先把当前线程加到条件队列里，等待signal将线程转移到<code>ReentrantLock</code>的等待队列上，等待<code>ReentrantLock</code>调度</p>
 
-<h4 id="4-3-1-await">4.3.1 await</h4>
+<h3 id="4-3-1-await">4.3.1 await</h3>
 
 <p>主逻辑如下</p>
 
@@ -591,7 +586,7 @@ b += 1;
 
 <p>4⃣️acquireQueued返回之后，当前线程就持有了<code>ReentrantLock</code></p>
 
-<h4 id="4-3-2-signal">4.3.2 signal</h4>
+<h3 id="4-3-2-signal">4.3.2 signal</h3>
 
 <p>关键逻辑</p>
 
@@ -622,7 +617,7 @@ final boolean transferForSignal(Node node) {
 
 <p>这里不是很理解最后这个if的逻辑，看起来是如果前序节点的waitStatus不是SIGNAL(表示当前节点没在SIGNAL状态)，那么唤醒当前线程???</p>
 
-<h2 id="5-lock-free">5. Lock Free</h2>
+<h1 id="5-lock-free">5. Lock Free</h1>
 
 <p>个人理解，lock的最大问题在以下几点</p>
 
@@ -674,11 +669,11 @@ final boolean transferForSignal(Node node) {
 <li>非公平实现，可能会有线程饿死</li>
 </ul>
 
-<h2 id="6-常用同步工具">6. 常用同步工具</h2>
+<h1 id="6-常用同步工具">6. 常用同步工具</h1>
 
 <p>concurrent包下的同步工具基本都是<code>AbstractQueuedSynchronizer</code>的直接使用(内部使用其子类)，或者间接使用(用<code>ReentrantLock</code>)</p>
 
-<h3 id="countdownlatch">CountDownLatch</h3>
+<h2 id="countdownlatch">CountDownLatch</h2>
 
 <p>设置等待数量，允许一个线程等在latch上，N个线程countDown()，在所有线程countDown()完之后，等待线程放行。典型场景就是多线程统计的时候，N个线程统计完了之后在等待线程上归并</p>
 
@@ -701,7 +696,7 @@ protected boolean tryReleaseShared(int releases) {
 }
 </code></pre>
 
-<h3 id="semaphore">Semaphore</h3>
+<h2 id="semaphore">Semaphore</h2>
 
 <p>容量为N的资源，每acquire()一次-1，到0的时候阻塞，等前面持有资源的人release()</p>
 
@@ -709,17 +704,17 @@ protected boolean tryReleaseShared(int releases) {
 
 <p>也分fair和non-fair，区别和<code>ReentrantLock</code>一样，在于抢锁前是否会看一眼队列里有没有等待线程</p>
 
-<h3 id="cyclicbarrier">CyclicBarrier</h3>
+<h2 id="cyclicbarrier">CyclicBarrier</h2>
 
 <p>设置个初始量N，在这N个线程都await()之后所有线程才能继续执行，否则阻塞。线程中断可以打破这个barrier，所有await中的线程抛<code>InterruptedException</code></p>
 
 <p>实现上，用<code>ReentrantLock</code>做同步，内部用一个generation的概念区分每一次全员到达barrier之前的状态，每次到达barrier之后重置这个generation</p>
 
-<h2 id="7-线程池">7. 线程池</h2>
+<h1 id="7-线程池">7. 线程池</h1>
 
 <p>线程创建的时候有额外的开销，OS需要创建线程内核数据结构、分配栈内存(fork/COW)、管理调度队列，JVM需要创建<code>Thread</code>对象、分配栈空间、关联OS线程等操作，所以一般多线程程序不会频繁创建/结束线程，而是将线程池化，要用的时候向线程池提交任务，由线程池去找线程执行(如果找得到的话)，结束后归还线程池等待新任务。</p>
 
-<h3 id="使用">使用</h3>
+<h2 id="使用">使用</h2>
 
 <p>Java线程池主要由<code>ThreadPoolExecutor</code>(及其子类)实现，通过<code>void execute(Runnable command)</code>(或<code>Future&lt;?&gt; submit(Runnable task)</code>，如果需要后续拿返回结果)向线程池提交任务执行，submit最终也是调用execute。</p>
 
@@ -744,7 +739,7 @@ protected boolean tryReleaseShared(int releases) {
 <li>RejectedExecutionHandler，线程池拒绝任务后的回调</li>
 </ul>
 
-<h3 id="实现">实现</h3>
+<h2 id="实现">实现</h2>
 
 <p>实现上，内部由<code>AtomicInteger ctl</code>控制线程池内部状态，其中高3位存储执行状态(RUNNING/SHUTDOWN/STOP/TIDYING/TERMINATED)，低3位存储工作线程数。</p>
 

@@ -17,7 +17,7 @@
       <pubDate>Thu, 27 Sep 2018 09:51:48 +0800</pubDate>
       
       <guid>http://hbprotoss.github.io/post/java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%80%BB%E7%BB%93/</guid>
-      <description>Java多线程 零散笔记的流水账式总结，有错误之处请指正😂 部分图片资源来自网络，侵删 1. 内存模型 1.1 硬件内存模型 CPU不能直接对内存进行操作，必须</description>
+      <description>零散笔记的流水账式总结，有错误之处请指正😂 部分图片资源来自网络，侵删 1. 内存模型 1.1 硬件内存模型 CPU不能直接对内存进行操作，必须将内存中的值读</description>
     </item>
     
   </channel>
