@@ -6,19 +6,10 @@
     <description>Recent content in Java on hbprotoss的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 27 Sep 2018 09:51:48 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 06 Jul 2016 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="http://hbprotoss.github.io/tags/java/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>Java多线程</title>
-      <link>http://hbprotoss.github.io/post/java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%80%BB%E7%BB%93/</link>
-      <pubDate>Thu, 27 Sep 2018 09:51:48 +0800</pubDate>
-      
-      <guid>http://hbprotoss.github.io/post/java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%80%BB%E7%BB%93/</guid>
-      <description>Java多线程 零散笔记的流水账式总结，有错误之处请指正😂 部分图片资源来自网络，侵删 1. 内存模型 1.1 硬件内存模型 CPU不能直接对内存进行操作，必须</description>
-    </item>
     
     <item>
       <title>classpath* vs classpath in spring</title>
