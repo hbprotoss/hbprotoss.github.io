@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Dubbo on hbprotoss的博客</title>
+    <link>http://hbprotoss.github.io/tags/dubbo/</link>
+    <description>Recent content in Dubbo on hbprotoss的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 31 Oct 2018 14:24:13 +0800</lastBuildDate>
+    
+	<atom:link href="http://hbprotoss.github.io/tags/dubbo/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Netty在dubbo传输层中的应用</title>
+      <link>http://hbprotoss.github.io/post/netty%E5%9C%A8dubbo%E4%BC%A0%E8%BE%93%E5%B1%82%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/</link>
+      <pubDate>Wed, 31 Oct 2018 14:24:13 +0800</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/netty%E5%9C%A8dubbo%E4%BC%A0%E8%BE%93%E5%B1%82%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/</guid>
+      <description>最近在看netty的东西，为了学以致用，顺带看了下netty作为dubbo传输层的一种实现是怎么应用的 Netty体系结构 Netty 是一款异步的事件驱</description>
+    </item>
+    
+  </channel>
+</rss>
