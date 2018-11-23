@@ -3,6 +3,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://hbprotoss.github.io/post/redis%E5%BB%B6%E8%BF%9F%E9%97%AE%E9%A2%98/</loc>
+    <lastmod>2018-11-23T15:59:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>http://hbprotoss.github.io/post/netty%E5%9C%A8dubbo%E4%BC%A0%E8%BE%93%E5%B1%82%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/</loc>
     <lastmod>2018-10-31T14:24:13+08:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -220,7 +227,7 @@
   
   <url>
     <loc>http://hbprotoss.github.io/tags/database/</loc>
-    <lastmod>2013-11-16T00:00:00+00:00</lastmod>
+    <lastmod>2018-11-23T15:59:00+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0</priority>
   </url>
@@ -311,7 +318,7 @@
   
   <url>
     <loc>http://hbprotoss.github.io/post/</loc>
-    <lastmod>2018-10-31T14:24:13+08:00</lastmod>
+    <lastmod>2018-11-23T15:59:00+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0</priority>
   </url>
@@ -347,6 +354,13 @@
   <url>
     <loc>http://hbprotoss.github.io/tags/rpc/</loc>
     <lastmod>2018-10-31T14:24:13+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://hbprotoss.github.io/tags/redis/</loc>
+    <lastmod>2018-11-23T15:59:00+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0</priority>
   </url>
@@ -402,7 +416,7 @@
   
   <url>
     <loc>http://hbprotoss.github.io/</loc>
-    <lastmod>2018-10-31T14:24:13+08:00</lastmod>
+    <lastmod>2018-11-23T15:59:00+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0</priority>
   </url>

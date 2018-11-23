@@ -6,10 +6,19 @@
     <description>Recent content in Database on hbprotoss的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 16 Nov 2013 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 23 Nov 2018 15:59:00 +0800</lastBuildDate>
     
 	<atom:link href="http://hbprotoss.github.io/tags/database/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Redis延迟问题</title>
+      <link>http://hbprotoss.github.io/post/redis%E5%BB%B6%E8%BF%9F%E9%97%AE%E9%A2%98/</link>
+      <pubDate>Fri, 23 Nov 2018 15:59:00 +0800</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/redis%E5%BB%B6%E8%BF%9F%E9%97%AE%E9%A2%98/</guid>
+      <description>redis延迟 慢查询语句 SORT, LREM, SUNION, KEYS fork 生成RDB，或者rewrite AOF的时候，会fork一个进程开搞。fork的时候会复制页表，大内存的实例</description>
+    </item>
     
     <item>
       <title>InnoDB引擎索引学习笔记</title>

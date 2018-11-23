@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Redis on hbprotoss的博客</title>
+    <link>http://hbprotoss.github.io/tags/redis/</link>
+    <description>Recent content in Redis on hbprotoss的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Fri, 23 Nov 2018 15:59:00 +0800</lastBuildDate>
+    
+	<atom:link href="http://hbprotoss.github.io/tags/redis/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Redis延迟问题</title>
+      <link>http://hbprotoss.github.io/post/redis%E5%BB%B6%E8%BF%9F%E9%97%AE%E9%A2%98/</link>
+      <pubDate>Fri, 23 Nov 2018 15:59:00 +0800</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/redis%E5%BB%B6%E8%BF%9F%E9%97%AE%E9%A2%98/</guid>
+      <description>redis延迟 慢查询语句 SORT, LREM, SUNION, KEYS fork 生成RDB，或者rewrite AOF的时候，会fork一个进程开搞。fork的时候会复制页表，大内存的实例</description>
+    </item>
+    
+  </channel>
+</rss>
