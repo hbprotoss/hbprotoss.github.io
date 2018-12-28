@@ -76,7 +76,7 @@
 
 <meta itemprop="datePublished" content="2018-12-28T14:42:05&#43;08:00" />
 <meta itemprop="dateModified" content="2018-12-28T14:42:05&#43;08:00" />
-<meta itemprop="wordCount" content="1150">
+<meta itemprop="wordCount" content="1246">
 
 
 
@@ -151,7 +151,7 @@
       <div class="post-meta">
         <span class="post-time"> 2018-12-28 </span>
         
-        <span class="more-meta"> 1150 words </span>
+        <span class="more-meta"> 1246 words </span>
         <span class="more-meta"> 3 mins read </span>
         
       </div>
@@ -165,7 +165,10 @@
   <div class="post-toc-content always-active">
     <nav id="TableOfContents">
 <ul>
-<li><a href="#tcp-backlog">TCP backlog</a></li>
+<li><a href="#tcp-backlog">TCP backlog</a>
+<ul>
+<li><a href="#附">附</a></li>
+</ul></li>
 </ul>
 </nav>
   </div>
@@ -208,12 +211,12 @@
 
 <p>以backlog=2为例，查看具体某个端口的队列使用情况</p>
 
-<pre><code class="language-shell"># netstat -nat | grep 8888
-tcp        0      0 0.0.0.0:8888            0.0.0.0:*               LISTEN
-tcp        0      0 192.168.21.231:8888     192.168.21.130:59962    ESTABLISHED
-tcp        0      0 192.168.21.231:8888     192.168.21.130:59961    ESTABLISHED
-tcp        0      0 192.168.21.231:8888     192.168.21.130:59958    ESTABLISHED
-tcp        0      0 192.168.21.231:8888     192.168.21.130:59966    SYN_RECV
+<pre><code class="language-shell"># ss -nat | grep 8888
+LISTEN     3      2                         *:8888                     *:*
+ESTAB      0      0            192.168.21.231:8888        192.168.21.130:60069
+SYN-RECV   0      0            192.168.21.231:8888        192.168.21.130:61266
+ESTAB      0      0            192.168.21.231:8888        192.168.21.130:60070
+ESTAB      0      0            192.168.21.231:8888        192.168.21.130:60068
 </code></pre>
 
 <p>可以看到3个ESTABLISHED的连接，一个SYN_RECV连接处于sync队列中</p>
@@ -240,6 +243,10 @@ tcp        0      0 192.168.21.231:8888     192.168.21.130:59966    SYN_RECV
 14:31:27.332744 IP 192.168.21.130.60071 &gt; 192.168.21.231.8888: Flags [.], ack 1, win 2058, options [nop,nop,TS val 524192791 ecr 59939640], length 0
 14:31:27.333010 IP 192.168.21.231.8888 &gt; 192.168.21.130.60071: Flags [R], seq 1085891052, win 0, length 0
 </code></pre>
+
+<h2 id="附">附</h2>
+
+<p>有一点不是很明白，上文中，ss查到的RECV-Q长度为3，但是backlog传进去的是2。多次实验发现，<code>max(RECV-Q) = backlog + 1</code>，不是很理解这种现象，kernel里也没找到相关代码，求大佬解答。</p>
 
     </div>
 
