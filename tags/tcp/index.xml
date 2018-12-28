@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>TCP on hbprotoss的博客</title>
+    <link>http://hbprotoss.github.io/tags/tcp/</link>
+    <description>Recent content in TCP on hbprotoss的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Fri, 28 Dec 2018 14:42:05 +0800</lastBuildDate>
+    
+	<atom:link href="http://hbprotoss.github.io/tags/tcp/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>补完TCP Backlog</title>
+      <link>http://hbprotoss.github.io/post/%E8%A1%A5%E5%AE%8Ctcp-backlog/</link>
+      <pubDate>Fri, 28 Dec 2018 14:42:05 +0800</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/%E8%A1%A5%E5%AE%8Ctcp-backlog/</guid>
+      <description>TCP backlog 先贴TCP状态机 服务端在TCP接收新连接三次握手的时候会经历一个中间状态sync_recv，来表示已收到客户端syn包，并且已回syn+</description>
+    </item>
+    
+  </channel>
+</rss>
