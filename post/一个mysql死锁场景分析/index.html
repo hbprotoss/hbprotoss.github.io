@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>一个mysql死锁场景分析 - hbprotoss的博客</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="hbprotoss" />
+  <meta name="description" content="最近遇到一个mysql在RR级别下的死锁问题，感觉有点意思，研究了一下，做个记录。 涉及知识点：共享锁、排他锁、意向锁、间隙锁、插入意向锁、锁" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.54.0" />
+
+
+<link rel="canonical" href="http://hbprotoss.github.io/post/%E4%B8%80%E4%B8%AAmysql%E6%AD%BB%E9%94%81%E5%9C%BA%E6%99%AF%E5%88%86%E6%9E%90/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="一个mysql死锁场景分析" />
+<meta property="og:description" content="最近遇到一个mysql在RR级别下的死锁问题，感觉有点意思，研究了一下，做个记录。 涉及知识点：共享锁、排他锁、意向锁、间隙锁、插入意向锁、锁" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://hbprotoss.github.io/post/%E4%B8%80%E4%B8%AAmysql%E6%AD%BB%E9%94%81%E5%9C%BA%E6%99%AF%E5%88%86%E6%9E%90/" />
+<meta property="article:published_time" content="2019-03-03T14:11:27&#43;08:00"/>
+<meta property="article:modified_time" content="2019-03-03T14:11:27&#43;08:00"/>
+
+<meta itemprop="name" content="一个mysql死锁场景分析">
+<meta itemprop="description" content="最近遇到一个mysql在RR级别下的死锁问题，感觉有点意思，研究了一下，做个记录。 涉及知识点：共享锁、排他锁、意向锁、间隙锁、插入意向锁、锁">
+
+
+<meta itemprop="datePublished" content="2019-03-03T14:11:27&#43;08:00" />
+<meta itemprop="dateModified" content="2019-03-03T14:11:27&#43;08:00" />
+<meta itemprop="wordCount" content="3266">
+
+
+
+<meta itemprop="keywords" content="Database,MySQL," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="一个mysql死锁场景分析"/>
+<meta name="twitter:description" content="最近遇到一个mysql在RR级别下的死锁问题，感觉有点意思，研究了一下，做个记录。 涉及知识点：共享锁、排他锁、意向锁、间隙锁、插入意向锁、锁"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">hbprotoss的博客</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">hbprotoss的博客</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">一个mysql死锁场景分析</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-03-03 </span>
+        
+        <span class="more-meta"> 3266 words </span>
+        <span class="more-meta"> 7 mins read </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#场景">场景</a>
+<ul>
+<li><a href="#共享-s-锁-互斥-x-锁">共享(S)锁/互斥(X)锁</a></li>
+<li><a href="#意向锁">意向锁</a></li>
+<li><a href="#行锁">行锁</a></li>
+<li><a href="#间隙锁">间隙锁</a></li>
+<li><a href="#插入意向锁">插入意向锁</a></li>
+</ul></li>
+<li><a href="#死锁过程分析">死锁过程分析</a></li>
+<li><a href="#one-more-thing">One More Thing</a></li>
+<li><a href="#总结">总结</a></li>
+<li><a href="#参考资料">参考资料</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+
+    
+    
+
+    
+    <div class="post-content">
+      
+
+<p>最近遇到一个mysql在RR级别下的死锁问题，感觉有点意思，研究了一下，做个记录。
+涉及知识点：共享锁、排他锁、意向锁、间隙锁、插入意向锁、锁等待队列</p>
+
+<h2 id="场景">场景</h2>
+
+<p>隔离级别：Repeatable-Read
+表结构如下</p>
+
+<pre><code class="language-sql">create table t (
+    id int not null primary key AUTO_INCREMENT,
+    a int not null default 0,
+    b varchar(10) not null default '',
+    c varchar(10) not null default '',
+    unique key uniq_a_b(a,b),
+    unique key uniq_c(c)
+);
+</code></pre>
+
+<p>初始化数据</p>
+
+<pre><code class="language-sql">insert into t(a,b,c) values(1,'1','1');
+</code></pre>
+
+<p>有A/B两个session，按如下顺序执行两个事务
+<img src="https://i.imgur.com/TeZjggw.jpg" alt="transaction" /></p>
+
+<p>结果是</p>
+
+<ul>
+<li>B执行完4之后还是一切正常</li>
+<li>A执行5的时候，被block</li>
+<li>B接着执行6，B报死锁，B回滚，A插入数据</li>
+</ul>
+
+<p><code>show engine innodb status</code>中可以看到死锁信息，这里先不贴，先解释几种锁的概念，再来理解死锁过程</p>
+
+<h3 id="共享-s-锁-互斥-x-锁">共享(S)锁/互斥(X)锁</h3>
+
+<ul>
+<li>共享锁允许事务读取记录</li>
+<li>互斥锁允许事务读写记录
+这两种其实是锁的模式可以和行锁、间隙锁混搭，多个事务可以同时持有S锁，但是只有一个事务能持有X锁</li>
+</ul>
+
+<h3 id="意向锁">意向锁</h3>
+
+<p>一种表锁(也是一种锁模式)，表明有事务即将给对应表的记录加S或者X锁。<code>SELECT ... LOCK IN SHARE MODE</code>会在给记录加S锁之前先给表加IS锁，<code>SELECT ... FOR UPDATE</code>会在给记录加X锁之前给表加IX锁。
+这是一种mysql的锁优化策略，并不是很清楚意向锁的优化点在哪里，求大佬指教</p>
+
+<p>两种锁的兼容情况如下
+<img src="https://i.imgur.com/LhhLp6t.jpg" alt="locks" /></p>
+
+<h3 id="行锁">行锁</h3>
+
+<p>很简单，给对应行加锁。比如<code>update</code>、<code>select for update</code>、<code>delete</code>等都会给涉及到的行加上行锁，防止其他事务的操作</p>
+
+<h3 id="间隙锁">间隙锁</h3>
+
+<p>在RR隔离级别下，为了防止幻读现象，除了给记录本身，还需要为记录两边的间隙加上间隙锁。
+比如列a上有一个普通索引，已经有了1、5、10三条记录，<code>select * from t where a=5 for update</code>除了会给5这条记录加行锁，还会给间隙(1,5)和(5,10)加上间隙锁，防止其他事务插入值为5的数据造成幻读。
+当a上的普通索引变成唯一索引时，不需要间隙锁，因为值唯一，<code>select * from t where a=5 for update</code>不可能读出两条记录来。</p>
+
+<p>间隙锁相互兼容，因为如果互斥，事务A持有左半段(1,5)，事务B持有右半段(1,10)，那么当前面那个例子中a=5的记录被删除时，理论上左右两个间隙锁得合并成一个新锁(1,10)，那么这个新的大范围锁属于谁呢？所以间隙锁相互兼容，不管是S间隙锁还是X间隙锁</p>
+
+<h3 id="插入意向锁">插入意向锁</h3>
+
+<p>插入意向锁其实是一种特殊的间隙锁，从前面对间隙锁的描述中可以得知，两个事务在真正insert之前可以同时持有一段间隙的间隙锁，锁不住真正insert的这个动作。真正insert之前，mysql还会尝试获取对应记录的插入意向锁，表明有在间隙中插入一个值的意向。
+插入意向锁和间隙锁互斥，比如事务1锁了(1,5)这个间隙，事务2就不能获取到a=3的插入意向锁，所以需要锁等待。</p>
+
+<h2 id="死锁过程分析">死锁过程分析</h2>
+
+<p>接下来就可以来分析前面那个例子中的死锁过程了，先看<code>show engine innodb status</code></p>
+
+<pre><code> *** (1) TRANSACTION:
+TRANSACTION 5967, ACTIVE 8 sec inserting
+mysql tables in use 1, locked 1
+LOCK WAIT 3 lock struct(s), heap size 1136, 2 row lock(s), undo log entries 1
+MySQL thread id 9, OS thread handle 140528848688896, query id 537 192.168.128.1 root update
+insert into t(a,b) values(0,'0')
+*** (1) WAITING FOR THIS LOCK TO BE GRANTED:
+RECORD LOCKS space id 64 page no 4 n bits 72 index uniq_a_b of table `t2`.`t` trx id 5967 lock_mode X locks gap before rec insert intention waiting
+Record lock, heap no 2 PHYSICAL RECORD: n_fields 3; compact format; info bits 0
+ 0: len 4; hex 80000001; asc     ;;
+ 1: len 1; hex 31; asc 1;;
+ 2: len 4; hex 80000001; asc     ;;
+
+*** (2) TRANSACTION:
+TRANSACTION 5968, ACTIVE 7 sec inserting
+mysql tables in use 1, locked 1
+3 lock struct(s), heap size 1136, 2 row lock(s), undo log entries 1
+MySQL thread id 8, OS thread handle 140528848484096, query id 538 192.168.128.1 root update
+insert into t(a,b) values(0,'0')
+*** (2) HOLDS THE LOCK(S):
+RECORD LOCKS space id 64 page no 4 n bits 72 index uniq_a_b of table `t2`.`t` trx id 5968 lock_mode X locks gap before rec
+Record lock, heap no 2 PHYSICAL RECORD: n_fields 3; compact format; info bits 0
+ 0: len 4; hex 80000001; asc     ;;
+ 1: len 1; hex 31; asc 1;;
+ 2: len 4; hex 80000001; asc     ;;
+
+*** (2) WAITING FOR THIS LOCK TO BE GRANTED:
+RECORD LOCKS space id 64 page no 4 n bits 72 index uniq_a_b of table `t2`.`t` trx id 5968 lock_mode X locks gap before rec insert intention waiting
+Record lock, heap no 2 PHYSICAL RECORD: n_fields 3; compact format; info bits 0
+ 0: len 4; hex 80000001; asc     ;;
+ 1: len 1; hex 31; asc 1;;
+ 2: len 4; hex 80000001; asc     ;;
+
+*** WE ROLL BACK TRANSACTION (2)
+</code></pre>
+
+<p>session A(即TRANSACTION 5967)正在等待记录(a=1,b=&lsquo;1&rsquo;)之前的插入意向锁，session B(即TRANSACTION 5968)持有记录(a=1,b=&lsquo;1&rsquo;)之前的间隙锁，却也在等待那个插入意向锁。这说的什么玩意儿，是不是很诡异？</p>
+
+<p>从头开始分析过程</p>
+
+<ol>
+<li>A、B分别begin，开始事务</li>
+<li>A先执行<code>select * from t where a=0 and b='0' for update;</code>，先加了IX锁，然后原本意图为给(0, &lsquo;0&rsquo;)这条记录加排他行锁，但是记录不存在，所以变成了排他间隙锁(-∞,1)</li>
+<li>B再执行<code>select * from t where a=0 and b='0' for update;</code>，也是先加了IX锁，因为记录不存在，所以加上了排他间隙锁(-∞,1)，但是由于间隙锁相互兼容，所以没有block</li>
+<li>A执行<code>insert into t(a,b) values(0,'0');</code>，这时候，要开始真正insert了，A需要获得(0,&lsquo;0&rsquo;)上的插入意向锁，由于和B持有的(-∞,1)排他意向锁冲突，所以锁等待，进入记录(0,&lsquo;0&rsquo;)的锁等待队列（虽然记录并不存在）</li>
+<li>B执行<code>insert into t(a,b) values(0,'0');</code>，要获取插入意向锁，发现虽然B自己是持有(-∞,1)的排他间隙锁，但是A也有，所以进入等待队列，等待A释放</li>
+<li>叮，死锁发生</li>
+</ol>
+
+<p>死锁信息解读</p>
+
+<p>事务1(TRANSACTION 5967)，等待获得锁index uniq_a_b of table <code>t2</code>.<code>t</code> trx id 5967 lock_mode X locks gap before rec insert intention waiting，即在唯一索引<code>uniq_a_b</code>上的插入意向锁(lock_mode X locks gap before rec insert intention)
+锁的边界为</p>
+
+<pre><code> 0: len 4; hex 80000001; asc     ;;
+ 1: len 1; hex 31; asc 1;;
+ 2: len 4; hex 80000001; asc     ;;
+</code></pre>
+
+<p>表明两行记录</p>
+
+<ul>
+<li>0和1表示uniq_a_b上的值，a=1，b=0x31（即&rsquo;1&rsquo;的ascii码）</li>
+<li>a=1,b=&lsquo;1&rsquo;对应的主键id=1，因为innodb的索引结构决定的，二级索引(非主键索引)指向主键索引，主键索引再指向数据，所以需要给主键加索引
+至于int值按位或上的0x80000000就不是很清楚为什么了，需要大佬解读</li>
+</ul>
+
+<p>事务2(TRANSACTION 5968)，持有间隙锁index uniq_a_b of table <code>t2</code>.<code>t</code> trx id 5968 lock_mode X locks gap before rec，等待插入意向锁index uniq_a_b of table <code>t2</code>.<code>t</code> trx id 5968 lock_mode X locks gap before rec insert intention，所以死锁发生。</p>
+
+<p>原则上是innodb引擎判断哪个事务回滚代价小就回滚哪个事务，但是具体评判标准不是很清楚（再一次需要大佬），这里innodb选择了回滚事务2。至此，死锁过程分析完毕</p>
+
+<h2 id="one-more-thing">One More Thing</h2>
+
+<p>还没完。。。有个神奇的现象是，如果表结构变成</p>
+
+<pre><code class="language-sql">create table t (
+    id int not null primary key AUTO_INCREMENT,
+    a int not null default 0,
+    b varchar(10) not null default '',
+    c varchar(10) not null default '',
+    unique key uniq_c(c),
+    unique key uniq_a_b(a,b)
+);
+insert into t(a,b,c) values(1,1,1);
+</code></pre>
+
+<p>只是把c上的唯一索引<code>uniq_c</code>放到了<code>uniq_a_b</code>前面，那么最后的死锁信息就变了！</p>
+
+<pre><code> *** (1) TRANSACTION:
+TRANSACTION 5801, ACTIVE 5 sec inserting
+mysql tables in use 1, locked 1
+LOCK WAIT 4 lock struct(s), heap size 1136, 3 row lock(s), undo log entries 1
+MySQL thread id 5, OS thread handle 140528848688896, query id 380 192.168.128.1 root update
+insert into t2(a,b) values(0,'0')
+*** (1) WAITING FOR THIS LOCK TO BE GRANTED:
+RECORD LOCKS space id 56 page no 5 n bits 72 index uniq_a_b of table `t2`.`t2` trx id 5801 lock_mode X locks gap before rec insert intention waiting
+Record lock, heap no 2 PHYSICAL RECORD: n_fields 3; compact format; info bits 0
+ 0: len 4; hex 80000001; asc     ;;
+ 1: len 1; hex 31; asc 1;;
+ 2: len 4; hex 80000001; asc     ;;
+
+*** (2) TRANSACTION:
+TRANSACTION 5802, ACTIVE 4 sec inserting
+mysql tables in use 1, locked 1
+3 lock struct(s), heap size 1136, 2 row lock(s), undo log entries 1
+MySQL thread id 6, OS thread handle 140528848484096, query id 381 192.168.128.1 root update
+insert into t2(a,b) values(0,'0')
+*** (2) HOLDS THE LOCK(S):
+RECORD LOCKS space id 56 page no 5 n bits 72 index uniq_a_b of table `t2`.`t2` trx id 5802 lock_mode X locks gap before rec
+Record lock, heap no 2 PHYSICAL RECORD: n_fields 3; compact format; info bits 0
+ 0: len 4; hex 80000001; asc     ;;
+ 1: len 1; hex 31; asc 1;;
+ 2: len 4; hex 80000001; asc     ;;
+
+*** (2) WAITING FOR THIS LOCK TO BE GRANTED:
+RECORD LOCKS space id 56 page no 4 n bits 72 index uniq_c of table `t2`.`t2` trx id 5802 lock mode S waiting
+Record lock, heap no 3 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
+ 0: len 0; hex ; asc ;;
+ 1: len 4; hex 80000002; asc     ;;
+
+*** WE ROLL BACK TRANSACTION (2)
+</code></pre>
+
+<p>事务2等待的锁由前面的插入意向锁变成了共享锁。什么鬼？
+由于没看过源码，只能根据现象倒推：因为表结构上c的唯一索引在(a,b)前面，而插入的时候没指定c的值，用的默认值0，innodb需要先去查一下有没有0这条记录，有的话就要报唯一键冲突了，所以先要加S锁，但是在(0,&lsquo;0&rsquo;)这条记录上已经有了IX锁，看一下前面的兼容性矩阵，S锁和IX锁互斥，所以也只能锁等待</p>
+
+<h2 id="总结">总结</h2>
+
+<p>看似一句简单的select和insert，底下设计非常复杂的锁机制，理解这些锁机制有利于写出高效的SQL(至少是正确的😂)</p>
+
+<p>遗留问题：</p>
+
+<ol>
+<li>意向锁的优化点是哪</li>
+<li>锁信息里，行记录按位或上的0x80000000是啥</li>
+<li>锁互斥的判定顺序，场景1中，(0,&lsquo;0&rsquo;)上有兼容的间隙锁，也有等待队列中的锁，先判定哪个？</li>
+<li>innodb计算事务回滚代价的算法</li>
+</ol>
+
+<h2 id="参考资料">参考资料</h2>
+
+<ul>
+<li><a href="http://hedengcheng.com/?p=771">http://hedengcheng.com/?p=771</a></li>
+<li><a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-locking.html#innodb-insert-intention-locks">https://dev.mysql.com/doc/refman/5.7/en/innodb-locking.html#innodb-insert-intention-locks</a></li>
+<li><a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-next-key-locking.html">https://dev.mysql.com/doc/refman/5.7/en/innodb-next-key-locking.html</a></li>
+<li><a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-information-schema-understanding-innodb-locking.html">https://dev.mysql.com/doc/refman/5.7/en/innodb-information-schema-understanding-innodb-locking.html</a></li>
+</ul>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">hbprotoss</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2019-03-03</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png" /></a><br />本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh">知识共享署名-非商业性使用-禁止演绎 3.0 未本地化版本许可协议</a>进行许可。</span>
+  </p>
+</div>
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/database/">Database</a>
+          
+          <a href="/tags/mysql/">MySQL</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/post/%E8%A1%A5%E5%AE%8Ctcp-backlog/">
+            <span class="next-text nav-default">补完TCP Backlog</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'hbprotoss';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://weibo.com/hbprotoss" class="iconfont icon-weibo" title="weibo"></a>
+  <a href="http://hbprotoss.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">hbprotoss</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script><script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox-3.1.20.min.js"></script>
+
+
+<script type="text/javascript" src="/dist/even.min.js?v=3.2.0"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
