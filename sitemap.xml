@@ -3,6 +3,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://hbprotoss.github.io/post/%E5%85%B3%E4%BA%8Eredis%E7%9A%84lazy-free/</loc>
+    <lastmod>2019-05-16T22:05:09+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>http://hbprotoss.github.io/post/%E4%B8%80%E4%B8%AAmysql%E6%AD%BB%E9%94%81%E5%9C%BA%E6%99%AF%E5%88%86%E6%9E%90/</loc>
     <lastmod>2019-03-03T14:11:27+08:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -200,7 +207,7 @@
   
   <url>
     <loc>http://hbprotoss.github.io/tags/c/</loc>
-    <lastmod>2013-10-09T00:00:00+00:00</lastmod>
+    <lastmod>2019-05-16T22:05:09+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0</priority>
   </url>
@@ -241,7 +248,7 @@
   
   <url>
     <loc>http://hbprotoss.github.io/tags/database/</loc>
-    <lastmod>2019-03-03T14:11:27+08:00</lastmod>
+    <lastmod>2019-05-16T22:05:09+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0</priority>
   </url>
@@ -325,7 +332,7 @@
   
   <url>
     <loc>http://hbprotoss.github.io/post/</loc>
-    <lastmod>2019-03-03T14:11:27+08:00</lastmod>
+    <lastmod>2019-05-16T22:05:09+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0</priority>
   </url>
@@ -367,7 +374,7 @@
   
   <url>
     <loc>http://hbprotoss.github.io/tags/redis/</loc>
-    <lastmod>2018-11-23T15:59:00+08:00</lastmod>
+    <lastmod>2019-05-16T22:05:09+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0</priority>
   </url>
@@ -430,7 +437,7 @@
   
   <url>
     <loc>http://hbprotoss.github.io/</loc>
-    <lastmod>2019-03-03T14:11:27+08:00</lastmod>
+    <lastmod>2019-05-16T22:05:09+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0</priority>
   </url>

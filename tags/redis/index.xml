@@ -6,10 +6,19 @@
     <description>Recent content in Redis on hbprotoss的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 23 Nov 2018 15:59:00 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 16 May 2019 22:05:09 +0800</lastBuildDate>
     
 	<atom:link href="http://hbprotoss.github.io/tags/redis/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>关于redis的lazy Free</title>
+      <link>http://hbprotoss.github.io/post/%E5%85%B3%E4%BA%8Eredis%E7%9A%84lazy-free/</link>
+      <pubDate>Thu, 16 May 2019 22:05:09 +0800</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/%E5%85%B3%E4%BA%8Eredis%E7%9A%84lazy-free/</guid>
+      <description>众所周知，redis对外提供的服务是由单线程支撑，通过事件(event)驱动各种内部逻辑，比如网络IO、命令处理、过期key处理、超时等逻辑</description>
+    </item>
     
     <item>
       <title>Redis延迟问题</title>
