@@ -62,7 +62,7 @@
 
 <meta itemprop="datePublished" content="2019-05-16T22:05:09&#43;08:00" />
 <meta itemprop="dateModified" content="2019-05-16T22:05:09&#43;08:00" />
-<meta itemprop="wordCount" content="2726">
+<meta itemprop="wordCount" content="2731">
 
 
 
@@ -137,7 +137,7 @@
       <div class="post-meta">
         <span class="post-time"> 2019-05-16 </span>
         
-        <span class="more-meta"> 2726 words </span>
+        <span class="more-meta"> 2731 words </span>
         <span class="more-meta"> 6 mins read </span>
         
       </div>
@@ -184,7 +184,7 @@
 
 <ol>
 <li>lazy free不是在遇到快OOM的时候直接执行命令，放后台释放内存，而是也需要block一段时间去获得足够的内存来执行命令</li>
-<li>lazy free不适合kv的平均大小太小或太大的场景，大小均衡的场景下性价比比较高（当然，可以根据业务场景调整源码里的宏，重新编译一个版本）</li>
+<li>lazy free不适合kv的平均大小太小或太大的场景，大小均衡的场景下性价比比较高（当然，可以根据业务场景调整源码里的宏来设定阈值，重新编译一个版本）</li>
 <li>redis短期内其实是可以略微超出一点内存上限的，因为前一条命令没检测到内存超标（其实快超了）的情况下，是可以写入一个很大的kv的，当后续命令进来之后会发现内存不够了，交给后续命令执行释放内存操作</li>
 <li>如果业务能预估到可能会有集中的大量key过期，那么最好ttl上加个随机数，匀开来，避免集中expire造成的blocking，这点不管开不开lazy free都一样</li>
 </ol>
