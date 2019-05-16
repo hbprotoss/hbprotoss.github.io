@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>关于redis的lazy Free - hbprotoss的博客</title>
+  <title>从实现角度看redis lazy free的使用和注意事项 - hbprotoss的博客</title>
   <meta name="renderer" content="webkit" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
@@ -49,26 +49,26 @@
 
 
 
-<meta property="og:title" content="关于redis的lazy Free" />
+<meta property="og:title" content="从实现角度看redis lazy free的使用和注意事项" />
 <meta property="og:description" content="众所周知，redis对外提供的服务是由单线程支撑，通过事件(event)驱动各种内部逻辑，比如网络IO、命令处理、过期key处理、超时等逻辑" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="http://hbprotoss.github.io/post/%E5%85%B3%E4%BA%8Eredis%E7%9A%84lazy-free/" />
 <meta property="article:published_time" content="2019-05-16T22:05:09&#43;08:00"/>
 <meta property="article:modified_time" content="2019-05-16T22:05:09&#43;08:00"/>
 
-<meta itemprop="name" content="关于redis的lazy Free">
+<meta itemprop="name" content="从实现角度看redis lazy free的使用和注意事项">
 <meta itemprop="description" content="众所周知，redis对外提供的服务是由单线程支撑，通过事件(event)驱动各种内部逻辑，比如网络IO、命令处理、过期key处理、超时等逻辑">
 
 
 <meta itemprop="datePublished" content="2019-05-16T22:05:09&#43;08:00" />
 <meta itemprop="dateModified" content="2019-05-16T22:05:09&#43;08:00" />
-<meta itemprop="wordCount" content="2298">
+<meta itemprop="wordCount" content="2730">
 
 
 
 <meta itemprop="keywords" content="Database,Redis,C," />
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="关于redis的lazy Free"/>
+<meta name="twitter:title" content="从实现角度看redis lazy free的使用和注意事项"/>
 <meta name="twitter:description" content="众所周知，redis对外提供的服务是由单线程支撑，通过事件(event)驱动各种内部逻辑，比如网络IO、命令处理、过期key处理、超时等逻辑"/>
 
 <!--[if lte IE 9]>
@@ -132,13 +132,13 @@
           <article class="post">
     
     <header class="post-header">
-      <h1 class="post-title">关于redis的lazy Free</h1>
+      <h1 class="post-title">从实现角度看redis lazy free的使用和注意事项</h1>
 
       <div class="post-meta">
         <span class="post-time"> 2019-05-16 </span>
         
-        <span class="more-meta"> 2298 words </span>
-        <span class="more-meta"> 5 mins read </span>
+        <span class="more-meta"> 2730 words </span>
+        <span class="more-meta"> 6 mins read </span>
         
       </div>
     </header>
@@ -174,9 +174,17 @@
     <div class="post-content">
       
 
-<p>众所周知，redis对外提供的服务是由单线程支撑，通过事件(event)驱动各种内部逻辑，比如网络IO、命令处理、过期key处理、超时等逻辑。在执行耗时命令(如范围扫描类的keys, 超大hash下的hgetall等)、瞬时大量key过期/驱逐等情况下，会造成redis的QPS下降，阻塞其他请求。</p>
+<p>众所周知，redis对外提供的服务是由单线程支撑，通过事件(event)驱动各种内部逻辑，比如网络IO、命令处理、过期key处理、超时等逻辑。在执行耗时命令(如范围扫描类的keys, 超大hash下的hgetall等)、瞬时大量key过期/驱逐等情况下，会造成redis的QPS下降，阻塞其他请求。近期就遇到过大容量并且大量key的场景，由于各种原因引发的redis内存耗尽，导致有6位数的key几乎同时被驱逐，短期内redis hang住的情况</p>
 
-<p>由于耗时命令是客户端行为，服务端不可控，优化余地有限，所以作者antirez就在4.0这个大版本中增加了针对大量key过期/驱逐的lazy free功能，服务端的事情还是可控的，甚至提供了异步删除的命令unlink（前因后果和作者的思路变迁，见作者博客：<a href="http://antirez.com/news/93">Lazy Redis is better Redis - <antirez></a>）</p>
+<p>耗时命令是客户端行为，服务端不可控，优化余地有限，作者antirez在4.0这个大版本中增加了针对大量key过期/驱逐的lazy free功能，服务端的事情还是可控的，甚至提供了异步删除的命令unlink（前因后果和作者的思路变迁，见作者博客：<a href="http://antirez.com/news/93">Lazy Redis is better Redis - <antirez></a>）</p>
+
+<p>lazy free的功能在使用中有几个注意事项（以下为个人观点，有误的地方请评论区交流）：
+1. lazy free不是在遇到快OOM的时候直接执行命令，放后台释放内存，而是也需要block一段时间去获得足够的内存来执行命令
+2. lazy free不适合kv的平均大小太小或太大的场景，大小均衡的场景下性价比比较高（当然，可以根据业务场景调整源码里的宏，重新编译一个版本）
+3. redis短期内其实是可以略微超出一点内存上限的，因为前一条命令没检测到内存超标（其实快超了）的情况下，是可以写入一个很大的kv的，当后续命令进来之后会发现内存不够了，交给后续命令执行释放内存操作
+4. 如果业务能预估到可能会有集中的大量key过期，那么最好ttl上加个随机数，匀开来，避免集中expire造成的blocking，这点不管开不开lazy free都一样</p>
+
+<p>具体分析请见下文</p>
 
 <h2 id="参数">参数</h2>
 
@@ -284,6 +292,7 @@
             // ...
 
             // 如果是异步删除，需要在循环过程中定期评估后台清理线程是否释放了足够的内存，默认每16次循环检查一次
+            // 可以想到的是，如果kv都很小，那么前面的操作并不是异步，lazy free不生效。如果kv都很大，那么几乎所有kv都走异步清理，主线程接近空转，如果清理线程不够，那么还是会话相对长的时间的。所以应该是大小混合的场景比较合适lazy free，需要实验数据验证
             if (server.lazyfree_lazy_eviction &amp;&amp; !(keys_freed % 16)) {
                 if (getMaxmemoryState(NULL,NULL,NULL,NULL) == C_OK) {
                     // 如果释放了足够内存，那么可以直接跳出循环了
@@ -339,12 +348,9 @@ int dbAsyncDelete(redisDb *db, robj *key) {
 
 <h2 id="总结">总结</h2>
 
-<ol>
-<li>配置了lazyfree-lazy-eviction yes之后，遇到OOM的时候，并不是直接扔给后台线程去执行清理，也是要在当前命令执行前清理出足够的内存来的。只不过同步清小块内存，异步清大块内存，稍微加速一点清理效果</li>
-<li>redis其实是可以用超内存的，在当前这个命令执行前，没探测到内存超标(其实已经快超了)，然后写入了一个很大的kv，等下一个命令进来之后发现内存不够了，这时候才开始清理内存</li>
-<li>redis可以考虑一个功能，给一个参数配置内存高水位，超过高水位之后就可以触发evict操作。但是有个问题，可能清理速度赶不上写入速度，怎么合理平衡这两者需要仔细想一下</li>
-<li>如果业务能预估到可能会有集中的大量key过期，那么最好ttl上加个随机数，匀开来，避免集中expire造成的blocking</li>
-</ol>
+<p>感觉redis可以考虑一个功能，给一个参数配置内存高水位，超过高水位之后就可以触发evict操作。但是有个问题，可能清理速度赶不上写入速度，怎么合理平衡这两者需要仔细想一下。</p>
+
+<p>另外感叹一下antirez代码层面上的架构能力，几年前看过redis 2.8的代码，从2.8的分支直接切到5.0之后，原来阅读的位置并没有偏离主线太远。历经几个大版本的迭代，加了N多功能之后，代码主体逻辑依旧没有大改，真的是做到了对修改关闭，对扩展开放。向大佬学习</p>
 
     </div>
 

@@ -12,7 +12,7 @@
     
     
     <item>
-      <title>关于redis的lazy Free</title>
+      <title>从实现角度看redis lazy free的使用和注意事项</title>
       <link>http://hbprotoss.github.io/post/%E5%85%B3%E4%BA%8Eredis%E7%9A%84lazy-free/</link>
       <pubDate>Thu, 16 May 2019 22:05:09 +0800</pubDate>
       
