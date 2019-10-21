@@ -17,7 +17,7 @@
       <pubDate>Sat, 30 Sep 2017 00:00:00 +0000</pubDate>
       
       <guid>http://hbprotoss.github.io/post/shang-chuan-pythonbao-dao-pypi/</guid>
-      <description>注册账号 正式仓库: PyPI Live 测试仓库: PyPI Test 创建.pypirc文件 [distutils] index-servers = pypi pypitest [pypi] repository=https://upload.pypi.org/legacy/ username=your_username password=your_password [pypitest] repository=https://test.pypi.org/legacy/ username=your_username password=your_password 保存到~/.pypirc chmod 600 ~/.pypirc 准备工作 工作目录结构 root-dir/ # arbitrary</description>
+      <description>注册账号 正式仓库: PyPI Live 测试仓库: PyPI Test 创建.pypirc文件 1 2 3 4 5 6 7 8 9 10 11 12 13 14 [distutils] index-servers = pypi pypitest [pypi] repository=https://upload.pypi.org/legacy/ username=your_username password=your_password [pypitest] repository=https://test.pypi.org/legacy/ username=your_username password=your_password 保存到~/.pypirc 1 chmod</description>
     </item>
     
   </channel>

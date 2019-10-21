@@ -35,7 +35,7 @@
       <pubDate>Sat, 30 Sep 2017 00:00:00 +0000</pubDate>
       
       <guid>http://hbprotoss.github.io/post/shang-chuan-pythonbao-dao-pypi/</guid>
-      <description>注册账号 正式仓库: PyPI Live 测试仓库: PyPI Test 创建.pypirc文件 [distutils] index-servers = pypi pypitest [pypi] repository=https://upload.pypi.org/legacy/ username=your_username password=your_password [pypitest] repository=https://test.pypi.org/legacy/ username=your_username password=your_password 保存到~/.pypirc chmod 600 ~/.pypirc 准备工作 工作目录结构 root-dir/ # arbitrary</description>
+      <description>注册账号 正式仓库: PyPI Live 测试仓库: PyPI Test 创建.pypirc文件 1 2 3 4 5 6 7 8 9 10 11 12 13 14 [distutils] index-servers = pypi pypitest [pypi] repository=https://upload.pypi.org/legacy/ username=your_username password=your_password [pypitest] repository=https://test.pypi.org/legacy/ username=your_username password=your_password 保存到~/.pypirc 1 chmod</description>
     </item>
     
     <item>
@@ -89,7 +89,7 @@
       <pubDate>Mon, 18 Mar 2013 00:00:00 +0000</pubDate>
       
       <guid>http://hbprotoss.github.io/post/pythonde-importji-zhi/</guid>
-      <description>同一个模块以相同的模块名被导入时，模块内的代码只执行一遍（模块名必须相同）。 例： import/ test.py mo/ A.py # A.py a = 1 print(a) a += 1 # test.py #!/usr/bin/env python3 import os import sys import mo.A import mo.A path = os.path.abspath(&#39;./mo&#39;) print(path) sys.path.append(path)</description>
+      <description>同一个模块以相同的模块名被导入时，模块内的代码只执行一遍（模块名必须相同）。 例： import/ test.py mo/ A.py 1 2 3 4 # A.py a = 1 print(a) a += 1 1 2 3 4 5 6 7 8 9 10 # test.py #!/usr/bin/env</description>
     </item>
     
     <item>

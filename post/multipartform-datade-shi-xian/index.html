@@ -16,21 +16,17 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="hbprotoss" />
-  <meta name="description" content="写之前先吐槽几句：Python社区太懒了，Python3都推出多少年了，那么多第三方库还不port到Python3。不能安于现状啊！ 下面是正" />
-
-  <meta name="keywords" content="Hugo, theme, even" />
+<meta name="author" content="hbprotoss" /><meta name="description" content="写之前先吐槽几句：Python社区太懒了，Python3都推出多少年了，那么多第三方库还不port到Python3。不能安于现状啊！ 下面是正" /><meta name="keywords" content="Hugo, theme, even" />
 
 
 
 
 
 
-<meta name="generator" content="Hugo 0.54.0" />
+<meta name="generator" content="Hugo 0.58.3 with theme even" />
 
 
 <link rel="canonical" href="http://hbprotoss.github.io/post/multipartform-datade-shi-xian/" />
-
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -38,31 +34,23 @@
 <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
 
 
-
-
-
-
-
-<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
 <link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
-
-
 
 
 <meta property="og:title" content="multipart/form-data的实现" />
 <meta property="og:description" content="写之前先吐槽几句：Python社区太懒了，Python3都推出多少年了，那么多第三方库还不port到Python3。不能安于现状啊！ 下面是正" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="http://hbprotoss.github.io/post/multipartform-datade-shi-xian/" />
-<meta property="article:published_time" content="2013-03-29T00:00:00&#43;00:00"/>
-<meta property="article:modified_time" content="2013-03-29T00:00:00&#43;00:00"/>
-
+<meta property="article:published_time" content="2013-03-29T00:00:00+00:00" />
+<meta property="article:modified_time" content="2013-03-29T00:00:00+00:00" />
 <meta itemprop="name" content="multipart/form-data的实现">
 <meta itemprop="description" content="写之前先吐槽几句：Python社区太懒了，Python3都推出多少年了，那么多第三方库还不port到Python3。不能安于现状啊！ 下面是正">
 
 
 <meta itemprop="datePublished" content="2013-03-29T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2013-03-29T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="773">
+<meta itemprop="wordCount" content="827">
 
 
 
@@ -137,26 +125,18 @@
       <div class="post-meta">
         <span class="post-time"> 2013-03-29 </span>
         
-        <span class="more-meta"> 773 words </span>
-        <span class="more-meta"> 2 mins read </span>
+          <span class="more-meta"> 827 words </span>
+          <span class="more-meta"> 2 mins read </span>
         
       </div>
     </header>
 
-    
-    
-<div class="post-toc" id="post-toc">
+    <div class="post-toc" id="post-toc">
   <h2 class="post-toc-title">Contents</h2>
-  
   <div class="post-toc-content always-active">
     
   </div>
 </div>
-
-    
-    
-
-    
     <div class="post-content">
       <p>写之前先吐槽几句：Python社区太懒了，Python3都推出多少年了，那么多第三方库还不port到Python3。不能安于现状啊！</p>
 
@@ -180,8 +160,65 @@ Content-Type: 指定正文MIME类型，默认是纯文本text/plain，未知类�
 </ol>
 
 <p>下面贴一段上传新浪微博图片的代码：</p>
-
-<pre><code>#!/usr/bin/env python3
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">#!/usr/bin/env python3
 
 import urllib.request
 import urllib.parse
@@ -191,57 +228,56 @@ import json
 import mimetypes
 
 def _encode_multipart(params_dict):
-    '''
+    &#39;&#39;&#39;
     Build a multipart/form-data body with generated random boundary.
-    '''
-    boundary = '----------%s' % hex(int(time.time() * 1000))
+    &#39;&#39;&#39;
+    boundary = &#39;----------%s&#39; % hex(int(time.time() * 1000))
     data = []
     for k, v in params_dict.items():
-    data.append('--%s' % boundary)
-    if hasattr(v, 'read'):
-        filename = getattr(v, 'name', '')
+    data.append(&#39;--%s&#39; % boundary)
+    if hasattr(v, &#39;read&#39;):
+        filename = getattr(v, &#39;name&#39;, &#39;&#39;)
         content = v.read()
-        decoded_content = content.decode('ISO-8859-1')
-        data.append('Content-Disposition: form-data; name=&quot;%s&quot;; filename=&quot;hidden&quot;' % k)
-        data.append('Content-Type: application/octet-stream\r\n')
+        decoded_content = content.decode(&#39;ISO-8859-1&#39;)
+        data.append(&#39;Content-Disposition: form-data; name=&#34;%s&#34;; filename=&#34;hidden&#34;&#39; % k)
+        data.append(&#39;Content-Type: application/octet-stream\r\n&#39;)
         data.append(decoded_content)
     else:
-        data.append('Content-Disposition: form-data; name=&quot;%s&quot;\r\n' % k)
-        data.append(v if isinstance(v, str) else v.decode('utf-8'))
-    data.append('--%s--\r\n' % boundary)
-    return '\r\n'.join(data), boundary
+        data.append(&#39;Content-Disposition: form-data; name=&#34;%s&#34;\r\n&#39; % k)
+        data.append(v if isinstance(v, str) else v.decode(&#39;utf-8&#39;))
+    data.append(&#39;--%s--\r\n&#39; % boundary)
+    return &#39;\r\n&#39;.join(data), boundary
 
 #############################################################
-url = 'https://upload.api.weibo.com/2/statuses/upload.json'
-access_token = 'xxx'
-file_name = 'big.png'
-path = '/home/xxx/Downloads/' + file_name
-status = '1234567'
+url = &#39;https://upload.api.weibo.com/2/statuses/upload.json&#39;
+access_token = &#39;xxx&#39;
+file_name = &#39;big.png&#39;
+path = &#39;/home/xxx/Downloads/&#39; + file_name
+status = &#39;1234567&#39;
 
 params = {
-    'access_token': access_token,
-    'status': urllib.parse.quote(status),
-    'pic': open(path, 'rb')
+    &#39;access_token&#39;: access_token,
+    &#39;status&#39;: urllib.parse.quote(status),
+    &#39;pic&#39;: open(path, &#39;rb&#39;)
 }
 
 coded_params, boundary = _encode_multipart(params)
 
 #############################################################
-req = urllib.request.Request(url, coded_params.encode('ISO-8859-1'))
-req.add_header('Content-Type', 'multipart/form-data; boundary=%s' % boundary)
+req = urllib.request.Request(url, coded_params.encode(&#39;ISO-8859-1&#39;))
+req.add_header(&#39;Content-Type&#39;, &#39;multipart/form-data; boundary=%s&#39; % boundary)
 try:
     resp = urllib.request.urlopen(req)
-    body = resp.read().decode('utf-8')
+    body = resp.read().decode(&#39;utf-8&#39;)
     print(body)
 except urllib.error.HTTPError as e:
-    print(e.fp.read())
-</code></pre>
-
+    print(e.fp.read())</pre></td></tr></table>
+</div>
+</div>
 <p><strong>其中尤其要注意的是，POST上去的data部分要encode成ISO-8859-1。一开始一直encode成UTF-8，死活报的都是格式错误。</strong></p>
 
     </div>
 
-    
     <div class="post-copyright">
   <p class="copyright-item">
     <span class="item-title">Author</span>
@@ -249,7 +285,10 @@ except urllib.error.HTTPError as e:
   </p>
   <p class="copyright-item">
     <span class="item-title">LastMod</span>
-    <span class="item-content">2013-03-29</span>
+    <span class="item-content">
+        2013-03-29
+        
+    </span>
   </p>
   
   <p class="copyright-item">
@@ -257,27 +296,17 @@ except urllib.error.HTTPError as e:
     <span class="item-content"><a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png" /></a><br />本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh">知识共享署名-非商业性使用-禁止演绎 3.0 未本地化版本许可协议</a>进行许可。</span>
   </p>
 </div>
-
-    
-    
-
-    <footer class="post-footer">
+<footer class="post-footer">
       <div class="post-tags">
-          
           <a href="/tags/python/">Python</a>
-          
-        </div>
-
-      
+          </div>
       <nav class="post-nav">
-        
-          <a class="prev" href="/post/python-decoratorde-ying-yong/">
+        <a class="prev" href="/post/python-decoratorde-ying-yong/">
             <i class="iconfont icon-left"></i>
             <span class="prev-text nav-default">Python decorator的应用</span>
             <span class="prev-text nav-mobile">Prev</span>
           </a>
-        
-          <a class="next" href="/post/nikolagitpageda-jian-bo-ke/">
+        <a class="next" href="/post/nikolagitpageda-jian-bo-ke/">
             <span class="next-text nav-default">nikola&#43;gitpage搭建博客</span>
             <span class="next-text nav-mobile">Next</span>
             <i class="iconfont icon-right"></i>
@@ -286,8 +315,7 @@ except urllib.error.HTTPError as e:
     </footer>
   </article>
         </div>
-        
-  <div id="disqus_thread"></div>
+        <div id="disqus_thread"></div>
     <script type="text/javascript">
     (function() {
       
@@ -301,6 +329,8 @@ except urllib.error.HTTPError as e:
     })();
     </script>
     <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
 
   
 
@@ -327,8 +357,7 @@ except urllib.error.HTTPError as e:
 
   <span class="copyright-year">
     &copy; 
-    
-      2017 - 
+    2017 - 
     2019
     <span class="heart">
       <i class="iconfont icon-heart"></i>
@@ -342,13 +371,10 @@ except urllib.error.HTTPError as e:
       <i class="iconfont icon-up"></i>
     </div>
   </div>
-  
-<script src="/lib/highlight/highlight.pack.js?v=20171001"></script><script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
   <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
   <script type="text/javascript" src="/lib/fancybox/jquery.fancybox-3.1.20.min.js"></script>
-
-
-<script type="text/javascript" src="/dist/even.min.js?v=3.2.0"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
 
 
 
