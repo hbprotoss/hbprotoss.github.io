@@ -165,7 +165,7 @@
 
 <p>在介绍组复制之前，让我们先回顾一下传统的master-slave复制形式，这将有利于我们理解组复制要解决什么问题</p>
 
-<p><img src="https://ws1.sinaimg.cn/large/6a07fe7aly1g83pt9uyaqj21150q9mzp.jpg" alt="async-semisync-group-simple1.png" /></p>
+<p><img src="https://i.imgur.com/SYybWIw.jpg" alt="async-semisync-group-simple1.png" /></p>
 
 <h3 id="传统复制">传统复制</h3>
 
@@ -284,7 +284,7 @@
 
 <p>组复制作为一个MySQL插件实现，内部复用了很多现有的代码</p>
 
-<p><img src="https://ws1.sinaimg.cn/large/6a07fe7aly1g84gtc0c96j20wc0mvdih.jpg" alt="gcs-block-diagram-stack.png" /></p>
+<p><img src="https://i.imgur.com/wdtfxOL.jpg" alt="gcs-block-diagram-stack.png" /></p>
 
 <p>插件跟MySQL server层和复制架构层高度集成，利用了现有的binlog、relay log、GTID、从库复制线程、applier等，所以熟悉MySQL的读者能从中发现很多熟悉的东西，没有什么太多的区别。但是于此同时，为了能和其他组件更好的协作，MySQL内部做了一系列重构，模块化抽象等。</p>
 

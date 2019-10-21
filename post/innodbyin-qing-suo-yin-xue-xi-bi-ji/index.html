@@ -169,11 +169,11 @@
 
 <p>其中，主键索引(Primary Index)是聚集索引，中间节点是用于查询的边界值，叶子节点就是数据节点，叶子节点之间通过指针形成双向链表。如图：</p>
 
-<p><img src="../static/images/InnoDB/primary_index.jpg" alt="primary_index.jpg" /></p>
+<p><img src="https://i.imgur.com/8SbtTMC.jpg" alt="primary_index.jpg" /></p>
 
 <p>辅助索引(Secondary Index)同样为B-Tree索引，只是叶子节点不是数据节点，而是对主键的引用。</p>
 
-<p><img src="../static/images/InnoDB/secondary_index.jpg" alt="secondary_index.jpg" /></p>
+<p><img src="https://i.imgur.com/FRhbKZo.jpg" alt="secondary_index.jpg" /></p>
 
 <p>由于此特性，InnoDB引擎要求数据表必须有一个主键，如果没有主键，在数据表创建的时候会自动生成一个唯一非空索引替代。这个特性也决定了InnoDB表的主键最好是一个自增的ID序列，这样在后续插入的过程中不会造成数据块的唯一，提升性能。</p>
 
