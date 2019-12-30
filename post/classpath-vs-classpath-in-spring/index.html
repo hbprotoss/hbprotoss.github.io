@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.58.3 with theme even" />
+<meta name="generator" content="Hugo 0.62.0 with theme even" />
 
 
 <link rel="canonical" href="http://hbprotoss.github.io/post/classpath-vs-classpath-in-spring/" />
@@ -46,16 +46,13 @@
 <meta property="article:modified_time" content="2016-07-06T00:00:00+00:00" />
 <meta itemprop="name" content="classpath* vs classpath in spring">
 <meta itemprop="description" content="记录一下spring里读取资源时的classpath*和classpath表达式的区别。不想看细节的可以直接跳到最后直接看结论。 读取资源的主">
-
-
 <meta itemprop="datePublished" content="2016-07-06T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2016-07-06T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="807">
+<meta itemprop="wordCount" content="808">
 
 
 
-<meta itemprop="keywords" content="Spring,Java," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="Spring,Java," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="classpath* vs classpath in spring"/>
 <meta name="twitter:description" content="记录一下spring里读取资源时的classpath*和classpath表达式的区别。不想看细节的可以直接跳到最后直接看结论。 读取资源的主"/>
 
@@ -125,7 +122,7 @@
       <div class="post-meta">
         <span class="post-time"> 2016-07-06 </span>
         
-          <span class="more-meta"> 807 words </span>
+          <span class="more-meta"> 808 words </span>
           <span class="more-meta"> 2 mins read </span>
         
       </div>
@@ -135,27 +132,22 @@
   <h2 class="post-toc-title">Contents</h2>
   <div class="post-toc-content always-active">
     <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#结论">结论</a></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#heading">结论</a></li>
+      </ul>
+    </li>
+  </ul>
 </nav>
   </div>
 </div>
     <div class="post-content">
-      
-
-<p>记录一下spring里读取资源时的classpath*和classpath表达式的区别。不想看细节的可以直接跳到最后直接看结论。</p>
-
+      <p>记录一下spring里读取资源时的classpath*和classpath表达式的区别。不想看细节的可以直接跳到最后直接看结论。</p>
 <p>读取资源的主要逻辑在<code>PathMatchingResourcePatternResolver.getResources</code></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -182,62 +174,62 @@
 </span><span class="lnt">25
 </span><span class="lnt">26
 </span><span class="lnt">27
+</span><span class="lnt">28
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="nf">Resource</span><span class="p">[]</span> <span class="n">getResources</span><span class="p">(</span><span class="n">String</span> <span class="nf">locationPattern</span><span class="p">)</span> <span class="kd">throws</span> <span class="nf">IOException</span> <span class="p">{</span>
-	<span class="n">Assert</span><span class="p">.</span><span class="na">notNull</span><span class="p">(</span><span class="n">locationPattern</span><span class="p">,</span> <span class="s">&#34;Location pattern must not be null&#34;</span><span class="p">);</span>
-	<span class="k">if</span> <span class="p">(</span><span class="n">locationPattern</span><span class="p">.</span><span class="na">startsWith</span><span class="p">(</span><span class="n">CLASSPATH_ALL_URL_PREFIX</span><span class="p">))</span> <span class="p">{</span>
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">Resource</span><span class="o">[</span><span class="o">]</span> <span class="nf">getResources</span><span class="o">(</span><span class="n">String</span> <span class="n">locationPattern</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+	<span class="n">Assert</span><span class="o">.</span><span class="na">notNull</span><span class="o">(</span><span class="n">locationPattern</span><span class="o">,</span> <span class="s">&#34;Location pattern must not be null&#34;</span><span class="o">)</span><span class="o">;</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">locationPattern</span><span class="o">.</span><span class="na">startsWith</span><span class="o">(</span><span class="n">CLASSPATH_ALL_URL_PREFIX</span><span class="o">)</span><span class="o">)</span> <span class="o">{</span>
 		<span class="c1">// a class path resource (multiple resources for same name possible)
-</span><span class="c1"></span>		<span class="k">if</span> <span class="p">(</span><span class="n">getPathMatcher</span><span class="p">().</span><span class="na">isPattern</span><span class="p">(</span><span class="n">locationPattern</span><span class="p">.</span><span class="na">substring</span><span class="p">(</span><span class="n">CLASSPATH_ALL_URL_PREFIX</span><span class="p">.</span><span class="na">length</span><span class="p">())))</span> <span class="p">{</span>
+</span><span class="c1"></span>		<span class="k">if</span> <span class="o">(</span><span class="n">getPathMatcher</span><span class="o">(</span><span class="o">)</span><span class="o">.</span><span class="na">isPattern</span><span class="o">(</span><span class="n">locationPattern</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">CLASSPATH_ALL_URL_PREFIX</span><span class="o">.</span><span class="na">length</span><span class="o">(</span><span class="o">)</span><span class="o">)</span><span class="o">)</span><span class="o">)</span> <span class="o">{</span>
 			<span class="c1">// a class path resource pattern
-</span><span class="c1"></span>			<span class="k">return</span> <span class="n">findPathMatchingResources</span><span class="p">(</span><span class="n">locationPattern</span><span class="p">);</span>
-		<span class="p">}</span>
-		<span class="k">else</span> <span class="p">{</span>
+</span><span class="c1"></span>			<span class="k">return</span> <span class="n">findPathMatchingResources</span><span class="o">(</span><span class="n">locationPattern</span><span class="o">)</span><span class="o">;</span>
+		<span class="o">}</span>
+		<span class="k">else</span> <span class="o">{</span>
 			<span class="c1">// all class path resources with the given name
-</span><span class="c1"></span>			<span class="k">return</span> <span class="n">findAllClassPathResources</span><span class="p">(</span><span class="n">locationPattern</span><span class="p">.</span><span class="na">substring</span><span class="p">(</span><span class="n">CLASSPATH_ALL_URL_PREFIX</span><span class="p">.</span><span class="na">length</span><span class="p">()));</span>
-		<span class="p">}</span>
-	<span class="p">}</span>
-	<span class="k">else</span> <span class="p">{</span>
+</span><span class="c1"></span>			<span class="k">return</span> <span class="n">findAllClassPathResources</span><span class="o">(</span><span class="n">locationPattern</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">CLASSPATH_ALL_URL_PREFIX</span><span class="o">.</span><span class="na">length</span><span class="o">(</span><span class="o">)</span><span class="o">)</span><span class="o">)</span><span class="o">;</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+	<span class="k">else</span> <span class="o">{</span>
 		<span class="c1">// Only look for a pattern after a prefix here
 </span><span class="c1"></span>		<span class="c1">// (to not get fooled by a pattern symbol in a strange prefix).
-</span><span class="c1"></span>		<span class="kt">int</span> <span class="nf">prefixEnd</span> <span class="o">=</span> <span class="n">locationPattern</span><span class="p">.</span><span class="na">indexOf</span><span class="p">(</span><span class="s">&#34;:&#34;</span><span class="p">)</span> <span class="o">+</span> <span class="n">1</span><span class="p">;</span>
-		<span class="k">if</span> <span class="p">(</span><span class="n">getPathMatcher</span><span class="p">().</span><span class="na">isPattern</span><span class="p">(</span><span class="n">locationPattern</span><span class="p">.</span><span class="na">substring</span><span class="p">(</span><span class="n">prefixEnd</span><span class="p">)))</span> <span class="p">{</span>
+</span><span class="c1"></span>		<span class="kt">int</span> <span class="n">prefixEnd</span> <span class="o">=</span> <span class="n">locationPattern</span><span class="o">.</span><span class="na">indexOf</span><span class="o">(</span><span class="s">&#34;:&#34;</span><span class="o">)</span> <span class="o">+</span> <span class="n">1</span><span class="o">;</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">getPathMatcher</span><span class="o">(</span><span class="o">)</span><span class="o">.</span><span class="na">isPattern</span><span class="o">(</span><span class="n">locationPattern</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">prefixEnd</span><span class="o">)</span><span class="o">)</span><span class="o">)</span> <span class="o">{</span>
 			<span class="c1">// a file pattern
-</span><span class="c1"></span>			<span class="k">return</span> <span class="n">findPathMatchingResources</span><span class="p">(</span><span class="n">locationPattern</span><span class="p">);</span>
-		<span class="p">}</span>
-		<span class="k">else</span> <span class="p">{</span>
+</span><span class="c1"></span>			<span class="k">return</span> <span class="n">findPathMatchingResources</span><span class="o">(</span><span class="n">locationPattern</span><span class="o">)</span><span class="o">;</span>
+		<span class="o">}</span>
+		<span class="k">else</span> <span class="o">{</span>
 			<span class="c1">// a single resource with the given name
-</span><span class="c1"></span>			<span class="k">return</span> <span class="k">new</span> <span class="n">Resource</span><span class="p">[]</span> <span class="p">{</span><span class="n">getResourceLoader</span><span class="p">().</span><span class="na">getResource</span><span class="p">(</span><span class="n">locationPattern</span><span class="p">)};</span>
-		<span class="p">}</span>
-	<span class="p">}</span>
-<span class="p">}</span></code></pre></td></tr></table>
+</span><span class="c1"></span>			<span class="k">return</span> <span class="k">new</span> <span class="n">Resource</span><span class="o">[</span><span class="o">]</span> <span class="o">{</span><span class="n">getResourceLoader</span><span class="o">(</span><span class="o">)</span><span class="o">.</span><span class="na">getResource</span><span class="o">(</span><span class="n">locationPattern</span><span class="o">)</span><span class="o">}</span><span class="o">;</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+
+</code></pre></td></tr></table>
 </div>
-</div>
-<ul>
-<li><p>classpath*:resource</p>
-
-<p>代码中的if逻辑，通过findAllClassPathResources，遍历整个classpath，搜索所有名字匹配的文件返回</p></li>
-
-<li><p>classpath:resource</p>
-
-<p>代码中的else逻辑，<code>getResourceLoader().getResource(locationPattern)</code>最终调用tomcat提供的WebappClassLoader，从classpath中遍历每个目录（包括jar），寻找指定的resource直到找到指定的第一个匹配文件返回</p></li>
+</div><ul>
+<li>
+<p>classpath*:resource</p>
+<p>代码中的if逻辑，通过findAllClassPathResources，遍历整个classpath，搜索所有名字匹配的文件返回</p>
+</li>
+<li>
+<p>classpath:resource</p>
+<p>代码中的else逻辑，<code>getResourceLoader().getResource(locationPattern)</code>最终调用tomcat提供的WebappClassLoader，从classpath中遍历每个目录（包括jar），寻找指定的resource直到找到指定的第一个匹配文件返回</p>
+</li>
 </ul>
-
 <p>读取完resource列表之后，<code>AbstractBeanDefinitionReader.loadBeanDefinitions</code>会载入得到resource列表</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="n">Resource</span><span class="p">[]</span> <span class="nf">resources</span> <span class="o">=</span> <span class="p">((</span><span class="n">ResourcePatternResolver</span><span class="p">)</span> <span class="n">resourceLoader</span><span class="p">).</span><span class="na">getResources</span><span class="p">(</span><span class="n">location</span><span class="p">);</span>
-<span class="kt">int</span> <span class="nf">loadCount</span> <span class="o">=</span> <span class="n">loadBeanDefinitions</span><span class="p">(</span><span class="n">resources</span><span class="p">);</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="n">Resource</span><span class="o">[</span><span class="o">]</span> <span class="n">resources</span> <span class="o">=</span> <span class="o">(</span><span class="o">(</span><span class="n">ResourcePatternResolver</span><span class="o">)</span> <span class="n">resourceLoader</span><span class="o">)</span><span class="o">.</span><span class="na">getResources</span><span class="o">(</span><span class="n">location</span><span class="o">)</span><span class="o">;</span>
+<span class="kt">int</span> <span class="n">loadCount</span> <span class="o">=</span> <span class="n">loadBeanDefinitions</span><span class="o">(</span><span class="n">resources</span><span class="o">)</span><span class="o">;</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<h3 id="结论">结论</h3>
-
+</div><h3 id="heading">结论</h3>
 <p>从<code>classpath*:resource</code>中读取资源，就相当于把整个classpath下能找到的同名resource按照classpath中的次序拼接成一个大文件后载入，位于classpath后部的resource定义会覆盖前面的。由于tomcat会保证<code>WEB-INF/class</code>下的class会放在classpath中的第一位，所以导致jar中的同名resource定义覆盖app中的定义。</p>
-
 <p><code>classpath:resource</code>仅载入classpath路径中碰到的第一个resource。</p>
 
     </div>

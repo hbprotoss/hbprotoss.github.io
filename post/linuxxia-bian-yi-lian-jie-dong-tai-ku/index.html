@@ -16,14 +16,14 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="hbprotoss" /><meta name="description" content="记录下Linux下编译和链接动态库的过程。 ##一、 编写动态库 头文件so.h： 1 2 3 4 5 6 7 #ifndef SO_H #define SO_H int add(int a, int b); #endif /*SO_H*/ 实现文件so.c： 1 2 3 4 5" /><meta name="keywords" content="Hugo, theme, even" />
+<meta name="author" content="hbprotoss" /><meta name="description" content="记录下Linux下编译和链接动态库的过程。 ##一、 编写动态库 头文件so.h： 1 2 3 4 5 6 7 8 #ifndef SO_H#define SO_H int add(int a, int b); #endif /*SO_H*/ 实现文件so.c： 1 2 3 4 5" /><meta name="keywords" content="Hugo, theme, even" />
 
 
 
 
 
 
-<meta name="generator" content="Hugo 0.58.3 with theme even" />
+<meta name="generator" content="Hugo 0.62.0 with theme even" />
 
 
 <link rel="canonical" href="http://hbprotoss.github.io/post/linuxxia-bian-yi-lian-jie-dong-tai-ku/" />
@@ -39,25 +39,22 @@
 
 
 <meta property="og:title" content="Linux下编译链接动态库" />
-<meta property="og:description" content="记录下Linux下编译和链接动态库的过程。 ##一、 编写动态库 头文件so.h： 1 2 3 4 5 6 7 #ifndef SO_H #define SO_H int add(int a, int b); #endif /*SO_H*/ 实现文件so.c： 1 2 3 4 5" />
+<meta property="og:description" content="记录下Linux下编译和链接动态库的过程。 ##一、 编写动态库 头文件so.h： 1 2 3 4 5 6 7 8 #ifndef SO_H#define SO_H int add(int a, int b); #endif /*SO_H*/ 实现文件so.c： 1 2 3 4 5" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="http://hbprotoss.github.io/post/linuxxia-bian-yi-lian-jie-dong-tai-ku/" />
 <meta property="article:published_time" content="2013-10-08T00:00:00+00:00" />
 <meta property="article:modified_time" content="2013-10-08T00:00:00+00:00" />
 <meta itemprop="name" content="Linux下编译链接动态库">
-<meta itemprop="description" content="记录下Linux下编译和链接动态库的过程。 ##一、 编写动态库 头文件so.h： 1 2 3 4 5 6 7 #ifndef SO_H #define SO_H int add(int a, int b); #endif /*SO_H*/ 实现文件so.c： 1 2 3 4 5">
-
-
+<meta itemprop="description" content="记录下Linux下编译和链接动态库的过程。 ##一、 编写动态库 头文件so.h： 1 2 3 4 5 6 7 8 #ifndef SO_H#define SO_H int add(int a, int b); #endif /*SO_H*/ 实现文件so.c： 1 2 3 4 5">
 <meta itemprop="datePublished" content="2013-10-08T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2013-10-08T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="1067">
+<meta itemprop="wordCount" content="1069">
 
 
 
-<meta itemprop="keywords" content="C,Linux,Programming," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="C,Linux,Programming," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Linux下编译链接动态库"/>
-<meta name="twitter:description" content="记录下Linux下编译和链接动态库的过程。 ##一、 编写动态库 头文件so.h： 1 2 3 4 5 6 7 #ifndef SO_H #define SO_H int add(int a, int b); #endif /*SO_H*/ 实现文件so.c： 1 2 3 4 5"/>
+<meta name="twitter:description" content="记录下Linux下编译和链接动态库的过程。 ##一、 编写动态库 头文件so.h： 1 2 3 4 5 6 7 8 #ifndef SO_H#define SO_H int add(int a, int b); #endif /*SO_H*/ 实现文件so.c： 1 2 3 4 5"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -125,7 +122,7 @@
       <div class="post-meta">
         <span class="post-time"> 2013-10-08 </span>
         
-          <span class="more-meta"> 1067 words </span>
+          <span class="more-meta"> 1069 words </span>
           <span class="more-meta"> 3 mins read </span>
         
       </div>
@@ -134,17 +131,39 @@
     <div class="post-toc" id="post-toc">
   <h2 class="post-toc-title">Contents</h2>
   <div class="post-toc-content always-active">
-    
+    <nav id="TableOfContents"></nav>
   </div>
 </div>
     <div class="post-content">
       <p>记录下Linux下编译和链接动态库的过程。</p>
-
 <p>##一、 编写动态库
 头文件so.h：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#</span><span class="cp">ifndef  SO_H</span><span class="cp">
+</span><span class="cp"></span><span class="cp">#</span><span class="cp">define  SO_H</span><span class="cp">
+</span><span class="cp"></span>
+<span class="kt">int</span> <span class="nf">add</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span><span class="p">;</span>
+
+
+<span class="cp">#</span><span class="cp">endif  </span><span class="cm">/*SO_H*/</span><span class="cp">
+</span><span class="cp"></span>
+</code></pre></td></tr></table>
+</div>
+</div><p>实现文件so.c：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -153,54 +172,33 @@
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#ifndef  SO_H
-</span><span class="cp">#define  SO_H
-</span><span class="cp"></span>
-<span class="kt">int</span> <span class="nf">add</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">);</span>
-
-
-<span class="cp">#endif  </span><span class="cm">/*SO_H*/</span></code></pre></td></tr></table>
-</div>
-</div>
-<p>实现文件so.c：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&#34;so.h&#34;</span><span class="cp">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&#34;so.h&#34;</span><span class="cp">
 </span><span class="cp"></span>
 <span class="kt">int</span> <span class="nf">add</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span>
 <span class="p">{</span>
 	<span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">;</span>
-<span class="p">}</span></code></pre></td></tr></table>
+<span class="p">}</span>
+
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>##二、编译动态库</p>
+</div><p>##二、编译动态库</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">gcc so.c -fPIC -shared -o libtest.so</code></pre></td></tr></table>
+<pre class="chroma"><code class="language-bash" data-lang="bash">gcc so.c -fPIC -shared -o libtest.so
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>解释一下各个参数含义：</p>
-
+</div><p>解释一下各个参数含义：</p>
 <ol>
-<li>-fPIC：生成位置无关代码(<a href="http://en.wikipedia.org/wiki/Position-independent_code">Position Independent Code</a>)，只有生成PIC才能通过虚拟页映射达到可执行代码在进程间共享，从而节省内存的目的。</li>
+<li>-fPIC：生成位置无关代码(<a href="http://en.wikipedia.org/wiki/Position-independent_code" title="">Position Independent Code</a>)，只有生成PIC才能通过虚拟页映射达到可执行代码在进程间共享，从而节省内存的目的。</li>
 <li>说明我们要生成的是动态库so(Shared Object)文件，从而进行动态链接。</li>
 </ol>
-
 <p>通过<code>nm -g libtest.so</code>可以看到，导出符号表中已经有<code>add</code>这个符号了：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -225,15 +223,15 @@
 <span class="m">0000000000000540</span> T _init
                  w _ITM_deregisterTMCloneTable
                  w _ITM_registerTMCloneTable
-                 w _Jv_RegisterClasses</code></pre></td></tr></table>
+                 w _Jv_RegisterClasses
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>##三、使用动态库
+</div><p>##三、使用动态库
 ###1. 隐式链接(编译时链接)
 编写主程序main.c：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -241,29 +239,29 @@
 </span><span class="lnt">6
 </span><span class="lnt">7
 </span><span class="lnt">8
+</span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
-</span><span class="cp">#include</span> <span class="cpf">&#34;so.h&#34;</span><span class="cp">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="cp"></span><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&#34;so.h&#34;</span><span class="cp">
 </span><span class="cp"></span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[</span><span class="p">]</span><span class="p">)</span>
 <span class="p">{</span>
-	<span class="n">printf</span><span class="p">(</span><span class="s">&#34;%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span>
+	<span class="n">printf</span><span class="p">(</span><span class="sa"></span><span class="s">&#34;</span><span class="s">%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="p">)</span><span class="p">;</span>
 	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span></code></pre></td></tr></table>
-</div>
-</div>
-<p>使用<code>gcc main.c -L. -ltest -o test</code>进行编译。</p>
+<span class="p">}</span>
 
+</code></pre></td></tr></table>
+</div>
+</div><p>使用<code>gcc main.c -L. -ltest -o test</code>进行编译。</p>
 <ul>
 <li>-L：添加库文件的搜索路径</li>
 <li>-l：指定需要链接的库。该名称是处在头lib和后缀.so中的名称，如上动态库libtest.so的l参数为-l test</li>
 </ul>
-
 <p>此时通过<code>readelf test -d</code>已经能看到生成的可执行文件test的Dynamic section里依赖libtest.so了</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -278,13 +276,13 @@ Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
   Tag        Type                         Name/Value
  0x0000000000000001 <span class="o">(</span>NEEDED<span class="o">)</span>             Shared library: <span class="o">[</span>libtest.so<span class="o">]</span>
  0x0000000000000001 <span class="o">(</span>NEEDED<span class="o">)</span>             Shared library: <span class="o">[</span>libc.so.6<span class="o">]</span>
-......</code></pre></td></tr></table>
+......
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>dynamic symbols中也有一个undefined symbol(add)</p>
+</div><p>dynamic symbols中也有一个undefined symbol(add)</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -311,35 +309,35 @@ Dynamic section at offset 0xe18 contains <span class="m">25</span> entries:
                  w _ITM_registerTMCloneTable
                  w _Jv_RegisterClasses
                  U __libc_start_main
-                 U printf</code></pre></td></tr></table>
+                 U <span class="nb">printf</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>在执行隐式链接的程序之前要注意设置<code>LD_LIBRARY_PATH</code>环境变量，或者把前面生成的libtest.so复制到系统路径下，否则会找不到动态库。</p>
+</div><p>在执行隐式链接的程序之前要注意设置<code>LD_LIBRARY_PATH</code>环境变量，或者把前面生成的libtest.so复制到系统路径下，否则会找不到动态库。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span><span class="lnt">6
 </span><span class="lnt">7
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">$ ./test 
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">$ ./test 
 ./test: error while loading shared libraries: libtest.so: cannot open shared object file: No such file or directory
 
 $ export LD_LIBRARY_PATH=.
 
 $ ./test 
-3</pre></td></tr></table>
+3
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>###2. 显式链接(运行时链接)
+</div><p>###2. 显式链接(运行时链接)
 编写主程序dyn_main.c</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -363,57 +361,56 @@ $ ./test
 </span><span class="lnt">22
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
-</span><span class="cp">#include</span> <span class="cpf">&lt;dlfcn.h&gt;</span><span class="cp">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="cp"></span><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;dlfcn.h&gt;</span><span class="cp">
 </span><span class="cp"></span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[</span><span class="p">]</span><span class="p">)</span>
 <span class="p">{</span>
 	<span class="kt">void</span> <span class="o">*</span><span class="n">dl</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
-	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">add</span><span class="p">)(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">);</span>
-	<span class="n">dl</span> <span class="o">=</span> <span class="n">dlopen</span><span class="p">(</span> <span class="s">&#34;./libtest.so&#34;</span><span class="p">,</span> <span class="n">RTLD_LAZY</span><span class="p">);</span>
-	<span class="k">if</span><span class="p">(</span> <span class="n">dl</span> <span class="o">==</span> <span class="nb">NULL</span> <span class="p">)</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">add</span><span class="p">)</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span><span class="p">;</span>
+	<span class="n">dl</span> <span class="o">=</span> <span class="n">dlopen</span><span class="p">(</span> <span class="sa"></span><span class="s">&#34;</span><span class="s">./libtest.so</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">RTLD_LAZY</span><span class="p">)</span><span class="p">;</span>
+	<span class="k">if</span><span class="p">(</span> <span class="n">dl</span> <span class="o">=</span><span class="o">=</span> <span class="nb">NULL</span> <span class="p">)</span>
 	<span class="p">{</span>
-		<span class="n">printf</span><span class="p">(</span><span class="s">&#34;so loading error.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+		<span class="n">printf</span><span class="p">(</span><span class="sa"></span><span class="s">&#34;</span><span class="s">so loading error.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">)</span><span class="p">;</span>
 		<span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
 	<span class="p">}</span>
-	<span class="n">add</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">(</span><span class="o">*</span><span class="p">)(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">))</span><span class="n">dlsym</span><span class="p">(</span><span class="n">dl</span><span class="p">,</span> <span class="s">&#34;add&#34;</span><span class="p">);</span>
-	<span class="k">if</span><span class="p">(</span> <span class="n">dlerror</span><span class="p">()</span> <span class="o">!=</span> <span class="nb">NULL</span> <span class="p">)</span>
+	<span class="n">add</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">)</span><span class="p">)</span><span class="n">dlsym</span><span class="p">(</span><span class="n">dl</span><span class="p">,</span> <span class="sa"></span><span class="s">&#34;</span><span class="s">add</span><span class="s">&#34;</span><span class="p">)</span><span class="p">;</span>
+	<span class="k">if</span><span class="p">(</span> <span class="n">dlerror</span><span class="p">(</span><span class="p">)</span> <span class="o">!</span><span class="o">=</span> <span class="nb">NULL</span> <span class="p">)</span>
 	<span class="p">{</span>
-		<span class="n">printf</span><span class="p">(</span><span class="s">&#34;fun load error.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+		<span class="n">printf</span><span class="p">(</span><span class="sa"></span><span class="s">&#34;</span><span class="s">fun load error.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">)</span><span class="p">;</span>
 		<span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
 	<span class="p">}</span>
-	<span class="n">printf</span><span class="p">(</span><span class="s">&#34;%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span>
+	<span class="n">printf</span><span class="p">(</span><span class="sa"></span><span class="s">&#34;</span><span class="s">%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="p">)</span><span class="p">;</span>
 	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span></code></pre></td></tr></table>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>使用<code>gcc dyn_main.c -ldl -o dyn_test</code>编译。</p>
-
+</div><p>使用<code>gcc dyn_main.c -ldl -o dyn_test</code>编译。</p>
 <p>这时通过<code>readelf dyn_test -d</code>可以发现，dyn_test不依赖libtest.so：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span><span class="lnt">6
 </span><span class="lnt">7
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">$ readelf dyn_test -d
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">$ readelf dyn_test -d
 
 Dynamic section at offset 0xe18 contains 25 entries:
   Tag        Type                         Name/Value
  0x0000000000000001 (NEEDED)             Shared library: [libdl.so.2]
  0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
-......</pre></td></tr></table>
+......
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>dyn_test的dynamic symbols中也没有add：</p>
+</div><p>dyn_test的dynamic symbols中也没有add：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -424,9 +421,9 @@ Dynamic section at offset 0xe18 contains 25 entries:
 </span><span class="lnt"> 9
 </span><span class="lnt">10
 </span><span class="lnt">11
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">$ nm -D dyn_test 
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">$ nm -D dyn_test 
                  U dlerror
                  U dlopen
                  U dlsym
@@ -436,29 +433,27 @@ Dynamic section at offset 0xe18 contains 25 entries:
                  w _Jv_RegisterClasses
                  U __libc_start_main
                  U printf
-                 U puts</pre></td></tr></table>
+                 U puts
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>运行程序也不需要设置<code>LD_LIBRARY_PATH</code>环境变量</p>
+</div><p>运行程序也不需要设置<code>LD_LIBRARY_PATH</code>环境变量</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-bash" data-lang="bash">$ ./dyn_test 
-<span class="m">3</span></code></pre></td></tr></table>
+<span class="m">3</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<hr />
-
+</div><hr>
 <p>参考资料：</p>
-
 <ol>
-<li><a href="http://hi.baidu.com/linuxlife/item/ed8e5d0c6e86b491a2df4366">Linux动态库的编译与使用 转载</a></li>
-<li><a href="http://os.51cto.com/art/201003/186246.htm">详细分析Linux动态库的使用方式</a></li>
-<li><a href="http://stackoverflow.com/questions/34732/how-do-i-list-the-symbols-in-a-so-file">How do I list the symbols in a .so file</a></li>
-<li><a href="http://stackoverflow.com/questions/10480657/import-names-in-elf-binary">Import names in ELF binary</a></li>
+<li><a href="http://hi.baidu.com/linuxlife/item/ed8e5d0c6e86b491a2df4366" title="">Linux动态库的编译与使用 转载</a></li>
+<li><a href="http://os.51cto.com/art/201003/186246.htm" title="">详细分析Linux动态库的使用方式</a></li>
+<li><a href="http://stackoverflow.com/questions/34732/how-do-i-list-the-symbols-in-a-so-file" title="">How do I list the symbols in a .so file</a></li>
+<li><a href="http://stackoverflow.com/questions/10480657/import-names-in-elf-binary" title="">Import names in ELF binary</a></li>
 </ol>
 
     </div>

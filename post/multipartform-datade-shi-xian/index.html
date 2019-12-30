@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.58.3 with theme even" />
+<meta name="generator" content="Hugo 0.62.0 with theme even" />
 
 
 <link rel="canonical" href="http://hbprotoss.github.io/post/multipartform-datade-shi-xian/" />
@@ -46,16 +46,13 @@
 <meta property="article:modified_time" content="2013-03-29T00:00:00+00:00" />
 <meta itemprop="name" content="multipart/form-data的实现">
 <meta itemprop="description" content="写之前先吐槽几句：Python社区太懒了，Python3都推出多少年了，那么多第三方库还不port到Python3。不能安于现状啊！ 下面是正">
-
-
 <meta itemprop="datePublished" content="2013-03-29T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2013-03-29T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="827">
+<meta itemprop="wordCount" content="771">
 
 
 
-<meta itemprop="keywords" content="Python," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="Python," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="multipart/form-data的实现"/>
 <meta name="twitter:description" content="写之前先吐槽几句：Python社区太懒了，Python3都推出多少年了，那么多第三方库还不port到Python3。不能安于现状啊！ 下面是正"/>
 
@@ -125,7 +122,7 @@
       <div class="post-meta">
         <span class="post-time"> 2013-03-29 </span>
         
-          <span class="more-meta"> 827 words </span>
+          <span class="more-meta"> 771 words </span>
           <span class="more-meta"> 2 mins read </span>
         
       </div>
@@ -134,91 +131,26 @@
     <div class="post-toc" id="post-toc">
   <h2 class="post-toc-title">Contents</h2>
   <div class="post-toc-content always-active">
-    
+    <nav id="TableOfContents"></nav>
   </div>
 </div>
     <div class="post-content">
       <p>写之前先吐槽几句：Python社区太懒了，Python3都推出多少年了，那么多第三方库还不port到Python3。不能安于现状啊！</p>
-
-<hr />
-
+<hr>
 <p>下面是正题：</p>
-
 <p>最近写微博客户端，上传图片需要multipart/form-data编码图片和参数，由于前面说的原因，没有第三方库可用，所以就自己实现一下。</p>
-
 <p>先贴一下multipart/form-data的RFC文档地址：<a href="http://www.ietf.org/rfc/rfc2388.txt">点这里</a></p>
-
 <p>multipart/form-data主要由三部分组成：</p>
-
 <ol>
-<li>HTTP Header。需要添加头&rdquo;Content-Type: multipart/form-data; boundary=%s&rdquo;，这个boundary就是分隔符，见第二条。</li>
-<li>分隔符boundary。分隔符是一串和正文内容不冲突的字符串，用以分割多个参数。一般都是N个减号+随机字符串，比如&rdquo;&mdash;&mdash;&mdash;-当前时间&rdquo;。<br />
-正文需要加header：<br />
-Content-Disposition: form-data; name=&ldquo;%s&rdquo;，%s为需要传递的变量名。<br />
-Content-Type: 指定正文MIME类型，默认是纯文本text/plain，未知类型可以填application/octet-stream。<br /></li>
-<li>数据。要注意的是数据的编码，文档上说&rdquo;7BIT encoding&rdquo;，ISO-8859-1即可。</li>
+<li>HTTP Header。需要添加头&quot;Content-Type: multipart/form-data; boundary=%s&rdquo;，这个boundary就是分隔符，见第二条。</li>
+<li>分隔符boundary。分隔符是一串和正文内容不冲突的字符串，用以分割多个参数。一般都是N个减号+随机字符串，比如&rdquo;&mdash;&mdash;&mdash;-当前时间&rdquo;。<br>
+正文需要加header：<br>
+Content-Disposition: form-data; name=&rdquo;%s&rdquo;，%s为需要传递的变量名。<br>
+Content-Type: 指定正文MIME类型，默认是纯文本text/plain，未知类型可以填application/octet-stream。</li>
+<li>数据。要注意的是数据的编码，文档上说&quot;7BIT encoding&rdquo;，ISO-8859-1即可。</li>
 </ol>
-
 <p>下面贴一段上传新浪微博图片的代码：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span><span class="lnt">43
-</span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
-</span><span class="lnt">47
-</span><span class="lnt">48
-</span><span class="lnt">49
-</span><span class="lnt">50
-</span><span class="lnt">51
-</span><span class="lnt">52
-</span><span class="lnt">53
-</span><span class="lnt">54
-</span></pre></td>
-<td class="lntd">
-<pre class="chroma">#!/usr/bin/env python3
+<pre><code>#!/usr/bin/env python3
 
 import urllib.request
 import urllib.parse
@@ -228,52 +160,51 @@ import json
 import mimetypes
 
 def _encode_multipart(params_dict):
-    &#39;&#39;&#39;
+    '''
     Build a multipart/form-data body with generated random boundary.
-    &#39;&#39;&#39;
-    boundary = &#39;----------%s&#39; % hex(int(time.time() * 1000))
+    '''
+    boundary = '----------%s' % hex(int(time.time() * 1000))
     data = []
     for k, v in params_dict.items():
-    data.append(&#39;--%s&#39; % boundary)
-    if hasattr(v, &#39;read&#39;):
-        filename = getattr(v, &#39;name&#39;, &#39;&#39;)
+    data.append('--%s' % boundary)
+    if hasattr(v, 'read'):
+        filename = getattr(v, 'name', '')
         content = v.read()
-        decoded_content = content.decode(&#39;ISO-8859-1&#39;)
-        data.append(&#39;Content-Disposition: form-data; name=&#34;%s&#34;; filename=&#34;hidden&#34;&#39; % k)
-        data.append(&#39;Content-Type: application/octet-stream\r\n&#39;)
+        decoded_content = content.decode('ISO-8859-1')
+        data.append('Content-Disposition: form-data; name=&quot;%s&quot;; filename=&quot;hidden&quot;' % k)
+        data.append('Content-Type: application/octet-stream\r\n')
         data.append(decoded_content)
     else:
-        data.append(&#39;Content-Disposition: form-data; name=&#34;%s&#34;\r\n&#39; % k)
-        data.append(v if isinstance(v, str) else v.decode(&#39;utf-8&#39;))
-    data.append(&#39;--%s--\r\n&#39; % boundary)
-    return &#39;\r\n&#39;.join(data), boundary
+        data.append('Content-Disposition: form-data; name=&quot;%s&quot;\r\n' % k)
+        data.append(v if isinstance(v, str) else v.decode('utf-8'))
+    data.append('--%s--\r\n' % boundary)
+    return '\r\n'.join(data), boundary
 
 #############################################################
-url = &#39;https://upload.api.weibo.com/2/statuses/upload.json&#39;
-access_token = &#39;xxx&#39;
-file_name = &#39;big.png&#39;
-path = &#39;/home/xxx/Downloads/&#39; + file_name
-status = &#39;1234567&#39;
+url = 'https://upload.api.weibo.com/2/statuses/upload.json'
+access_token = 'xxx'
+file_name = 'big.png'
+path = '/home/xxx/Downloads/' + file_name
+status = '1234567'
 
 params = {
-    &#39;access_token&#39;: access_token,
-    &#39;status&#39;: urllib.parse.quote(status),
-    &#39;pic&#39;: open(path, &#39;rb&#39;)
+    'access_token': access_token,
+    'status': urllib.parse.quote(status),
+    'pic': open(path, 'rb')
 }
 
 coded_params, boundary = _encode_multipart(params)
 
 #############################################################
-req = urllib.request.Request(url, coded_params.encode(&#39;ISO-8859-1&#39;))
-req.add_header(&#39;Content-Type&#39;, &#39;multipart/form-data; boundary=%s&#39; % boundary)
+req = urllib.request.Request(url, coded_params.encode('ISO-8859-1'))
+req.add_header('Content-Type', 'multipart/form-data; boundary=%s' % boundary)
 try:
     resp = urllib.request.urlopen(req)
-    body = resp.read().decode(&#39;utf-8&#39;)
+    body = resp.read().decode('utf-8')
     print(body)
 except urllib.error.HTTPError as e:
-    print(e.fp.read())</pre></td></tr></table>
-</div>
-</div>
+    print(e.fp.read())
+</code></pre>
 <p><strong>其中尤其要注意的是，POST上去的data部分要encode成ISO-8859-1。一开始一直encode成UTF-8，死活报的都是格式错误。</strong></p>
 
     </div>

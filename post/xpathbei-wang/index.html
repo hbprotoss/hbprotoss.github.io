@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.58.3 with theme even" />
+<meta name="generator" content="Hugo 0.62.0 with theme even" />
 
 
 <link rel="canonical" href="http://hbprotoss.github.io/post/xpathbei-wang/" />
@@ -46,16 +46,13 @@
 <meta property="article:modified_time" content="2016-04-12T00:00:00+00:00" />
 <meta itemprop="name" content="XPath备忘">
 <meta itemprop="description" content="最近写了几个scrapy的爬虫程序，里面用到了xpath，写个日志记录一下用法。 XPath是什么 XPath是一种用于xml、html等结构化">
-
-
 <meta itemprop="datePublished" content="2016-04-12T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2016-04-12T00:00:00&#43;00:00" />
 <meta itemprop="wordCount" content="954">
 
 
 
-<meta itemprop="keywords" content="Python,Crawler,Scrapy," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="Python,Crawler,Scrapy," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="XPath备忘"/>
 <meta name="twitter:description" content="最近写了几个scrapy的爬虫程序，里面用到了xpath，写个日志记录一下用法。 XPath是什么 XPath是一种用于xml、html等结构化"/>
 
@@ -135,92 +132,71 @@
   <h2 class="post-toc-title">Contents</h2>
   <div class="post-toc-content always-active">
     <nav id="TableOfContents">
-<ul>
-<li><a href="#xpath是什么">XPath是什么</a></li>
-<li><a href="#xpath主要功能">XPath主要功能</a>
-<ul>
-<li><a href="#精确路径寻址">精确路径寻址</a></li>
-<li><a href="#模糊路径寻址">模糊路径寻址</a></li>
-<li><a href="#节点属性匹配">节点属性匹配</a></li>
-<li><a href="#属性选择">属性选择</a></li>
-<li><a href="#内置函数">内置函数</a></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#heading">精确路径寻址</a></li>
+    <li><a href="#heading-1">模糊路径寻址</a></li>
+    <li><a href="#heading-2">节点属性匹配</a></li>
+    <li><a href="#heading-3">属性选择</a></li>
+    <li><a href="#heading-4">内置函数</a></li>
+  </ul>
 </nav>
   </div>
 </div>
     <div class="post-content">
-      
-
-<p>最近写了几个scrapy的爬虫程序，里面用到了xpath，写个日志记录一下用法。</p>
-
-<h1 id="xpath是什么">XPath是什么</h1>
-
+      <p>最近写了几个scrapy的爬虫程序，里面用到了xpath，写个日志记录一下用法。</p>
+<h1 id="xpath">XPath是什么</h1>
 <p>XPath是一种用于xml、html等结构化文档中寻址定位特定元素等描述性语言</p>
-
-<h1 id="xpath主要功能">XPath主要功能</h1>
-
+<h1 id="xpath-1">XPath主要功能</h1>
 <p>下面以如下测试文档为例进行说明：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-html" data-lang="html"><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span><span class="lnt">9
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-html" data-lang="html"><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
-	<span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
-		<span class="p">&lt;</span><span class="nt">contents</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;content&#34;</span><span class="p">&gt;</span>
-		<span class="p">&lt;</span><span class="nt">para</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;one.html&#34;</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;normal-link&#34;</span><span class="p">&gt;</span>One<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">para</span><span class="p">&gt;</span>
-		<span class="p">&lt;</span><span class="nt">para</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;two.html&#34;</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;normal-link&#34;</span><span class="p">&gt;</span>Two<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">para</span><span class="p">&gt;</span>
-		<span class="p">&lt;</span><span class="nt">para</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;three.html&#34;</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;ex-link&#34;</span><span class="p">&gt;</span>Three<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">para</span><span class="p">&gt;</span>
-		<span class="p">&lt;/</span><span class="nt">contents</span><span class="p">&gt;</span>
-	<span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
-<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span></code></pre></td></tr></table>
-</div>
-</div>
-<h2 id="精确路径寻址">精确路径寻址</h2>
+<pre class="chroma"><code class="language-html" data-lang="html"><span class="p">&lt;</span><span class="nt">html</span><span class="p"></span><span class="p">&gt;</span>
+	<span class="p">&lt;</span><span class="nt">body</span><span class="p"></span><span class="p">&gt;</span>
+		<span class="p">&lt;</span><span class="nt">contents</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;content&#34;</span><span class="p"></span><span class="p">&gt;</span>
+		<span class="p">&lt;</span><span class="nt">para</span><span class="p"></span><span class="p">&gt;</span><span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;one.html&#34;</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;normal-link&#34;</span><span class="p"></span><span class="p">&gt;</span>One<span class="p">&lt;</span><span class="p">/</span><span class="nt">a</span><span class="p">&gt;</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">para</span><span class="p">&gt;</span>
+		<span class="p">&lt;</span><span class="nt">para</span><span class="p"></span><span class="p">&gt;</span><span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;two.html&#34;</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;normal-link&#34;</span><span class="p"></span><span class="p">&gt;</span>Two<span class="p">&lt;</span><span class="p">/</span><span class="nt">a</span><span class="p">&gt;</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">para</span><span class="p">&gt;</span>
+		<span class="p">&lt;</span><span class="nt">para</span><span class="p"></span><span class="p">&gt;</span><span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;three.html&#34;</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;ex-link&#34;</span><span class="p"></span><span class="p">&gt;</span>Three<span class="p">&lt;</span><span class="p">/</span><span class="nt">a</span><span class="p">&gt;</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">para</span><span class="p">&gt;</span>
+		<span class="p">&lt;</span><span class="p">/</span><span class="nt">contents</span><span class="p">&gt;</span>
+	<span class="p">&lt;</span><span class="p">/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="p">/</span><span class="nt">html</span><span class="p">&gt;</span>
 
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="heading">精确路径寻址</h2>
 <p>指通过精确制定的路径取得元素。例如</p>
-
 <p>和unix文件系统概念一致，有如下几种定位方式：</p>
-
 <ul>
 <li>绝对路径，<code>/html/body/contents/para</code>能查找出文档中的三个para元素</li>
 <li>相对路径，在<code>/html/body</code>路径下，<code>/contents/para</code>同样也能查找出这三个para元素</li>
 <li>父级路径，<code>.</code>表示当前路径，<code>..</code>表示当前路径的父级路径</li>
 </ul>
-
-<h2 id="模糊路径寻址">模糊路径寻址</h2>
-
+<h2 id="heading-1">模糊路径寻址</h2>
 <p>不需要指定绝对路径或根据当前路径确定的相对路径，只需要指定某个子结构，就能查找出所有符合这个子结构的元素。如</p>
-
 <ul>
 <li><code>//contents/para</code>在任何路径下，都能查找到<strong>整个文档</strong>下的这三个para元素</li>
 <li><code>.//contents/para</code>能在当前路径下，查找到子节点中任何符合<code>contents/para</code>结构的元素</li>
 </ul>
-
-<h2 id="节点属性匹配">节点属性匹配</h2>
-
-<p>格式：元素[@属性=&ldquo;xxx&rdquo;]</p>
-
+<h2 id="heading-2">节点属性匹配</h2>
+<p>格式：元素[@属性=&quot;xxx&rdquo;]</p>
 <ul>
 <li><code>a[@class=&quot;normal-link&quot;]</code>能查找出两个有带normal-link class的a链</li>
 <li><code>para[a/@class=&quot;ex-link&quot;]</code>能查找出一级子元素中有带ex-link class的a链的para元素，这里就是<code>&lt;para&gt;&lt;a href=&quot;three.html&quot; class=&quot;ex-link&quot;&gt;Three&lt;/a&gt;&lt;/para&gt;</code></li>
 </ul>
-
-<h2 id="属性选择">属性选择</h2>
-
+<h2 id="heading-3">属性选择</h2>
 <p>查找某个元素中的特定属性值，如：<code>a[@class=&quot;ex-link&quot;]/@href</code>能读取第三个a链的href值</p>
-
-<h2 id="内置函数">内置函数</h2>
-
+<h2 id="heading-4">内置函数</h2>
 <ul>
 <li>node()，返回任意种类的节点。比如和内置关键字<code>child</code>组合成<code>/html/body/contents/child::node()</code>，可以选择所有的para节点</li>
 <li>text()，返回节点中包含的文本。<code>/html/body/contents/para/a[@class=&quot;ex-link&quot;]/text()</code>返回Three。特别的，和模糊路径寻址配合，如<code>/html/body/contents//text()</code>，能返回contents下的<code>One Two Three</code>字符串</li>

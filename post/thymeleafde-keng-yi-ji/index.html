@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.58.3 with theme even" />
+<meta name="generator" content="Hugo 0.62.0 with theme even" />
 
 
 <link rel="canonical" href="http://hbprotoss.github.io/post/thymeleafde-keng-yi-ji/" />
@@ -46,16 +46,13 @@
 <meta property="article:modified_time" content="2016-05-31T00:00:00+00:00" />
 <meta itemprop="name" content="thymeleaf的坑一记">
 <meta itemprop="description" content="记录下thymeleaf 3.0新增的th:field与th:each中生成的变量结合使用时的坑。 代码就是官方例子https://github">
-
-
 <meta itemprop="datePublished" content="2016-05-31T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2016-05-31T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="742">
+<meta itemprop="wordCount" content="743">
 
 
 
-<meta itemprop="keywords" content="thymeleaf,Java,Spring," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="thymeleaf,Java,Spring," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="thymeleaf的坑一记"/>
 <meta name="twitter:description" content="记录下thymeleaf 3.0新增的th:field与th:each中生成的变量结合使用时的坑。 代码就是官方例子https://github"/>
 
@@ -125,7 +122,7 @@
       <div class="post-meta">
         <span class="post-time"> 2016-05-31 </span>
         
-          <span class="more-meta"> 742 words </span>
+          <span class="more-meta"> 743 words </span>
           <span class="more-meta"> 2 mins read </span>
         
       </div>
@@ -134,16 +131,15 @@
     <div class="post-toc" id="post-toc">
   <h2 class="post-toc-title">Contents</h2>
   <div class="post-toc-content always-active">
-    
+    <nav id="TableOfContents"></nav>
   </div>
 </div>
     <div class="post-content">
       <p>记录下thymeleaf 3.0新增的<code>th:field</code>与<code>th:each</code>中生成的变量结合使用时的坑。</p>
-
 <p>代码就是官方例子<a href="https://github.com/thymeleaf/thymeleafexamples-stsm.git">https://github.com/thymeleaf/thymeleafexamples-stsm.git</a>，在<code>webapp/WEB-INF/seedstartermng.html</code>中118-131行</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-html" data-lang="html"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -159,28 +155,27 @@
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-html" data-lang="html"><span class="p">&lt;</span><span class="nt">tr</span> <span class="na">th:each</span><span class="o">=</span><span class="s">&#34;row,rowStat : *{rows}&#34;</span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="nt">td</span> <span class="na">th:text</span><span class="o">=</span><span class="s">&#34;${rowStat.count}&#34;</span><span class="p">&gt;</span>1<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">select</span> <span class="na">th:field</span><span class="o">=</span><span class="s">&#34;*{rows[__${rowStat.index}__].variety}&#34;</span><span class="p">&gt;</span>
-      <span class="p">&lt;</span><span class="nt">option</span> <span class="na">th:each</span><span class="o">=</span><span class="s">&#34;var : ${allVarieties}&#34;</span> <span class="na">th:value</span><span class="o">=</span><span class="s">&#34;${var.id}&#34;</span> <span class="na">th:text</span><span class="o">=</span><span class="s">&#34;${var.name}&#34;</span><span class="p">&gt;</span>Thymus Thymi<span class="p">&lt;/</span><span class="nt">option</span><span class="p">&gt;</span>
-    <span class="p">&lt;/</span><span class="nt">select</span><span class="p">&gt;</span>
-  <span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;text&#34;</span> <span class="na">th:field</span><span class="o">=</span><span class="s">&#34;*{rows[__${rowStat.index}__].seedsPerCell}&#34;</span> <span class="na">th:errorclass</span><span class="o">=</span><span class="s">&#34;fieldError&#34;</span> <span class="p">/&gt;</span>
-  <span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;submit&#34;</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;removeRow&#34;</span> <span class="na">th:value</span><span class="o">=</span><span class="s">&#34;${rowStat.index}&#34;</span> <span class="na">th:text</span><span class="o">=</span><span class="s">&#34;#{seedstarter.row.remove}&#34;</span><span class="p">&gt;</span>Remove row<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
-  <span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
-<span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-html" data-lang="html"><span class="p">&lt;</span><span class="nt">tr</span> <span class="na">th:each</span><span class="o">=</span><span class="s">&#34;row,rowStat : *{rows}&#34;</span><span class="p"></span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">td</span> <span class="na">th:text</span><span class="o">=</span><span class="s">&#34;${rowStat.count}&#34;</span><span class="p"></span><span class="p">&gt;</span>1<span class="p">&lt;</span><span class="p">/</span><span class="nt">td</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">td</span><span class="p"></span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">select</span> <span class="na">th:field</span><span class="o">=</span><span class="s">&#34;*{rows[__${rowStat.index}__].variety}&#34;</span><span class="p"></span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">option</span> <span class="na">th:each</span><span class="o">=</span><span class="s">&#34;var : ${allVarieties}&#34;</span> <span class="na">th:value</span><span class="o">=</span><span class="s">&#34;${var.id}&#34;</span> <span class="na">th:text</span><span class="o">=</span><span class="s">&#34;${var.name}&#34;</span><span class="p"></span><span class="p">&gt;</span>Thymus Thymi<span class="p">&lt;</span><span class="p">/</span><span class="nt">option</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="p">/</span><span class="nt">select</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="p">/</span><span class="nt">td</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">td</span><span class="p"></span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;text&#34;</span> <span class="na">th:field</span><span class="o">=</span><span class="s">&#34;*{rows[__${rowStat.index}__].seedsPerCell}&#34;</span> <span class="na">th:errorclass</span><span class="o">=</span><span class="s">&#34;fieldError&#34;</span> <span class="p">/</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="p">/</span><span class="nt">td</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">td</span><span class="p"></span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;submit&#34;</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;removeRow&#34;</span> <span class="na">th:value</span><span class="o">=</span><span class="s">&#34;${rowStat.index}&#34;</span> <span class="na">th:text</span><span class="o">=</span><span class="s">&#34;#{seedstarter.row.remove}&#34;</span><span class="p"></span><span class="p">&gt;</span>Remove row<span class="p">&lt;</span><span class="p">/</span><span class="nt">button</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="p">/</span><span class="nt">td</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="p">/</span><span class="nt">tr</span><span class="p">&gt;</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>其中第二个td取出rows中的每一行的variety，做成一个select下拉菜单，当我尝试用<code>${row.variety}</code>替换原文的<code>*{rows[__${rowStat.index}__].variety}</code>时，页面渲染抛出异常<code>Neither BindingResult nor plain target object for bean name 'row' available as request attribute</code>。多方探索之后得出结论：这是我们使用的问题，设计时特意在遇到这种情况时为了避免服务端无法处理提交后的表单，就抛出异常。</p>
-
+</div><p>其中第二个td取出rows中的每一行的variety，做成一个select下拉菜单，当我尝试用<code>${row.variety}</code>替换原文的<code>*{rows[__${rowStat.index}__].variety}</code>时，页面渲染抛出异常<code>Neither BindingResult nor plain target object for bean name 'row' available as request attribute</code>。多方探索之后得出结论：这是我们使用的问题，设计时特意在遇到这种情况时为了避免服务端无法处理提交后的表单，就抛出异常。</p>
 <p>用例子中的代码渲染完生成后的页面为：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-html" data-lang="html"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -198,32 +193,32 @@
 </span><span class="lnt">16
 </span><span class="lnt">17
 </span><span class="lnt">18
+</span><span class="lnt">19
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-html" data-lang="html"><span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>1<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">select</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;rows0.variety&#34;</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;rows[0].variety&#34;</span><span class="p">&gt;</span>
-      <span class="p">&lt;</span><span class="nt">option</span> <span class="na">value</span><span class="o">=</span><span class="s">&#34;1&#34;</span><span class="p">&gt;</span>Thymus vulgaris<span class="p">&lt;/</span><span class="nt">option</span><span class="p">&gt;</span>
-      <span class="p">&lt;</span><span class="nt">option</span> <span class="na">value</span><span class="o">=</span><span class="s">&#34;2&#34;</span><span class="p">&gt;</span>Thymus x citriodorus<span class="p">&lt;/</span><span class="nt">option</span><span class="p">&gt;</span>
-      <span class="p">&lt;</span><span class="nt">option</span> <span class="na">value</span><span class="o">=</span><span class="s">&#34;3&#34;</span><span class="p">&gt;</span>Thymus herba-barona<span class="p">&lt;/</span><span class="nt">option</span><span class="p">&gt;</span>
-      <span class="p">&lt;</span><span class="nt">option</span> <span class="na">value</span><span class="o">=</span><span class="s">&#34;4&#34;</span><span class="p">&gt;</span>Thymus pseudolaginosus<span class="p">&lt;/</span><span class="nt">option</span><span class="p">&gt;</span>
-      <span class="p">&lt;</span><span class="nt">option</span> <span class="na">value</span><span class="o">=</span><span class="s">&#34;5&#34;</span><span class="p">&gt;</span>Thymus serpyllum<span class="p">&lt;/</span><span class="nt">option</span><span class="p">&gt;</span>
-    <span class="p">&lt;/</span><span class="nt">select</span><span class="p">&gt;</span>
-  <span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;text&#34;</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;rows0.seedsPerCell&#34;</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;rows[0].seedsPerCell&#34;</span> <span class="na">value</span><span class="o">=</span><span class="s">&#34;&#34;</span><span class="p">&gt;</span>
-  <span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;submit&#34;</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;removeRow&#34;</span> <span class="na">value</span><span class="o">=</span><span class="s">&#34;0&#34;</span><span class="p">&gt;</span>Remove row<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
-  <span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
-<span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span></code></pre></td></tr></table>
-</div>
-</div>
-<p>其中，<code>th:field</code>在渲染时会给目标元素加上id和name属性，name属性取<code>*{...}</code>中表达式的值。由于<code>__${rowStat.index}__</code>是个预处理语句，在渲染之前会直接文本替换，所以最终的表达式为<code>rows[0].variety</code>。</p>
+<pre class="chroma"><code class="language-html" data-lang="html"><span class="p">&lt;</span><span class="nt">tr</span><span class="p"></span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">td</span><span class="p"></span><span class="p">&gt;</span>1<span class="p">&lt;</span><span class="p">/</span><span class="nt">td</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">td</span><span class="p"></span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">select</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;rows0.variety&#34;</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;rows[0].variety&#34;</span><span class="p"></span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">option</span> <span class="na">value</span><span class="o">=</span><span class="s">&#34;1&#34;</span><span class="p"></span><span class="p">&gt;</span>Thymus vulgaris<span class="p">&lt;</span><span class="p">/</span><span class="nt">option</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">option</span> <span class="na">value</span><span class="o">=</span><span class="s">&#34;2&#34;</span><span class="p"></span><span class="p">&gt;</span>Thymus x citriodorus<span class="p">&lt;</span><span class="p">/</span><span class="nt">option</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">option</span> <span class="na">value</span><span class="o">=</span><span class="s">&#34;3&#34;</span><span class="p"></span><span class="p">&gt;</span>Thymus herba-barona<span class="p">&lt;</span><span class="p">/</span><span class="nt">option</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">option</span> <span class="na">value</span><span class="o">=</span><span class="s">&#34;4&#34;</span><span class="p"></span><span class="p">&gt;</span>Thymus pseudolaginosus<span class="p">&lt;</span><span class="p">/</span><span class="nt">option</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">option</span> <span class="na">value</span><span class="o">=</span><span class="s">&#34;5&#34;</span><span class="p"></span><span class="p">&gt;</span>Thymus serpyllum<span class="p">&lt;</span><span class="p">/</span><span class="nt">option</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="p">/</span><span class="nt">select</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="p">/</span><span class="nt">td</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">td</span><span class="p"></span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;text&#34;</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;rows0.seedsPerCell&#34;</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;rows[0].seedsPerCell&#34;</span> <span class="na">value</span><span class="o">=</span><span class="s">&#34;&#34;</span><span class="p"></span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="p">/</span><span class="nt">td</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">td</span><span class="p"></span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;submit&#34;</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;removeRow&#34;</span> <span class="na">value</span><span class="o">=</span><span class="s">&#34;0&#34;</span><span class="p"></span><span class="p">&gt;</span>Remove row<span class="p">&lt;</span><span class="p">/</span><span class="nt">button</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="p">/</span><span class="nt">td</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="p">/</span><span class="nt">tr</span><span class="p">&gt;</span>
 
+</code></pre></td></tr></table>
+</div>
+</div><p>其中，<code>th:field</code>在渲染时会给目标元素加上id和name属性，name属性取<code>*{...}</code>中表达式的值。由于<code>__${rowStat.index}__</code>是个预处理语句，在渲染之前会直接文本替换，所以最终的表达式为<code>rows[0].variety</code>。</p>
 <p>但是如果是<code>${row.variety}</code>，则最终name会被替换为<code>row.variety</code>，由于浏览器作为客户端无法知道服务端的逻辑，这样之后的每个tr中的元素都是这个表达式，表单提交的时候无法被spring解析成一个list对象，就会出现错误。</p>
-
 <p>官方站在实现角度的解释可以看这个<a href="https://github.com/thymeleaf/thymeleaf/issues/505#issuecomment-222557959">issue</a></p>
 
     </div>

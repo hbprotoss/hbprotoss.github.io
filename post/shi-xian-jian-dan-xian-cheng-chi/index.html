@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.58.3 with theme even" />
+<meta name="generator" content="Hugo 0.62.0 with theme even" />
 
 
 <link rel="canonical" href="http://hbprotoss.github.io/post/shi-xian-jian-dan-xian-cheng-chi/" />
@@ -46,16 +46,13 @@
 <meta property="article:modified_time" content="2013-03-18T00:00:00+00:00" />
 <meta itemprop="name" content="实现简单线程池">
 <meta itemprop="description" content="前段时间在写代码的时候（用了Qt）出现了似乎跟线程池有关的bug，在不确定是否是Qt线程池库QThreadPool的bug的情况下，自己实现">
-
-
 <meta itemprop="datePublished" content="2013-03-18T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2013-03-18T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="1338">
+<meta itemprop="wordCount" content="1253">
 
 
 
-<meta itemprop="keywords" content="Python,Qt,线程池," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="Python,Qt,线程池," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="实现简单线程池"/>
 <meta name="twitter:description" content="前段时间在写代码的时候（用了Qt）出现了似乎跟线程池有关的bug，在不确定是否是Qt线程池库QThreadPool的bug的情况下，自己实现"/>
 
@@ -125,7 +122,7 @@
       <div class="post-meta">
         <span class="post-time"> 2013-03-18 </span>
         
-          <span class="more-meta"> 1338 words </span>
+          <span class="more-meta"> 1253 words </span>
           <span class="more-meta"> 3 mins read </span>
         
       </div>
@@ -135,134 +132,32 @@
   <h2 class="post-toc-title">Contents</h2>
   <div class="post-toc-content always-active">
     <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#manager"><strong>Manager</strong></a></li>
-<li><a href="#thread"><strong>Thread</strong></a></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#manager">Manager</a></li>
+    <li><a href="#thread">Thread</a></li>
+  </ul>
 </nav>
   </div>
 </div>
     <div class="post-content">
-      
-
-<p>前段时间在写代码的时候（用了Qt）出现了似乎跟线程池有关的bug，在不确定是否是Qt线程池库QThreadPool的bug的情况下，自己实现了一个简单的线程池以确定到底是我的问题还是QThreadPool是否真有bug。（剧透下，最后证明不是QThreadPool有问题，可能是信号在线程之间传递的时候有问题，这个bug至今未修复= =）</p>
-
-<p>下面记录下我这个线程池的实现思路。<br />
+      <p>前段时间在写代码的时候（用了Qt）出现了似乎跟线程池有关的bug，在不确定是否是Qt线程池库QThreadPool的bug的情况下，自己实现了一个简单的线程池以确定到底是我的问题还是QThreadPool是否真有bug。（剧透下，最后证明不是QThreadPool有问题，可能是信号在线程之间传递的时候有问题，这个bug至今未修复= =）</p>
+<p>下面记录下我这个线程池的实现思路。<br>
 主要有两个类，Thread、Manager。ThreadPool类是整体的包装。</p>
-
-<p>Thread，继承自QThread，用来执行线程代码，并且作为线程对象存在。<br />
+<p>Thread，继承自QThread，用来执行线程代码，并且作为线程对象存在。<br>
 Manager，当前线程活动情况的管理类，检查线程池内空闲线程的情况，并管理新添加的任务。</p>
-
 <h2 id="manager"><strong>Manager</strong></h2>
-
-<p>Manager内部有一个维护空闲线程对象的集合idle_thread，考虑到需要在O(1)的时间内添加或删除指定元素，用了python内置的set。set内部使用哈希实现的，所以时间效率基本能控制在O(1)左右。<br />
-还有一个已添加任务的队列queue。时间效率上，入队和出队都要求O(1)的时间，但是最先想到的python内置的list对象是数组和链表的结合，入队时间是O(1)，出队时间却是O(n)（参见<a href="http://blog.csdn.net/digimon/article/details/7875781">这个链接</a>），所以用了collections.deque，一个双向链表，能实现入队和出队都是O(1)的时间。另外，由于我不需要优先级的概念，所以线性表足矣。以后如果要考虑优先级的话会改成堆。<br />
+<p>Manager内部有一个维护空闲线程对象的集合idle_thread，考虑到需要在O(1)的时间内添加或删除指定元素，用了python内置的set。set内部使用哈希实现的，所以时间效率基本能控制在O(1)左右。<br>
+还有一个已添加任务的队列queue。时间效率上，入队和出队都要求O(1)的时间，但是最先想到的python内置的list对象是数组和链表的结合，入队时间是O(1)，出队时间却是O(n)（参见<a href="http://blog.csdn.net/digimon/article/details/7875781">这个链接</a>），所以用了collections.deque，一个双向链表，能实现入队和出队都是O(1)的时间。另外，由于我不需要优先级的概念，所以线性表足矣。以后如果要考虑优先级的话会改成堆。<br>
 另外就是一个idle_thread的互斥量mutex。因为set对象是线程不安全的，所以在添加和删除元素的时候必须有互斥量保护。而collections.deque文档上说是线程安全的，所以就不需要互斥量之类的机制了。</p>
-
-<p>Manager的接口有：<br />
-hasIdleThread，返回线程池内是否还有空闲线程。<br />
-setThreadIdle，将某个线程加入到空闲线程池中。<br />
+<p>Manager的接口有：<br>
+hasIdleThread，返回线程池内是否还有空闲线程。<br>
+setThreadIdle，将某个线程加入到空闲线程池中。<br>
 startTask，先将task入队，然后看是否有空闲线程，如果有则在这个空闲线程上执行，没有的话就留在队列里等待下次调度。</p>
-
 <h2 id="thread"><strong>Thread</strong></h2>
-
-<p>在run方法内，通过Manager取出一个task执行，循环直到再没有新的task为止，之后跳出循环，将自己加入到空闲线程集合内。<br />
+<p>在run方法内，通过Manager取出一个task执行，循环直到再没有新的task为止，之后跳出循环，将自己加入到空闲线程集合内。<br>
 其实这样并不能保证线程一直存活，还是会有销毁和重建线程的动作，而且某些极端情况下还会很频繁。但是我当时的情况是要执行的任务会一次性全部加入到队列里，而下一次同样的添加动作会相隔比较长的时间，所以问题不大。更重要的是，当时只是为了确定QThreadPool是否有bug，这方面没有考虑地太多。</p>
-
 <p>下面是具体代码（遵循GPLv3协议）</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span><span class="lnt">43
-</span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
-</span><span class="lnt">47
-</span><span class="lnt">48
-</span><span class="lnt">49
-</span><span class="lnt">50
-</span><span class="lnt">51
-</span><span class="lnt">52
-</span><span class="lnt">53
-</span><span class="lnt">54
-</span><span class="lnt">55
-</span><span class="lnt">56
-</span><span class="lnt">57
-</span><span class="lnt">58
-</span><span class="lnt">59
-</span><span class="lnt">60
-</span><span class="lnt">61
-</span><span class="lnt">62
-</span><span class="lnt">63
-</span><span class="lnt">64
-</span><span class="lnt">65
-</span><span class="lnt">66
-</span><span class="lnt">67
-</span><span class="lnt">68
-</span><span class="lnt">69
-</span><span class="lnt">70
-</span><span class="lnt">71
-</span><span class="lnt">72
-</span><span class="lnt">73
-</span><span class="lnt">74
-</span><span class="lnt">75
-</span><span class="lnt">76
-</span><span class="lnt">77
-</span><span class="lnt">78
-</span><span class="lnt">79
-</span><span class="lnt">80
-</span><span class="lnt">81
-</span><span class="lnt">82
-</span><span class="lnt">83
-</span><span class="lnt">84
-</span><span class="lnt">85
-</span></pre></td>
-<td class="lntd">
-<pre class="chroma">#!/usr/bin/env python3
+<pre><code>#!/usr/bin/env python3
 
 import collections
 from PyQt4.QtCore import *
@@ -275,10 +170,10 @@ class Thread(QThread):
     super(Thread, self).__init__()
     self.manager = manager
     self.name = name
-
+	
     def __str__(self):
     return self.name
-
+	
     def run(self):
     while True:
         try:
@@ -289,66 +184,66 @@ class Thread(QThread):
             del task
         except IndexError:
         # There is no task
-        log.debug(self.name + &#39;No task, %s quiting&#39; % self)
+        log.debug(self.name + 'No task, %s quiting' % self)
         break
         except Exception as e:
         print(e)
-
+		
     self.manager.setThreadIdle(self)
 
 class Manager:
     def __init__(self, max_thread_count):
     self.max_thread_count = max_thread_count
-
-    self.threads = [Thread(self, &#39;thread_%d&#39; % i) for i in range(max_thread_count)]
-
+	
+    self.threads = [Thread(self, 'thread_%d' % i) for i in range(max_thread_count)]
+	
     self.idle_threads = set(self.threads)
     self.idle_threads_mutex = QMutex()
-
+	
     self.queue = collections.deque()
-
+	
     def hasIdleThread(self):
     return len(self.idle_threads) != 0
-
+    
     def setThreadIdle(self, thread):
     self.idle_threads_mutex.lock()
     self.idle_threads.add(thread)
-    log.debug(&#39;%s becomes idle&#39; % thread)
+    log.debug('%s becomes idle' % thread)
     self.idle_threads_mutex.unlock()
-
+    
     def startTask(self, task):
     self.enqueueTask(task)
-    log.debug(&#39;%s enqueued&#39; % task)
-
+    log.debug('%s enqueued' % task)
+	
     self.idle_threads_mutex.lock()
     try:
         thread = self.idle_threads.pop()
         thread.start()
-        log.debug(&#39;%s started&#39; % task)
+        log.debug('%s started' % task)
     except KeyError:
         # No idle thread
-        log.debug(&#39;No idle thread&#39;)
+        log.debug('No idle thread')
         pass
     except Exception as e:
         print(e)
     self.idle_threads_mutex.unlock()
-
+    
     def enqueueTask(self, task):
     self.queue.append(task)
-
+    
     def dequeueTask(self):
     return self.queue.popleft()
 
 class ThreadPool:
     def __init__(self, max_thread_count=2):
     self.manager = Manager(max_thread_count)
-
+	
     def start(self, task):
     if not isinstance(task, QRunnable):
-        raise TypeError(&#39;Task must be QRunnable object.&#39;)
-    self.manager.startTask(task)</pre></td></tr></table>
-</div>
-</div>
+        raise TypeError('Task must be QRunnable object.')
+    self.manager.startTask(task)
+</code></pre>
+
     </div>
 
     <div class="post-copyright">

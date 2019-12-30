@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.58.3 with theme even" />
+<meta name="generator" content="Hugo 0.62.0 with theme even" />
 
 
 <link rel="canonical" href="http://hbprotoss.github.io/post/guan-yu-pythonyi-chang-chu-li-liu-cheng/" />
@@ -46,16 +46,13 @@
 <meta property="article:modified_time" content="2014-10-23T00:00:00+00:00" />
 <meta itemprop="name" content="关于Python异常处理流程">
 <meta itemprop="description" content="1 2 3 4 5 6 7 8 9 10 11 12 13 def f(): try: print &#39;try&#39; raise NameError except Exception, e: print &#39;except&#39; raise KeyError else: print &#39;else&#39; raise IOError finally: print &#39;finally&#39; raise ValueError 在以上代码中，无论try里有没有异常，走得是except还是els">
-
-
 <meta itemprop="datePublished" content="2014-10-23T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2014-10-23T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="1414">
+<meta itemprop="wordCount" content="1416">
 
 
 
-<meta itemprop="keywords" content="," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="关于Python异常处理流程"/>
 <meta name="twitter:description" content="1 2 3 4 5 6 7 8 9 10 11 12 13 def f(): try: print &#39;try&#39; raise NameError except Exception, e: print &#39;except&#39; raise KeyError else: print &#39;else&#39; raise IOError finally: print &#39;finally&#39; raise ValueError 在以上代码中，无论try里有没有异常，走得是except还是els"/>
 
@@ -125,7 +122,7 @@
       <div class="post-meta">
         <span class="post-time"> 2014-10-23 </span>
         
-          <span class="more-meta"> 1414 words </span>
+          <span class="more-meta"> 1416 words </span>
           <span class="more-meta"> 3 mins read </span>
         
       </div>
@@ -134,13 +131,13 @@
     <div class="post-toc" id="post-toc">
   <h2 class="post-toc-title">Contents</h2>
   <div class="post-toc-content always-active">
-    
+    <nav id="TableOfContents"></nav>
   </div>
 </div>
     <div class="post-content">
       <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-python" data-lang="python"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -155,38 +152,34 @@
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">f</span><span class="p">():</span>
+<pre class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="p">)</span><span class="p">:</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">print</span> <span class="s1">&#39;try&#39;</span>
+        <span class="k">print</span> <span class="sa"></span><span class="s1">&#39;</span><span class="s1">try</span><span class="s1">&#39;</span>
         <span class="k">raise</span> <span class="ne">NameError</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">print</span> <span class="s1">&#39;except&#39;</span>
+        <span class="k">print</span> <span class="sa"></span><span class="s1">&#39;</span><span class="s1">except</span><span class="s1">&#39;</span>
         <span class="k">raise</span> <span class="ne">KeyError</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">print</span> <span class="s1">&#39;else&#39;</span>
+        <span class="k">print</span> <span class="sa"></span><span class="s1">&#39;</span><span class="s1">else</span><span class="s1">&#39;</span>
         <span class="k">raise</span> <span class="ne">IOError</span>
     <span class="k">finally</span><span class="p">:</span>
-        <span class="k">print</span> <span class="s1">&#39;finally&#39;</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span></code></pre></td></tr></table>
+        <span class="k">print</span> <span class="sa"></span><span class="s1">&#39;</span><span class="s1">finally</span><span class="s1">&#39;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>在以上代码中，无论try里有没有异常，走得是except还是else，最终抛出的都是finally中的ValueError。为此小记一下Python里的异常处理流程。</p>
-
+</div><p>在以上代码中，无论try里有没有异常，走得是except还是else，最终抛出的都是finally中的ValueError。为此小记一下Python里的异常处理流程。</p>
 <p>Python当前状态的异常信息存储在线程状态PyThreadState中，包括type, value, traceback。无论是主动raise还是bug触发，异常信息最终都会通过PyErr_Restore(Python/errors.c)被修改。</p>
-
 <p>异常处理的主要流程在PyEval_EvalFrameEx(Python/ceval.c)里，也是Python虚拟机的核心处理流程。</p>
-
 <p>先说明几个概念以便理解：</p>
-
 <ol>
 <li>Python虚拟机里PyEval_EvalFrameEx干的活就是物理机里CPU干的活，根据指令作出相应动作</li>
 <li>frame：一个函数的执行环境，可以理解为物理机上EBP, ESP等寄存器确定的函数调用栈，外加一点别的状态信息</li>
 <li>blockstack：也是一个栈，隶属于一个frame。每当遇到循环或者try异常处理块都会压入一个block对象，块流程完了弹出</li>
-
-<li><p>traceback：一个链表，记录发生异常时候的调用栈信息</p>
+<li>traceback：一个链表，记录发生异常时候的调用栈信息</li>
+</ol>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -267,99 +260,98 @@
 </span><span class="lnt">79
 </span><span class="lnt">80
 </span><span class="lnt">81
+</span><span class="lnt">82
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="n">PyObject</span> <span class="o">*</span>
+<pre class="chroma"><code class="language-c" data-lang="c">
+<span class="n">PyObject</span> <span class="o">*</span>
 <span class="nf">PyEval_EvalFrameEx</span><span class="p">(</span><span class="n">PyFrameObject</span> <span class="o">*</span><span class="n">f</span><span class="p">,</span> <span class="kt">int</span> <span class="n">throwflag</span><span class="p">)</span>
 <span class="p">{</span>
 
- <span class="k">register</span> <span class="k">enum</span> <span class="n">why_code</span> <span class="n">why</span><span class="p">;</span> <span class="c1">// 每一条指令处理完之后的状态，用来标记是否有异常
+     <span class="k">register</span> <span class="k">enum</span> <span class="n">why_code</span> <span class="n">why</span><span class="p">;</span> <span class="c1">// 每一条指令处理完之后的状态，用来标记是否有异常
 </span><span class="c1"></span>
- <span class="k">switch</span><span class="p">(</span><span class="n">opcode</span><span class="p">){}</span> <span class="c1">// 一个处理字节码指令的巨大switch
-</span><span class="c1"></span> <span class="p">...</span>
+     <span class="k">switch</span><span class="p">(</span><span class="n">opcode</span><span class="p">)</span><span class="p">{</span><span class="p">}</span> <span class="c1">// 一个处理字节码指令的巨大switch
+</span><span class="c1"></span>     <span class="p">.</span><span class="p">.</span><span class="p">.</span>
 
- <span class="c1">// 记录traceback，用来在异常最终没有处理时打印调用栈信息
-</span><span class="c1"></span> <span class="c1">// 这个why ==WHY_EXCEPTION条件很重要，如果在finally中发生异常，则why的值是WHY_RERAISE，因此不会进入这个条件记录新的traceback，而是直接覆盖当前的traceback，所以在最终的调用栈里，finally异常之前try/except/else中的异常信息也就被覆盖了
-</span><span class="c1"></span>   <span class="k">if</span> <span class="p">(</span><span class="n">why</span> <span class="o">==</span> <span class="n">WHY_EXCEPTION</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">PyTraceBack_Here</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
+     <span class="c1">// 记录traceback，用来在异常最终没有处理时打印调用栈信息
+</span><span class="c1"></span>     <span class="c1">// 这个why ==WHY_EXCEPTION条件很重要，如果在finally中发生异常，则why的值是WHY_RERAISE，因此不会进入这个条件记录新的traceback，而是直接覆盖当前的traceback，所以在最终的调用栈里，finally异常之前try/except/else中的异常信息也就被覆盖了
+</span><span class="c1"></span>       <span class="k">if</span> <span class="p">(</span><span class="n">why</span> <span class="o">=</span><span class="o">=</span> <span class="n">WHY_EXCEPTION</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">PyTraceBack_Here</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="p">;</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="n">tstate</span><span class="o">-&gt;</span><span class="n">c_tracefunc</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span>
-            <span class="n">call_exc_trace</span><span class="p">(</span><span class="n">tstate</span><span class="o">-&gt;</span><span class="n">c_tracefunc</span><span class="p">,</span>
-                           <span class="n">tstate</span><span class="o">-&gt;</span><span class="n">c_traceobj</span><span class="p">,</span> <span class="n">f</span><span class="p">);</span>
-    <span class="p">}</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">tstate</span><span class="o">-</span><span class="o">&gt;</span><span class="n">c_tracefunc</span> <span class="o">!</span><span class="o">=</span> <span class="nb">NULL</span><span class="p">)</span>
+                <span class="n">call_exc_trace</span><span class="p">(</span><span class="n">tstate</span><span class="o">-</span><span class="o">&gt;</span><span class="n">c_tracefunc</span><span class="p">,</span>
+                               <span class="n">tstate</span><span class="o">-</span><span class="o">&gt;</span><span class="n">c_traceobj</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span><span class="p">;</span>
+        <span class="p">}</span>
 
- <span class="c1">// 这种是finally中有异常的状态，reraise
-</span><span class="c1"></span>   <span class="k">if</span> <span class="p">(</span><span class="n">why</span> <span class="o">==</span> <span class="n">WHY_RERAISE</span><span class="p">)</span>
-        <span class="n">why</span> <span class="o">=</span> <span class="n">WHY_EXCEPTION</span><span class="p">;</span>
+     <span class="c1">// 这种是finally中有异常的状态，reraise
+</span><span class="c1"></span>       <span class="k">if</span> <span class="p">(</span><span class="n">why</span> <span class="o">=</span><span class="o">=</span> <span class="n">WHY_RERAISE</span><span class="p">)</span>
+            <span class="n">why</span> <span class="o">=</span> <span class="n">WHY_EXCEPTION</span><span class="p">;</span>
 
- <span class="c1">// 栈帧展开，主要为了在当前frame，沿着block栈向上寻找有没有try/except来接住异常
+     <span class="c1">// 栈帧展开，主要为了在当前frame，沿着block栈向上寻找有没有try/except来接住异常
 </span><span class="c1"></span>
 <span class="nl">fast_block_end</span><span class="p">:</span>
-    <span class="k">while</span> <span class="p">(</span><span class="n">why</span> <span class="o">!=</span> <span class="n">WHY_NOT</span> <span class="o">&amp;&amp;</span> <span class="n">f</span><span class="o">-&gt;</span><span class="n">f_iblock</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-        <span class="cm">/* Peek at the current block. */</span>
-        <span class="n">PyTryBlock</span> <span class="o">*</span><span class="n">b</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">f</span><span class="o">-&gt;</span><span class="n">f_blockstack</span><span class="p">[</span><span class="n">f</span><span class="o">-&gt;</span><span class="n">f_iblock</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+        <span class="k">while</span> <span class="p">(</span><span class="n">why</span> <span class="o">!</span><span class="o">=</span> <span class="n">WHY_NOT</span> <span class="o">&amp;</span><span class="o">&amp;</span> <span class="n">f</span><span class="o">-</span><span class="o">&gt;</span><span class="n">f_iblock</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="cm">/* Peek at the current block. */</span>
+            <span class="n">PyTryBlock</span> <span class="o">*</span><span class="n">b</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">f</span><span class="o">-</span><span class="o">&gt;</span><span class="n">f_blockstack</span><span class="p">[</span><span class="n">f</span><span class="o">-</span><span class="o">&gt;</span><span class="n">f_iblock</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="p">;</span>
 
-       <span class="p">......</span>
+           <span class="p">.</span><span class="p">.</span><span class="p">.</span><span class="p">.</span><span class="p">.</span><span class="p">.</span>
 
-        <span class="cm">/* Now we have to pop the block. */</span>
-        <span class="n">f</span><span class="o">-&gt;</span><span class="n">f_iblock</span><span class="o">--</span><span class="p">;</span>
+            <span class="cm">/* Now we have to pop the block. */</span>
+            <span class="n">f</span><span class="o">-</span><span class="o">&gt;</span><span class="n">f_iblock</span><span class="o">-</span><span class="o">-</span><span class="p">;</span>
 
-       <span class="p">......</span>
+           <span class="p">.</span><span class="p">.</span><span class="p">.</span><span class="p">.</span><span class="p">.</span><span class="p">.</span>
 
-      <span class="c1">// 在finally块中
-</span><span class="c1"></span>        <span class="k">if</span> <span class="p">(</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">b_type</span> <span class="o">==</span> <span class="n">SETUP_FINALLY</span> <span class="o">||</span>
-            <span class="p">......</span>
-            <span class="p">)</span> <span class="p">{</span>
+          <span class="c1">// 在finally块中
+</span><span class="c1"></span>            <span class="k">if</span> <span class="p">(</span><span class="n">b</span><span class="o">-</span><span class="o">&gt;</span><span class="n">b_type</span> <span class="o">=</span><span class="o">=</span> <span class="n">SETUP_FINALLY</span> <span class="o">|</span><span class="o">|</span>
+                <span class="p">.</span><span class="p">.</span><span class="p">.</span><span class="p">.</span><span class="p">.</span><span class="p">.</span>
+                <span class="p">)</span> <span class="p">{</span>
 
-           <span class="c1">// 有异常(raise xxxError或bug触发的情况)
-</span><span class="c1"></span>            <span class="k">if</span> <span class="p">(</span><span class="n">why</span> <span class="o">==</span> <span class="n">WHY_EXCEPTION</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">PyObject</span> <span class="o">*</span><span class="n">exc</span><span class="p">,</span> <span class="o">*</span><span class="n">val</span><span class="p">,</span> <span class="o">*</span><span class="n">tb</span><span class="p">;</span>
+               <span class="c1">// 有异常(raise xxxError或bug触发的情况)
+</span><span class="c1"></span>                <span class="k">if</span> <span class="p">(</span><span class="n">why</span> <span class="o">=</span><span class="o">=</span> <span class="n">WHY_EXCEPTION</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="n">PyObject</span> <span class="o">*</span><span class="n">exc</span><span class="p">,</span> <span class="o">*</span><span class="n">val</span><span class="p">,</span> <span class="o">*</span><span class="n">tb</span><span class="p">;</span>
 
-                <span class="c1">// 取出异常信息，压入执行栈
-</span><span class="c1"></span>                <span class="n">PyErr_Fetch</span><span class="p">(</span><span class="o">&amp;</span><span class="n">exc</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">val</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">tb</span><span class="p">);</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">tb</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
-                    <span class="n">Py_INCREF</span><span class="p">(</span><span class="n">Py_None</span><span class="p">);</span>
-                    <span class="n">PUSH</span><span class="p">(</span><span class="n">Py_None</span><span class="p">);</span>
-                <span class="p">}</span> <span class="k">else</span>
-                    <span class="n">PUSH</span><span class="p">(</span><span class="n">tb</span><span class="p">);</span>
-                <span class="n">PUSH</span><span class="p">(</span><span class="n">val</span><span class="p">);</span>
-                <span class="n">PUSH</span><span class="p">(</span><span class="n">exc</span><span class="p">);</span>
+                    <span class="c1">// 取出异常信息，压入执行栈
+</span><span class="c1"></span>                    <span class="n">PyErr_Fetch</span><span class="p">(</span><span class="o">&amp;</span><span class="n">exc</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">val</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">tb</span><span class="p">)</span><span class="p">;</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">tb</span> <span class="o">=</span><span class="o">=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="n">Py_INCREF</span><span class="p">(</span><span class="n">Py_None</span><span class="p">)</span><span class="p">;</span>
+                        <span class="n">PUSH</span><span class="p">(</span><span class="n">Py_None</span><span class="p">)</span><span class="p">;</span>
+                    <span class="p">}</span> <span class="k">else</span>
+                        <span class="n">PUSH</span><span class="p">(</span><span class="n">tb</span><span class="p">)</span><span class="p">;</span>
+                    <span class="n">PUSH</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="p">;</span>
+                    <span class="n">PUSH</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="k">else</span> <span class="p">{</span>
+                    <span class="c1">// return或者continue语句
+</span><span class="c1"></span>                    <span class="k">if</span> <span class="p">(</span><span class="n">why</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">WHY_RETURN</span> <span class="o">|</span> <span class="n">WHY_CONTINUE</span><span class="p">)</span><span class="p">)</span>
+                        <span class="n">PUSH</span><span class="p">(</span><span class="n">retval</span><span class="p">)</span><span class="p">;</span>
+                    <span class="n">v</span> <span class="o">=</span> <span class="n">PyInt_FromLong</span><span class="p">(</span><span class="p">(</span><span class="kt">long</span><span class="p">)</span><span class="n">why</span><span class="p">)</span><span class="p">;</span>
+                    <span class="n">PUSH</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="p">;</span>
+                <span class="p">}</span>
+               <span class="c1">// 跳转到END_FINALLY指令进行扫尾工作
+</span><span class="c1"></span>                <span class="n">why</span> <span class="o">=</span> <span class="n">WHY_NOT</span><span class="p">;</span>
+                <span class="n">JUMPTO</span><span class="p">(</span><span class="n">b</span><span class="o">-</span><span class="o">&gt;</span><span class="n">b_handler</span><span class="p">)</span><span class="p">;</span>
+                <span class="k">break</span><span class="p">;</span>
             <span class="p">}</span>
-            <span class="k">else</span> <span class="p">{</span>
-                <span class="c1">// return或者continue语句
-</span><span class="c1"></span>                <span class="k">if</span> <span class="p">(</span><span class="n">why</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">WHY_RETURN</span> <span class="o">|</span> <span class="n">WHY_CONTINUE</span><span class="p">))</span>
-                    <span class="n">PUSH</span><span class="p">(</span><span class="n">retval</span><span class="p">);</span>
-                <span class="n">v</span> <span class="o">=</span> <span class="n">PyInt_FromLong</span><span class="p">((</span><span class="kt">long</span><span class="p">)</span><span class="n">why</span><span class="p">);</span>
-                <span class="n">PUSH</span><span class="p">(</span><span class="n">v</span><span class="p">);</span>
-            <span class="p">}</span>
-           <span class="c1">// 跳转到END_FINALLY指令进行扫尾工作
-</span><span class="c1"></span>            <span class="n">why</span> <span class="o">=</span> <span class="n">WHY_NOT</span><span class="p">;</span>
-            <span class="n">JUMPTO</span><span class="p">(</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">b_handler</span><span class="p">);</span>
-            <span class="k">break</span><span class="p">;</span>
-        <span class="p">}</span>
-    <span class="p">}</span> <span class="cm">/* unwind stack */</span>
+        <span class="p">}</span> <span class="cm">/* unwind stack */</span>
 
- <span class="c1">// 函数返回值为null说明函数中发生异常未处理
+     <span class="c1">// 函数返回值为null说明函数中发生异常未处理
 </span><span class="c1"></span>
-<span class="k">if</span> <span class="p">(</span><span class="n">why</span> <span class="o">!=</span> <span class="n">WHY_RETURN</span><span class="p">)</span>
-    <span class="n">retval</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">why</span> <span class="o">!</span><span class="o">=</span> <span class="n">WHY_RETURN</span><span class="p">)</span>
+        <span class="n">retval</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
 
- <span class="c1">// 栈帧回退，取回上一层函数执行信息
+     <span class="c1">// 栈帧回退，取回上一层函数执行信息
 </span><span class="c1"></span>
-<span class="n">tstate</span><span class="o">-&gt;</span><span class="n">frame</span> <span class="o">=</span> <span class="n">f</span><span class="o">-&gt;</span><span class="n">f_back</span><span class="p">;</span>
+    <span class="n">tstate</span><span class="o">-</span><span class="o">&gt;</span><span class="n">frame</span> <span class="o">=</span> <span class="n">f</span><span class="o">-</span><span class="o">&gt;</span><span class="n">f_back</span><span class="p">;</span>
 
-<span class="k">return</span> <span class="n">retval</span><span class="p">;</span>
-<span class="p">}</span></code></pre></td></tr></table>
+    <span class="k">return</span> <span class="n">retval</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
-</div></li>
-</ol>
-
-<p>补充一点：</p>
-
+</div><p>补充一点：</p>
 <p>dis模块可以“反汇编”Python字节码变成“Python汇编语言”，下面就是示例代码的反汇编结果：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -406,9 +398,11 @@
 </span><span class="lnt">45
 </span><span class="lnt">46
 </span><span class="lnt">47
-</span></pre></td>
+</span><span class="lnt">48
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">  6           0 SETUP_FINALLY           63 (to 66)
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">
+  6           0 SETUP_FINALLY           63 (to 66)
               3 SETUP_EXCEPT            15 (to 21)
 
   7           6 LOAD_CONST               1 (&#39;try&#39;)
@@ -454,7 +448,8 @@
              74 RAISE_VARARGS            1
              77 END_FINALLY
              78 LOAD_CONST               0 (None)
-             81 RETURN_VALUE</pre></td></tr></table>
+             81 RETURN_VALUE
+</code></pre></td></tr></table>
 </div>
 </div>
     </div>

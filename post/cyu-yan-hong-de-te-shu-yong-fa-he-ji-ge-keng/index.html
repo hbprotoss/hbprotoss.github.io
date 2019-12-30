@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.58.3 with theme even" />
+<meta name="generator" content="Hugo 0.62.0 with theme even" />
 
 
 <link rel="canonical" href="http://hbprotoss.github.io/post/cyu-yan-hong-de-te-shu-yong-fa-he-ji-ge-keng/" />
@@ -46,16 +46,13 @@
 <meta property="article:modified_time" content="2013-07-13T00:00:00+00:00" />
 <meta itemprop="name" content="C语言宏的特殊用法和几个坑">
 <meta itemprop="description" content="总结一下C语言中宏的一些特殊用法和几个容易踩的坑。由于本文主要参考GCC文档，某些细节（如宏参数中的空格是否处理之类）在别的编译器可能有细微">
-
-
 <meta itemprop="datePublished" content="2013-07-13T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2013-07-13T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="1971">
+<meta itemprop="wordCount" content="1954">
 
 
 
-<meta itemprop="keywords" content="C,Macro," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="C,Macro," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="C语言宏的特殊用法和几个坑"/>
 <meta name="twitter:description" content="总结一下C语言中宏的一些特殊用法和几个容易踩的坑。由于本文主要参考GCC文档，某些细节（如宏参数中的空格是否处理之类）在别的编译器可能有细微"/>
 
@@ -125,7 +122,7 @@
       <div class="post-meta">
         <span class="post-time"> 2013-07-13 </span>
         
-          <span class="more-meta"> 1971 words </span>
+          <span class="more-meta"> 1954 words </span>
           <span class="more-meta"> 4 mins read </span>
         
       </div>
@@ -135,123 +132,109 @@
   <h2 class="post-toc-title">Contents</h2>
   <div class="post-toc-content always-active">
     <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#宏基础">宏基础</a>
-<ul>
-<li><a href="#1-标示符别名">1. 标示符别名</a></li>
-<li><a href="#2-宏函数">2. 宏函数</a></li>
-</ul></li>
-<li><a href="#宏特殊用法">宏特殊用法</a>
-<ul>
-<li><a href="#1-字符串化-stringification">1. 字符串化(Stringification)</a></li>
-<li><a href="#2-连接-concatenation">2. 连接(Concatenation)</a></li>
-</ul></li>
-<li><a href="#几个坑">几个坑</a>
-<ul>
-<li><a href="#1-语法问题">1. 语法问题</a></li>
-<li><a href="#2-算符优先级问题">2. 算符优先级问题</a></li>
-<li><a href="#3-分号吞噬问题">3. 分号吞噬问题</a></li>
-<li><a href="#4-宏参数重复调用">4. 宏参数重复调用</a></li>
-<li><a href="#5-对自身的递归引用">5. 对自身的递归引用</a></li>
-<li><a href="#6-宏参数预处理">6. 宏参数预处理</a></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#heading">宏基础</a>
+      <ul>
+        <li><a href="#1-">1. 标示符别名</a></li>
+        <li><a href="#2-">2. 宏函数</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-1">宏特殊用法</a>
+      <ul>
+        <li><a href="#1-stringification">1. 字符串化(Stringification)</a></li>
+        <li><a href="#2-concatenation">2. 连接(Concatenation)</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-2">几个坑</a>
+      <ul>
+        <li><a href="#1--1">1. 语法问题</a></li>
+        <li><a href="#2--1">2. 算符优先级问题</a></li>
+        <li><a href="#3-">3. 分号吞噬问题</a></li>
+        <li><a href="#4-">4. 宏参数重复调用</a></li>
+        <li><a href="#5-">5. 对自身的递归引用</a></li>
+        <li><a href="#6-">6. 宏参数预处理</a></li>
+      </ul>
+    </li>
+  </ul>
 </nav>
   </div>
 </div>
     <div class="post-content">
-      
-
-<p>总结一下C语言中宏的一些特殊用法和几个容易踩的坑。由于本文主要参考GCC文档，某些细节（如宏参数中的空格是否处理之类）在别的编译器可能有细微差别，请参考相应文档。</p>
-
-<h2 id="宏基础">宏基础</h2>
-
+      <p>总结一下C语言中宏的一些特殊用法和几个容易踩的坑。由于本文主要参考GCC文档，某些细节（如宏参数中的空格是否处理之类）在别的编译器可能有细微差别，请参考相应文档。</p>
+<h2 id="heading">宏基础</h2>
 <p>宏仅仅是在C预处理阶段的一种文本替换工具，编译完之后对二进制代码不可见。基本用法如下：</p>
-
-<h3 id="1-标示符别名">1. 标示符别名</h3>
+<h3 id="1-">1. 标示符别名</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#define BUFFER_SIZE 1024</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#</span><span class="cp">define BUFFER_SIZE 1024</span><span class="cp">
+</span></code></pre></td></tr></table>
 </div>
-</div>
-<p>预处理阶段，<code>foo = (char *) malloc (BUFFER_SIZE);</code>会被替换成<code>foo = (char *) malloc (1024);</code></p>
-
-<p>宏体换行需要在行末加反斜杠</p>
+</div><p>预处理阶段，<code>foo = (char *) malloc (BUFFER_SIZE);</code>会被替换成<code>foo = (char *) malloc (1024);</code></p>
+<p>宏体换行需要在行末加反斜杠\</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#define NUMBERS 1, \
-</span><span class="cp">                2, \
-</span><span class="cp">                3</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#</span><span class="cp">define NUMBERS 1, \</span><span class="cp">
+</span><span class="cp"></span><span class="cp">                2, \</span><span class="cp">
+</span><span class="cp"></span><span class="cp">                3</span><span class="cp">
+</span></code></pre></td></tr></table>
 </div>
-</div>
-<p>预处理阶段<code>int x[] = { NUMBERS };</code>会被扩展成<code>int x[] = { 1, 2, 3 };</code></p>
-
-<h3 id="2-宏函数">2. 宏函数</h3>
-
+</div><p>预处理阶段<code>int x[] = { NUMBERS };</code>会被扩展成<code>int x[] = { 1, 2, 3 };</code></p>
+<h3 id="2-">2. 宏函数</h3>
 <p>宏名之后带括号的宏被认为是宏函数。用法和普通函数一样，只不过在预处理阶段，宏函数会被展开。优点是没有普通函数保存寄存器和参数传递的开销，展开后的代码有利于CPU cache的利用和指令预测，速度快。缺点是可执行代码体积大。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#define min(X, Y)  ((X) &lt; (Y) ? (X) : (Y))</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#</span><span class="cp">define min(X, Y)  ((X) &lt; (Y) ? (X) : (Y))</span><span class="cp">
+</span></code></pre></td></tr></table>
 </div>
-</div>
-<p><code>y = min(1, 2);</code>会被扩展成<code>y = ((1) &lt; (2) ? (1) : (2));</code></p>
-
-<hr />
-
-<h2 id="宏特殊用法">宏特殊用法</h2>
-
-<h3 id="1-字符串化-stringification">1. 字符串化(Stringification)</h3>
-
+</div><p><code>y = min(1, 2);</code>会被扩展成<code>y = ((1) &lt; (2) ? (1) : (2));</code></p>
+<hr>
+<h2 id="heading-1">宏特殊用法</h2>
+<h3 id="1-stringification">1. 字符串化(Stringification)</h3>
 <p>在宏体中，如果宏参数前加个<code>#</code>，那么在宏体扩展的时候，宏参数会被扩展成字符串的形式。如：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#define WARN_IF(EXP) \
-</span><span class="cp">     do { if (EXP) \
-</span><span class="cp">             fprintf (stderr, &#34;Warning: &#34; #EXP &#34;\n&#34;); } \
-</span><span class="cp">     while (0)</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#</span><span class="cp">define WARN_IF(EXP) \</span><span class="cp">
+</span><span class="cp"></span><span class="cp">     do { if (EXP) \</span><span class="cp">
+</span><span class="cp"></span><span class="cp">             fprintf (stderr, &#34;Warning: &#34; #EXP &#34;\n&#34;); } \</span><span class="cp">
+</span><span class="cp"></span><span class="cp">     while (0)</span><span class="cp">
+</span></code></pre></td></tr></table>
 </div>
-</div>
-<p><code>WARN_IF (x == 0);</code>会被扩展成：</p>
+</div><p><code>WARN_IF (x == 0);</code>会被扩展成：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="k">do</span> <span class="p">{</span> <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">fprintf</span> <span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#34;Warning: &#34;</span> <span class="s">&#34;x == 0&#34;</span> <span class="s">&#34;</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span> <span class="p">}</span>
-<span class="k">while</span> <span class="p">(</span><span class="mi">0</span><span class="p">);</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="k">do</span> <span class="p">{</span> <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">=</span><span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">fprintf</span> <span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="sa"></span><span class="s">&#34;</span><span class="s">Warning: </span><span class="s">&#34;</span> <span class="sa"></span><span class="s">&#34;</span><span class="s">x == 0</span><span class="s">&#34;</span> <span class="sa"></span><span class="s">&#34;</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">)</span><span class="p">;</span> <span class="p">}</span>
+<span class="k">while</span> <span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="p">;</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>这种用法可以用在assert中，如果断言失败，可以将失败的语句输出到反馈信息中</p>
-
-<h3 id="2-连接-concatenation">2. 连接(Concatenation)</h3>
-
+</div><p>这种用法可以用在assert中，如果断言失败，可以将失败的语句输出到反馈信息中</p>
+<h3 id="2-concatenation">2. 连接(Concatenation)</h3>
 <p>在宏体中，如果宏体所在标示符中有<code>##</code>，那么在宏体扩展的时候，宏参数会被直接替换到标示符中。如：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -260,19 +243,19 @@
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#define COMMAND(NAME)  { #NAME, NAME ## _command }
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#</span><span class="cp">define COMMAND(NAME)  { #NAME, NAME ## _command }</span><span class="cp">
 </span><span class="cp"></span>
 <span class="k">struct</span> <span class="n">command</span>
 <span class="p">{</span>
     <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
-    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">function</span><span class="p">)</span> <span class="p">(</span><span class="kt">void</span><span class="p">);</span>
-<span class="p">};</span></code></pre></td></tr></table>
+    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">function</span><span class="p">)</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="p">;</span>
+<span class="p">}</span><span class="p">;</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>在宏扩展的时候</p>
+</div><p>在宏扩展的时候</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -280,18 +263,18 @@
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">command</span> <span class="n">commands</span><span class="p">[]</span> <span class="o">=</span>
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">command</span> <span class="n">commands</span><span class="p">[</span><span class="p">]</span> <span class="o">=</span>
 <span class="p">{</span>
-    <span class="n">COMMAND</span> <span class="p">(</span><span class="n">quit</span><span class="p">),</span>
-    <span class="n">COMMAND</span> <span class="p">(</span><span class="n">help</span><span class="p">),</span>
-    <span class="p">...</span>
-<span class="p">};</span></code></pre></td></tr></table>
+    <span class="n">COMMAND</span> <span class="p">(</span><span class="n">quit</span><span class="p">)</span><span class="p">,</span>
+    <span class="n">COMMAND</span> <span class="p">(</span><span class="n">help</span><span class="p">)</span><span class="p">,</span>
+    <span class="p">.</span><span class="p">.</span><span class="p">.</span>
+<span class="p">}</span><span class="p">;</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>会被扩展成：</p>
+</div><p>会被扩展成：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -299,88 +282,77 @@
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">command</span> <span class="n">commands</span><span class="p">[]</span> <span class="o">=</span>
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">command</span> <span class="n">commands</span><span class="p">[</span><span class="p">]</span> <span class="o">=</span>
 <span class="p">{</span>
-    <span class="p">{</span> <span class="s">&#34;quit&#34;</span><span class="p">,</span> <span class="n">quit_command</span> <span class="p">},</span>
-    <span class="p">{</span> <span class="s">&#34;help&#34;</span><span class="p">,</span> <span class="n">help_command</span> <span class="p">},</span>
-    <span class="p">...</span>
-<span class="p">};</span></code></pre></td></tr></table>
+    <span class="p">{</span> <span class="sa"></span><span class="s">&#34;</span><span class="s">quit</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">quit_command</span> <span class="p">}</span><span class="p">,</span>
+    <span class="p">{</span> <span class="sa"></span><span class="s">&#34;</span><span class="s">help</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">help_command</span> <span class="p">}</span><span class="p">,</span>
+    <span class="p">.</span><span class="p">.</span><span class="p">.</span>
+<span class="p">}</span><span class="p">;</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>这样就节省了大量时间，提高效率。</p>
-
-<hr />
-
-<h2 id="几个坑">几个坑</h2>
-
-<h3 id="1-语法问题">1. 语法问题</h3>
-
+</div><p>这样就节省了大量时间，提高效率。</p>
+<hr>
+<h2 id="heading-2">几个坑</h2>
+<h3 id="1--1">1. 语法问题</h3>
 <p>由于是纯文本替换，C预处理器不对宏体做任何语法检查，像缺个括号、少个分号神马的预处理器是不管的。这里要格外小心，由此可能引出各种奇葩的问题，一下还很难找到根源。</p>
-
-<h3 id="2-算符优先级问题">2. 算符优先级问题</h3>
-
+<h3 id="2--1">2. 算符优先级问题</h3>
 <p>不仅宏体是纯文本替换，宏参数也是纯文本替换。有以下一段简单的宏，实现乘法：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#define MULTIPLY(x, y) x * y</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#</span><span class="cp">define MULTIPLY(x, y) x * y</span><span class="cp">
+</span></code></pre></td></tr></table>
 </div>
-</div>
-<p><code>MULTIPLY(1, 2)</code>没问题，会正常展开成<code>1 * 2</code>。有问题的是这种表达式<code>MULTIPLY(1+2, 3)</code>，展开后成了<code>1+2 * 3</code>，显然优先级错了。</p>
-
+</div><p><code>MULTIPLY(1, 2)</code>没问题，会正常展开成<code>1 * 2</code>。有问题的是这种表达式<code>MULTIPLY(1+2, 3)</code>，展开后成了<code>1+2 * 3</code>，显然优先级错了。</p>
 <p>在宏体中，给引用的参数加个括号就能避免这问题。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#define MULTIPLY(x, y) (x) * (y)</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#</span><span class="cp">define MULTIPLY(x, y) (x) * (y)</span><span class="cp">
+</span></code></pre></td></tr></table>
 </div>
-</div>
-<p><code>MULTIPLY(1+2, 3)</code>就会被展开成<code>(1+2) * (3)</code>，优先级正常了。</p>
-
+</div><p><code>MULTIPLY(1+2, 3)</code>就会被展开成<code>(1+2) * (3)</code>，优先级正常了。</p>
 <p>其实这个问题和下面要说到的某些问题都属于由于纯文本替换而导致的语义破坏问题，要格外小心。</p>
-
-<h3 id="3-分号吞噬问题">3. 分号吞噬问题</h3>
-
+<h3 id="3-">3. 分号吞噬问题</h3>
 <p>有如下宏定义：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#define SKIP_SPACES(p, limit)  \
-</span><span class="cp">     { char *lim = (limit);         \
-</span><span class="cp">       while (p &lt; lim) {            \
-</span><span class="cp">         if (*p++ != &#39; &#39;) {         \
-</span><span class="cp">           p--; break; }}}</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#</span><span class="cp">define SKIP_SPACES(p, limit)  \</span><span class="cp">
+</span><span class="cp"></span><span class="cp">     { char *lim = (limit);         \</span><span class="cp">
+</span><span class="cp"></span><span class="cp">       while (p &lt; lim) {            \</span><span class="cp">
+</span><span class="cp"></span><span class="cp">         if (*p++ != &#39; &#39;) {         \</span><span class="cp">
+</span><span class="cp"></span><span class="cp">           p--; break; }}}</span><span class="cp">
+</span></code></pre></td></tr></table>
 </div>
-</div>
-<p>假设有如下一段代码：</p>
+</div><p>假设有如下一段代码：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">p</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
-   <span class="n">SKIP_SPACES</span> <span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">lim</span><span class="p">);</span>
-<span class="k">else</span> <span class="p">...</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">p</span> <span class="o">!</span><span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+   <span class="n">SKIP_SPACES</span> <span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">lim</span><span class="p">)</span><span class="p">;</span>
+<span class="k">else</span> <span class="p">.</span><span class="p">.</span><span class="p">.</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>一编译，GCC报<code>error: ‘else’ without a previous ‘if’</code>。原来这个看似是一个函数的宏被展开后是一段大括号括起来的代码块，加上分号之后这个if逻辑块就结束了，所以编译器发现这个else没有对应的if。</p>
-
+</div><p>一编译，GCC报<code>error: ‘else’ without a previous ‘if’</code>。原来这个看似是一个函数的宏被展开后是一段大括号括起来的代码块，加上分号之后这个if逻辑块就结束了，所以编译器发现这个else没有对应的if。</p>
 <p>这个问题一般用<code>do ... while(0)</code>的形式来解决：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -388,105 +360,90 @@
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#define SKIP_SPACES(p, limit)     \
-</span><span class="cp">     do { char *lim = (limit);         \
-</span><span class="cp">          while (p &lt; lim) {            \
-</span><span class="cp">            if (*p++ != &#39; &#39;) {         \
-</span><span class="cp">              p--; break; }}}          \
-</span><span class="cp">     while (0)</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#</span><span class="cp">define SKIP_SPACES(p, limit)     \</span><span class="cp">
+</span><span class="cp"></span><span class="cp">     do { char *lim = (limit);         \</span><span class="cp">
+</span><span class="cp"></span><span class="cp">          while (p &lt; lim) {            \</span><span class="cp">
+</span><span class="cp"></span><span class="cp">            if (*p++ != &#39; &#39;) {         \</span><span class="cp">
+</span><span class="cp"></span><span class="cp">              p--; break; }}}          \</span><span class="cp">
+</span><span class="cp"></span><span class="cp">     while (0)</span><span class="cp">
+</span></code></pre></td></tr></table>
 </div>
-</div>
-<p>展开后就成了</p>
+</div><p>展开后就成了</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">p</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="k">do</span> <span class="p">...</span> <span class="k">while</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
-<span class="k">else</span> <span class="p">...</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">p</span> <span class="o">!</span><span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">do</span> <span class="p">.</span><span class="p">.</span><span class="p">.</span> <span class="k">while</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="p">;</span>
+<span class="k">else</span> <span class="p">.</span><span class="p">.</span><span class="p">.</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>这样就消除了分号吞噬问题。</p>
-
+</div><p>这样就消除了分号吞噬问题。</p>
 <p>这个技巧在Linux内核源码里很常见，比如这个置位宏<code>#define SET_REG_BIT(reg, bit)              do { (reg |= (1 &lt;&lt; (bit))); } while (0)</code>(位于arch/mips/include/asm/mach-pnx833x/gpio.h)</p>
-
-<h3 id="4-宏参数重复调用">4. 宏参数重复调用</h3>
-
+<h3 id="4-">4. 宏参数重复调用</h3>
 <p>有如下宏定义：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#define min(X, Y)  ((X) &lt; (Y) ? (X) : (Y))</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#</span><span class="cp">define min(X, Y)  ((X) &lt; (Y) ? (X) : (Y))</span><span class="cp">
+</span></code></pre></td></tr></table>
 </div>
-</div>
-<p>当有如下调用时<code>next = min (x + y, foo (z));</code>，宏体被展开成<code>next = ((x + y) &lt; (foo (z)) ? (x + y) : (foo (z)));</code>，可以看到，<code>foo(z)</code>被重复调用了两次，做了重复计算。更严重的是，如果foo是不可重入的(foo内修改了全局或静态变量)，程序会产生逻辑错误。</p>
-
+</div><p>当有如下调用时<code>next = min (x + y, foo (z));</code>，宏体被展开成<code>next = ((x + y) &lt; (foo (z)) ? (x + y) : (foo (z)));</code>，可以看到，<code>foo(z)</code>被重复调用了两次，做了重复计算。更严重的是，如果foo是不可重入的(foo内修改了全局或静态变量)，程序会产生逻辑错误。</p>
 <p>所以，尽量不要在宏参数中传入函数调用。</p>
-
-<h3 id="5-对自身的递归引用">5. 对自身的递归引用</h3>
-
+<h3 id="5-">5. 对自身的递归引用</h3>
 <p>有如下宏定义：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#define foo (4 + foo)</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#</span><span class="cp">define foo (4 + foo)</span><span class="cp">
+</span></code></pre></td></tr></table>
 </div>
-</div>
-<p>按前面的理解，<code>(4 + foo)</code>会展开成<code>(4 + (4 + foo))</code>，然后一直展开下去，直至内存耗尽。但是，预处理器采取的策略是<strong><em>只展开一次</em></strong>。也就是说，<code>foo</code>只会展开成<code>(4 + foo)</code>，而展开之后<code>foo</code>的含义就要根据上下文来确定了。</p>
-
+</div><p>按前面的理解，<code>(4 + foo)</code>会展开成<code>(4 + (4 + foo))</code>，然后一直展开下去，直至内存耗尽。但是，预处理器采取的策略是<em><strong>只展开一次</strong></em>。也就是说，<code>foo</code>只会展开成<code>(4 + foo)</code>，而展开之后<code>foo</code>的含义就要根据上下文来确定了。</p>
 <p>对于以下的交叉引用，宏体也只会展开一次。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#define x (4 + y)
-</span><span class="cp">#define y (2 * x)</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#</span><span class="cp">define x (4 + y)</span><span class="cp">
+</span><span class="cp"></span><span class="cp">#</span><span class="cp">define y (2 * x)</span><span class="cp">
+</span></code></pre></td></tr></table>
 </div>
-</div>
-<p><code>x</code>展开成<code>(4 + y) -&gt; (4 + (2 * x))</code>，<code>y</code>展开成<code>(2 * x) -&gt; (2 * (4 + y))</code>。</p>
-
+</div><p><code>x</code>展开成<code>(4 + y) -&gt; (4 + (2 * x))</code>，<code>y</code>展开成<code>(2 * x) -&gt; (2 * (4 + y))</code>。</p>
 <p><strong>注意，这是极不推荐的写法，程序可读性极差。</strong></p>
-
-<h3 id="6-宏参数预处理">6. 宏参数预处理</h3>
-
+<h3 id="6-">6. 宏参数预处理</h3>
 <p>宏参数中若包含另外的宏，那么宏参数在被代入到宏体之前会做一次完全的展开，除非宏体中含有<code>#</code>或<code>##</code>。</p>
-
 <p>有如下宏定义：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#define AFTERX(x) X_ ## x
-</span><span class="cp">#define XAFTERX(x) AFTERX(x)
-</span><span class="cp">#define TABLESIZE 1024
-</span><span class="cp">#define BUFSIZE TABLESIZE</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#</span><span class="cp">define AFTERX(x) X_ ## x</span><span class="cp">
+</span><span class="cp"></span><span class="cp">#</span><span class="cp">define XAFTERX(x) AFTERX(x)</span><span class="cp">
+</span><span class="cp"></span><span class="cp">#</span><span class="cp">define TABLESIZE 1024</span><span class="cp">
+</span><span class="cp"></span><span class="cp">#</span><span class="cp">define BUFSIZE TABLESIZE</span><span class="cp">
+</span></code></pre></td></tr></table>
 </div>
-</div>
-<ul>
+</div><ul>
 <li><code>AFTERX(BUFSIZE)</code>会被展开成<code>X_BUFSIZE</code>。因为宏体中含有<code>##</code>，宏参数直接代入宏体。</li>
 <li><code>XAFTERX(BUFSIZE)</code>会被展开成<code>X_1024</code>。因为<code>XAFTERX(x)</code>的宏体是<code>AFTERX(x)</code>，并没有<code>#</code>或<code>##</code>，所以<code>BUFSIZE</code>在代入前会被完全展开成<code>1024</code>，然后才代入宏体，变成<code>X_1024</code>。</li>
 </ul>
-
 <p>-EOF-</p>
-
-<hr />
-
+<hr>
 <p>参考资料：</p>
-
-<p><a href="http://gcc.gnu.org/onlinedocs/cpp/Macros.html">http://gcc.gnu.org/onlinedocs/cpp/Macros.html</a></p>
+<p><a href="http://gcc.gnu.org/onlinedocs/cpp/Macros.html" title="">http://gcc.gnu.org/onlinedocs/cpp/Macros.html</a></p>
 
     </div>
 

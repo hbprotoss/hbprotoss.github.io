@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.58.3 with theme even" />
+<meta name="generator" content="Hugo 0.62.0 with theme even" />
 
 
 <link rel="canonical" href="http://hbprotoss.github.io/post/shang-chuan-pythonbao-dao-pypi/" />
@@ -46,16 +46,13 @@
 <meta property="article:modified_time" content="2017-09-30T00:00:00+00:00" />
 <meta itemprop="name" content="上传python包到pypi">
 <meta itemprop="description" content="注册账号 正式仓库: PyPI Live 测试仓库: PyPI Test 创建.pypirc文件 1 2 3 4 5 6 7 8 9 10 11 12 13 14 [distutils] index-servers = pypi pypitest [pypi] repository=https://upload.pypi.org/legacy/ username=your_username password=your_password [pypitest] repository=https://test.pypi.org/legacy/ username=your_username password=your_password 保存到~/.pypirc 1 chmod">
-
-
 <meta itemprop="datePublished" content="2017-09-30T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2017-09-30T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="252">
+<meta itemprop="wordCount" content="253">
 
 
 
-<meta itemprop="keywords" content="Python,PyPi," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="Python,PyPi," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="上传python包到pypi"/>
 <meta name="twitter:description" content="注册账号 正式仓库: PyPI Live 测试仓库: PyPI Test 创建.pypirc文件 1 2 3 4 5 6 7 8 9 10 11 12 13 14 [distutils] index-servers = pypi pypitest [pypi] repository=https://upload.pypi.org/legacy/ username=your_username password=your_password [pypitest] repository=https://test.pypi.org/legacy/ username=your_username password=your_password 保存到~/.pypirc 1 chmod"/>
 
@@ -125,7 +122,7 @@
       <div class="post-meta">
         <span class="post-time"> 2017-09-30 </span>
         
-          <span class="more-meta"> 252 words </span>
+          <span class="more-meta"> 253 words </span>
           <span class="more-meta"> 1 min read </span>
         
       </div>
@@ -135,40 +132,35 @@
   <h2 class="post-toc-title">Contents</h2>
   <div class="post-toc-content always-active">
     <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#注册账号">注册账号</a></li>
-<li><a href="#创建-pypirc文件">创建.pypirc文件</a></li>
-<li><a href="#准备工作">准备工作</a>
-<ul>
-<li><a href="#setup-py">setup.py</a></li>
-<li><a href="#setup-cfg">setup.cfg</a></li>
-</ul></li>
-<li><a href="#打包上传">打包上传</a>
-<ul>
-<li><a href="#正式">正式</a></li>
-<li><a href="#测试">测试</a></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#heading">注册账号</a></li>
+    <li><a href="#pypirc">创建.pypirc文件</a></li>
+    <li><a href="#heading-1">准备工作</a>
+      <ul>
+        <li><a href="#setuppy">setup.py</a></li>
+        <li><a href="#setupcfg">setup.cfg</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-2">打包上传</a>
+      <ul>
+        <li><a href="#heading-3">正式</a></li>
+        <li><a href="#heading-4">测试</a></li>
+      </ul>
+    </li>
+  </ul>
 </nav>
   </div>
 </div>
     <div class="post-content">
-      
-
-<h2 id="注册账号">注册账号</h2>
-
+      <h2 id="heading">注册账号</h2>
 <ul>
 <li>正式仓库: <a href="https://pypi.python.org/pypi?%3Aaction=register_form">PyPI Live</a></li>
 <li>测试仓库: <a href="https://testpypi.python.org/pypi?%3Aaction=register_form">PyPI Test</a></li>
 </ul>
-
-<h2 id="创建-pypirc文件">创建.pypirc文件</h2>
+<h2 id="pypirc">创建.pypirc文件</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -182,9 +174,9 @@
 </span><span class="lnt">12
 </span><span class="lnt">13
 </span><span class="lnt">14
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">[distutils]
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">[distutils]
 index-servers =
   pypi
   pypitest
@@ -197,24 +189,23 @@ password=your_password
 [pypitest]
 repository=https://test.pypi.org/legacy/
 username=your_username
-password=your_password</pre></td></tr></table>
+password=your_password
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>保存到<code>~/.pypirc</code></p>
+</div><p>保存到<code>~/.pypirc</code></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
-</span></pre></td>
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">chmod 600 ~/.pypirc</pre></td></tr></table>
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">chmod 600 ~/.pypirc
+</code></pre></td></tr></table>
 </div>
-</div>
-<h2 id="准备工作">准备工作</h2>
-
+</div><h2 id="heading-1">准备工作</h2>
 <p>工作目录结构</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -224,9 +215,9 @@ password=your_password</pre></td></tr></table>
 </span><span class="lnt"> 8
 </span><span class="lnt"> 9
 </span><span class="lnt">10
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">root-dir/   # arbitrary working directory name
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">root-dir/   # arbitrary working directory name
   setup.py
   setup.cfg
   LICENSE.txt
@@ -235,13 +226,13 @@ password=your_password</pre></td></tr></table>
     __init__.py
     foo.py
     bar.py
-    baz.py</pre></td></tr></table>
+    baz.py
+</code></pre></td></tr></table>
 </div>
-</div>
-<h3 id="setup-py">setup.py</h3>
+</div><h3 id="setuppy">setup.py</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-py" data-lang="py"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -254,62 +245,59 @@ password=your_password</pre></td></tr></table>
 </span><span class="lnt">11
 </span><span class="lnt">12
 </span><span class="lnt">13
+</span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-py" data-lang="py"><span class="kn">from</span> <span class="nn">distutils.core</span> <span class="kn">import</span> <span class="n">setup</span>
 <span class="n">setup</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;protoss-pypi&#39;</span><span class="p">,</span>
-    <span class="n">packages</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;protoss-pypi&#39;</span><span class="p">],</span>
-    <span class="n">version</span><span class="o">=</span><span class="s1">&#39;0.1.1&#39;</span><span class="p">,</span>
-    <span class="n">description</span><span class="o">=</span><span class="s1">&#39;A random test lib&#39;</span><span class="p">,</span>
-    <span class="n">author</span><span class="o">=</span><span class="s1">&#39;hbprotoss&#39;</span><span class="p">,</span>
-    <span class="n">author_email</span><span class="o">=</span><span class="s1">&#39;gamespy1991@gmail.com&#39;</span><span class="p">,</span>
-    <span class="n">url</span><span class="o">=</span><span class="s1">&#39;https://github.com/hbprotoss/pypitest&#39;</span><span class="p">,</span>
-    <span class="n">download_url</span><span class="o">=</span><span class="s1">&#39;https://github.com/hbprotoss/pypitest/archive/master.zip&#39;</span><span class="p">,</span>
-    <span class="n">keywords</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;testing&#39;</span><span class="p">,</span> <span class="s1">&#39;logging&#39;</span><span class="p">,</span> <span class="s1">&#39;example&#39;</span><span class="p">],</span>  <span class="c1"># arbitrary keywords</span>
-    <span class="n">classifiers</span><span class="o">=</span><span class="p">[],</span>
-<span class="p">)</span></code></pre></td></tr></table>
-</div>
-</div>
-<p>name和packages保持一致，url写git仓库地址，download_url写源码包地址</p>
+    <span class="n">name</span><span class="o">=</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">protoss-pypi</span><span class="s1">&#39;</span><span class="p">,</span>
+    <span class="n">packages</span><span class="o">=</span><span class="p">[</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">protoss-pypi</span><span class="s1">&#39;</span><span class="p">]</span><span class="p">,</span>
+    <span class="n">version</span><span class="o">=</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">0.1.1</span><span class="s1">&#39;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">A random test lib</span><span class="s1">&#39;</span><span class="p">,</span>
+    <span class="n">author</span><span class="o">=</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">hbprotoss</span><span class="s1">&#39;</span><span class="p">,</span>
+    <span class="n">author_email</span><span class="o">=</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">gamespy1991@gmail.com</span><span class="s1">&#39;</span><span class="p">,</span>
+    <span class="n">url</span><span class="o">=</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">https://github.com/hbprotoss/pypitest</span><span class="s1">&#39;</span><span class="p">,</span>
+    <span class="n">download_url</span><span class="o">=</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">https://github.com/hbprotoss/pypitest/archive/master.zip</span><span class="s1">&#39;</span><span class="p">,</span>
+    <span class="n">keywords</span><span class="o">=</span><span class="p">[</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">testing</span><span class="s1">&#39;</span><span class="p">,</span> <span class="sa"></span><span class="s1">&#39;</span><span class="s1">logging</span><span class="s1">&#39;</span><span class="p">,</span> <span class="sa"></span><span class="s1">&#39;</span><span class="s1">example</span><span class="s1">&#39;</span><span class="p">]</span><span class="p">,</span>  <span class="c1"># arbitrary keywords</span>
+    <span class="n">classifiers</span><span class="o">=</span><span class="p">[</span><span class="p">]</span><span class="p">,</span>
+<span class="p">)</span>
 
-<h3 id="setup-cfg">setup.cfg</h3>
-
+</code></pre></td></tr></table>
+</div>
+</div><p>name和packages保持一致，url写git仓库地址，download_url写源码包地址</p>
+<h3 id="setupcfg">setup.cfg</h3>
 <p>markdown写的readme文件需要显示指定</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
-</span></pre></td>
-<td class="lntd">
-<pre class="chroma">[metadata]
-description-file = README.md</pre></td></tr></table>
-</div>
-</div>
-<h2 id="打包上传">打包上传</h2>
-
-<h3 id="正式">正式</h3>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell">python setup.py sdist upload -r pypi</code></pre></td></tr></table>
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">[metadata]
+description-file = README.md
+</code></pre></td></tr></table>
 </div>
-</div>
-<h3 id="测试">测试</h3>
+</div><h2 id="heading-2">打包上传</h2>
+<h3 id="heading-3">正式</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell">python setup.py sdist upload -r pypitest</code></pre></td></tr></table>
+<pre class="chroma"><code class="language-shell" data-lang="shell">python setup.py sdist upload -r pypi
+</code></pre></td></tr></table>
 </div>
+</div><h3 id="heading-4">测试</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">python setup.py sdist upload -r pypitest
+</code></pre></td></tr></table>
 </div>
-<hr />
-
+</div><hr>
 <p>参考资料：</p>
-
 <p><a href="http://peterdowns.com/posts/first-time-with-pypi.html">http://peterdowns.com/posts/first-time-with-pypi.html</a></p>
 
     </div>

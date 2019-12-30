@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Python on hbprotoss的博客</title>
@@ -89,7 +89,7 @@
       <pubDate>Mon, 18 Mar 2013 00:00:00 +0000</pubDate>
       
       <guid>http://hbprotoss.github.io/post/pythonde-importji-zhi/</guid>
-      <description>同一个模块以相同的模块名被导入时，模块内的代码只执行一遍（模块名必须相同）。 例： import/ test.py mo/ A.py 1 2 3 4 # A.py a = 1 print(a) a += 1 1 2 3 4 5 6 7 8 9 10 # test.py #!/usr/bin/env</description>
+      <description>同一个模块以相同的模块名被导入时，模块内的代码只执行一遍（模块名必须相同）。 例： import/ test.py mo/ A.py # A.py a = 1 print(a) a += 1 # test.py #!/usr/bin/env python3 import os import sys import mo.A import mo.A path = os.path.abspath(&#39;./mo&#39;) print(path) sys.path.append(path)</description>
     </item>
     
     <item>

@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.58.3 with theme even" />
+<meta name="generator" content="Hugo 0.62.0 with theme even" />
 
 
 <link rel="canonical" href="http://hbprotoss.github.io/post/redis%E5%BB%B6%E8%BF%9F%E9%97%AE%E9%A2%98/" />
@@ -46,16 +46,13 @@
 <meta property="article:modified_time" content="2018-11-23T15:59:00+08:00" />
 <meta itemprop="name" content="Redis延迟问题">
 <meta itemprop="description" content="redis延迟 慢查询语句 SORT, LREM, SUNION, KEYS fork 生成RDB，或者rewrite AOF的时候，会fork一个进程开搞。fork的时候会复制页表，大内存的实例">
-
-
 <meta itemprop="datePublished" content="2018-11-23T15:59:00&#43;08:00" />
 <meta itemprop="dateModified" content="2018-11-23T15:59:00&#43;08:00" />
 <meta itemprop="wordCount" content="586">
 
 
 
-<meta itemprop="keywords" content="Redis,Database," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="Redis,Database," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Redis延迟问题"/>
 <meta name="twitter:description" content="redis延迟 慢查询语句 SORT, LREM, SUNION, KEYS fork 生成RDB，或者rewrite AOF的时候，会fork一个进程开搞。fork的时候会复制页表，大内存的实例"/>
 
@@ -135,64 +132,49 @@
   <h2 class="post-toc-title">Contents</h2>
   <div class="post-toc-content always-active">
     <nav id="TableOfContents">
-<ul>
-<li><a href="#redis延迟">redis延迟</a>
-<ul>
-<li><a href="#慢查询语句">慢查询语句</a></li>
-<li><a href="#fork">fork</a></li>
-<li><a href="#huge-page">huge page</a></li>
-<li><a href="#swap">swap</a></li>
-<li><a href="#aof">aof</a></li>
-<li><a href="#大量key过期">大量key过期</a></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#heading">慢查询语句</a></li>
+    <li><a href="#fork">fork</a></li>
+    <li><a href="#huge-page">huge page</a></li>
+    <li><a href="#swap">swap</a></li>
+    <li><a href="#aof">aof</a></li>
+    <li><a href="#key">大量key过期</a></li>
+  </ul>
 </nav>
   </div>
 </div>
     <div class="post-content">
-      
-
-<h1 id="redis延迟">redis延迟</h1>
-
-<h2 id="慢查询语句">慢查询语句</h2>
-
+      <h1 id="redis">redis延迟</h1>
+<h2 id="heading">慢查询语句</h2>
 <p>SORT, LREM, SUNION, KEYS</p>
-
 <h2 id="fork">fork</h2>
-
 <p>生成RDB，或者rewrite AOF的时候，会fork一个进程开搞。fork的时候会复制页表，大内存的实例复制耗时不能忽略，可能会有上百ms的延迟。
 Linux默认page size 4k，页表按树状组织，至少包含一个页面指针，20G/4K * 8=40M，40M内存复制是需要几十到上百ms的时间的，如果是虚拟机更慢</p>
-
 <h2 id="huge-page">huge page</h2>
-
 <p>Linux下，当进程占用内存很多时，会产生很多的page，造成页表大小爆炸，Linux会合并这些连续的small page，形成huge page，以减少页表大小，减少虚拟地址到物理地址的映射时间。这样的问题是，redis在做fork的时候，copy on write也会复制很大一块page出来，造成内存占用上升，甚至完全复制了一个进程内存。
 这个时候执行以下命令禁用transparent huge page，不让small page自动合并成huge page</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="nb">echo</span> never &gt; /sys/kernel/mm/transparent_hugepage/enabled</code></pre></td></tr></table>
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="nb">echo</span> never &gt; /sys/kernel/mm/transparent_hugepage/enabled
+</code></pre></td></tr></table>
 </div>
-</div>
-<h2 id="swap">swap</h2>
-
+</div><h2 id="swap">swap</h2>
 <p>物理内存不够用，有磁盘swap</p>
-
 <h2 id="aof">aof</h2>
-
 <p>fsync会导致阻塞，一般每秒fsync一次(可以选择不fsync，甚至每条写入命令都fsync)
 strace可以跟踪系统调用</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell">strace -p <span class="k">$(</span>pidof redis-server<span class="k">)</span> -T -e <span class="nv">trace</span><span class="o">=</span>fdatasync,write</code></pre></td></tr></table>
+<pre class="chroma"><code class="language-shell" data-lang="shell">strace -p <span class="k">$(</span>pidof redis-server<span class="k">)</span> -T -e <span class="nv">trace</span><span class="o">=</span>fdatasync,write
+</code></pre></td></tr></table>
 </div>
-</div>
-<h2 id="大量key过期">大量key过期</h2>
-
+</div><h2 id="key">大量key过期</h2>
 <p>redis的被动过期策略，会在每条命令执行完之后，随机选择几个key，看看是否有过期的，如果有就清理掉，并且比例超过25%的时候会继续执行这个清理操作。当同一时间有大量key过期时，这个操作就很耗时</p>
 
     </div>

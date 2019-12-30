@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.58.3 with theme even" />
+<meta name="generator" content="Hugo 0.62.0 with theme even" />
 
 
 <link rel="canonical" href="http://hbprotoss.github.io/post/java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%80%BB%E7%BB%93/" />
@@ -46,16 +46,13 @@
 <meta property="article:modified_time" content="2018-09-27T09:51:48+08:00" />
 <meta itemprop="name" content="Java多线程">
 <meta itemprop="description" content="零散笔记的流水账式总结，有错误之处请指正😂 部分图片资源来自网络，侵删 1. 内存模型 1.1 硬件内存模型 CPU不能直接对内存进行操作，必须将内存中的值读">
-
-
 <meta itemprop="datePublished" content="2018-09-27T09:51:48&#43;08:00" />
 <meta itemprop="dateModified" content="2018-09-27T09:51:48&#43;08:00" />
-<meta itemprop="wordCount" content="7494">
+<meta itemprop="wordCount" content="7492">
 
 
 
-<meta itemprop="keywords" content="Java,Concurrent," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="Java,Concurrent," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Java多线程"/>
 <meta name="twitter:description" content="零散笔记的流水账式总结，有错误之处请指正😂 部分图片资源来自网络，侵删 1. 内存模型 1.1 硬件内存模型 CPU不能直接对内存进行操作，必须将内存中的值读"/>
 
@@ -125,7 +122,7 @@
       <div class="post-meta">
         <span class="post-time"> 2018-09-27 </span>
         
-          <span class="more-meta"> 7494 words </span>
+          <span class="more-meta"> 7492 words </span>
           <span class="more-meta"> 15 mins read </span>
         
       </div>
@@ -135,163 +132,122 @@
   <h2 class="post-toc-title">Contents</h2>
   <div class="post-toc-content always-active">
     <nav id="TableOfContents">
-<ul>
-<li><a href="#1-内存模型">1. 内存模型</a>
-<ul>
-<li><a href="#1-1-硬件内存模型">1.1 硬件内存模型</a></li>
-<li><a href="#1-2-jvm内存模型">1.2 JVM内存模型</a>
-<ul>
-<li><a href="#1-2-1-线程栈">1.2.1 线程栈</a></li>
-<li><a href="#1-2-2-堆">1.2.2 堆</a></li>
-</ul></li>
-</ul></li>
-<li><a href="#2-volatile关键字">2. volatile关键字</a>
-<ul>
-<li><a href="#2-1-变量可见性">2.1 变量可见性</a></li>
-<li><a href="#2-2-乱序执行">2.2 乱序执行</a></li>
-<li><a href="#2-3-volatile不是什么">2.3 volatile不是什么</a></li>
-</ul></li>
-<li><a href="#3-synchronized关键字-monitor">3. synchronized关键字(Monitor)</a></li>
-<li><a href="#4-lock">4. Lock</a>
-<ul>
-<li><a href="#4-1-常见的lock">4.1 常见的Lock</a>
-<ul>
-<li><a href="#4-1-1-reentrantlock">4.1.1 ReentrantLock</a></li>
-<li><a href="#4-1-2-readwritelock-interface">4.1.2 ReadWriteLock(interface)</a></li>
-<li><a href="#4-1-3-reentrantreadwritelock">4.1.3 ReentrantReadWriteLock</a></li>
-</ul></li>
-<li><a href="#4-2-lock实现">4.2 Lock实现</a>
-<ul>
-<li><a href="#4-2-1-通用实现">4.2.1 通用实现</a>
-<ul>
-<li><a href="#aqs">AQS</a></li>
-<li><a href="#获得锁">获得锁</a></li>
-<li><a href="#释放锁">释放锁</a></li>
-</ul></li>
-<li><a href="#4-2-2-reentrantlock实现">4.2.2 ReentrantLock实现</a>
-<ul>
-<li><a href="#nonfairsync">NonfairSync</a></li>
-<li><a href="#fairsync">FairSync</a></li>
-</ul></li>
-<li><a href="#4-2-3-reentrantreadwritelock实现">4.2.3 ReentrantReadWriteLock实现</a>
-<ul>
-<li><a href="#nonfairsync-fairsync">NonfairSync &amp; FairSync</a></li>
-</ul></li>
-</ul></li>
-<li><a href="#4-3-condition实现">4.3 Condition实现</a>
-<ul>
-<li><a href="#4-3-1-await">4.3.1 await</a></li>
-<li><a href="#4-3-2-signal">4.3.2 signal</a></li>
-</ul></li>
-</ul></li>
-<li><a href="#5-lock-free">5. Lock Free</a></li>
-<li><a href="#6-常用同步工具">6. 常用同步工具</a>
-<ul>
-<li><a href="#countdownlatch">CountDownLatch</a></li>
-<li><a href="#semaphore">Semaphore</a></li>
-<li><a href="#cyclicbarrier">CyclicBarrier</a></li>
-</ul></li>
-<li><a href="#7-线程池">7. 线程池</a>
-<ul>
-<li><a href="#使用">使用</a></li>
-<li><a href="#实现">实现</a></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#11-">1.1 硬件内存模型</a></li>
+    <li><a href="#12-jvm">1.2 JVM内存模型</a>
+      <ul>
+        <li><a href="#121-">1.2.1 线程栈</a></li>
+        <li><a href="#122-">1.2.2 堆</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+    <li><a href="#21-">2.1 变量可见性</a></li>
+    <li><a href="#22-">2.2 乱序执行</a></li>
+    <li><a href="#23-volatile">2.3 volatile不是什么</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#41-lock">4.1 常见的Lock</a>
+      <ul>
+        <li><a href="#411-reentrantlock">4.1.1 ReentrantLock</a></li>
+        <li><a href="#412-readwritelockinterface">4.1.2 ReadWriteLock(interface)</a></li>
+        <li><a href="#413-reentrantreadwritelock">4.1.3 ReentrantReadWriteLock</a></li>
+      </ul>
+    </li>
+    <li><a href="#42-lock">4.2 Lock实现</a>
+      <ul>
+        <li><a href="#421-">4.2.1 通用实现</a></li>
+        <li><a href="#422-reentrantlock">4.2.2 ReentrantLock实现</a></li>
+        <li><a href="#423-reentrantreadwritelock">4.2.3 ReentrantReadWriteLock实现</a></li>
+      </ul>
+    </li>
+    <li><a href="#43-condition">4.3 Condition实现</a>
+      <ul>
+        <li><a href="#431-await">4.3.1 await</a></li>
+        <li><a href="#432-signal">4.3.2 signal</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+    <li><a href="#countdownlatch">CountDownLatch</a></li>
+    <li><a href="#semaphore">Semaphore</a></li>
+    <li><a href="#cyclicbarrier">CyclicBarrier</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#heading-2">使用</a></li>
+    <li><a href="#heading-3">实现</a></li>
+  </ul>
 </nav>
   </div>
 </div>
     <div class="post-content">
-      
-
-<p>零散笔记的流水账式总结，有错误之处请指正😂</p>
-
+      <p>零散笔记的流水账式总结，有错误之处请指正😂</p>
 <p>部分图片资源来自网络，侵删</p>
-
-<h1 id="1-内存模型">1. 内存模型</h1>
-
-<h2 id="1-1-硬件内存模型">1.1 硬件内存模型</h2>
-
-<p><img src="https://i.imgur.com/vOCieKM.png" alt="Modern hardware memory architecture." /></p>
-
+<h1 id="1-">1. 内存模型</h1>
+<h2 id="11-">1.1 硬件内存模型</h2>
+<p><img src="https://i.imgur.com/vOCieKM.png" alt="Modern hardware memory architecture."></p>
 <p>CPU不能直接对内存进行操作，必须将内存中的值读到cache/寄存器中进行操作，然后写回内存</p>
-
-<h2 id="1-2-jvm内存模型">1.2 JVM内存模型</h2>
-
-<p><img src="https://i.imgur.com/7kEU2P3.jpg" alt="" /></p>
-
+<h2 id="12-jvm">1.2 JVM内存模型</h2>
+<p><img src="https://i.imgur.com/7kEU2P3.jpg" alt=""></p>
 <p>JVM模型和OS的内存模型一样，分栈和堆</p>
-
-<h3 id="1-2-1-线程栈">1.2.1 线程栈</h3>
-
+<h3 id="121-">1.2.1 线程栈</h3>
 <p>每个线程会分配一个线程栈，用于存储方法调用过程中的局部变量，主要用来存储</p>
-
 <ul>
 <li>原始类型变量</li>
 <li>堆对象引用</li>
 </ul>
-
-<h3 id="1-2-2-堆">1.2.2 堆</h3>
-
+<h3 id="122-">1.2.2 堆</h3>
 <p>Java对象的主要存储区域，new出来的对象都在堆区</p>
-
-<h1 id="2-volatile关键字">2. volatile关键字</h1>
-
-<h2 id="2-1-变量可见性">2.1 变量可见性</h2>
-
+<h1 id="2-volatile">2. volatile关键字</h1>
+<h2 id="21-">2.1 变量可见性</h2>
 <p>两个线程同时引用堆中的对象，想修改对象中某个字段的值，在通过jvm最终都会执行到硬件层面，cpu同样需要从内存把数据读到cache里，操作完成之后写回内存</p>
-
 <p><code>i=0</code>由于这个特性，在t1执行完<code>i+=1</code>操作后，cpu cache中的值并没有及时写回内存，导致t2在执行<code>i+=1</code>操作时，从内存读到的值依旧是0。和最终的预期并不一致</p>
-
-<p><img src="https://i.imgur.com/xIqwPyU.png" alt="image-20180927152138166" /></p>
-
+<p><img src="https://i.imgur.com/xIqwPyU.png" alt="image-20180927152138166"></p>
 <p>给变量加上volatile关键字，就能确保对变量的更新操作完成之后，cpu cache中的值被及时写回内存。</p>
-
 <p>volatile有个额外的保证，当t1写回一个volatile变量时，所有对t1可见的变量都会被写回内存</p>
-
-<h2 id="2-2-乱序执行">2.2 乱序执行</h2>
-
+<h2 id="22-">2.2 乱序执行</h2>
 <p>以下代码</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">a</span> <span class="o">=</span> <span class="n">0</span><span class="p">;</span>
-<span class="kt">int</span> <span class="nf">b</span> <span class="o">=</span> <span class="n">0</span><span class="p">;</span>
-<span class="n">a</span> <span class="o">+=</span> <span class="n">1</span><span class="p">;</span>
-<span class="n">b</span> <span class="o">+=</span> <span class="n">1</span><span class="p">;</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
+<span class="kt">int</span> <span class="n">b</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
+<span class="n">a</span> <span class="o">+</span><span class="o">=</span> <span class="n">1</span><span class="o">;</span>
+<span class="n">b</span> <span class="o">+</span><span class="o">=</span> <span class="n">1</span><span class="o">;</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>最终执行效果可能是</p>
+</div><p>最终执行效果可能是</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">a</span> <span class="o">=</span> <span class="n">0</span><span class="p">;</span>
-<span class="n">a</span> <span class="o">+=</span> <span class="n">1</span><span class="p">;</span>
-<span class="kt">int</span> <span class="nf">b</span> <span class="o">=</span> <span class="n">0</span><span class="p">;</span>
-<span class="n">b</span> <span class="o">+=</span> <span class="n">1</span><span class="p">;</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
+<span class="n">a</span> <span class="o">+</span><span class="o">=</span> <span class="n">1</span><span class="o">;</span>
+<span class="kt">int</span> <span class="n">b</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
+<span class="n">b</span> <span class="o">+</span><span class="o">=</span> <span class="n">1</span><span class="o">;</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>编译器/cpu都可能帮你干这种事。编译器先略过，看看cpu。</p>
-
+</div><p>编译器/cpu都可能帮你干这种事。编译器先略过，看看cpu。</p>
 <p>现代cpu内置了若干条指令流水线，一条指令执行的时候会分成若干个阶段，某些阶段互不影响，可以并行执行，所以会被分配到这些流水线里。当遇到分支条件时，cpu可能会进行分支预测，即在流水线里同时执行两个分支条件，当命中其中一个分支时，立刻抛弃掉另一个分支的流水线指令，提高效率，反正空着也是空着。</p>
-
 <p>从cpu角度，以上做法是为了减少执行这4条语句的总指令周期。当cpu发现，原语句顺序里，语句1/3和语句2/4的执行相互独立，互不影响，2和3的执行顺序并不会影响最终结果，cpu可能就会打乱指令顺序，按最优顺序执行。</p>
-
 <p>在上面这段代码里，乱序是没什么毛病，毕竟结果一样，但是下面这一段可能就不一样了。</p>
-
 <p>常见的double check singleton</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -307,118 +263,87 @@
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="nf">class</span> <span class="n">A</span> <span class="p">{</span>
-    <span class="kd">private</span> <span class="nf">static</span> <span class="n">A</span> <span class="nf">_instance</span><span class="p">;</span>
-    <span class="kd">private</span> <span class="nf">A</span><span class="p">()</span> <span class="p">{}</span>
-    <span class="kd">public</span> <span class="nf">static</span> <span class="n">A</span> <span class="nf">getInstance</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">_instance</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>			<span class="c1">// 1⃣️
-</span><span class="c1"></span>            <span class="kd">synchronized</span> <span class="p">(</span><span class="n">A</span><span class="p">.</span><span class="na">class</span><span class="p">)</span> <span class="p">{</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">_instance</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
-                    <span class="n">_instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">A</span><span class="p">();</span>	<span class="c1">// 2⃣️
-</span><span class="c1"></span>                <span class="p">}</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-        <span class="k">return</span> <span class="n">_instance</span><span class="p">;</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">A</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="n">A</span> <span class="n">_instance</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nf">A</span><span class="o">(</span><span class="o">)</span> <span class="o">{</span><span class="o">}</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">A</span> <span class="nf">getInstance</span><span class="o">(</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">_instance</span> <span class="o">=</span><span class="o">=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>			<span class="c1">// 1⃣️
+</span><span class="c1"></span>            <span class="kd">synchronized</span> <span class="o">(</span><span class="n">A</span><span class="o">.</span><span class="na">class</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">_instance</span> <span class="o">=</span><span class="o">=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">_instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">A</span><span class="o">(</span><span class="o">)</span><span class="o">;</span>	<span class="c1">// 2⃣️
+</span><span class="c1"></span>                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">_instance</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>注意这里的2⃣️并不是原子操作，可以拆分成以下操作</p>
-
+</div><p>注意这里的2⃣️并不是原子操作，可以拆分成以下操作</p>
 <ol>
 <li>申请内存</li>
 <li>调用<code>A</code>的构造函数初始化<code>_instance</code></li>
 <li>将申请到的内存分配给<code>_instance</code></li>
 </ol>
-
 <p>cpu会认为2和3的执行顺序不影响最终产出结果，所以可能乱序执行，线程t1先执行了3，还没执行2的时候，线程t2进了1⃣️判断，发现有值，直接返回了<code>_instance</code>拿出去用，这个时候<code>_instance</code>其实还没初始化完成。</p>
-
-<p>解决办法就是给<code>_instance</code>加volatile关键字，因为volatile关键字除了可见性保证之外还有另一个保证：写入volatile变量之前的操作&rdquo;happens before&rdquo;写入操作本身，即1/2这两条语句作为一个整体不能和3乱序，1/2两个之间是否乱序由乱序规则规定，通过生成汇编内存屏障指令实现</p>
-
-<h2 id="2-3-volatile不是什么">2.3 volatile不是什么</h2>
-
+<p>解决办法就是给<code>_instance</code>加volatile关键字，因为volatile关键字除了可见性保证之外还有另一个保证：写入volatile变量之前的操作&quot;happens before&quot;写入操作本身，即1/2这两条语句作为一个整体不能和3乱序，1/2两个之间是否乱序由乱序规则规定，通过生成汇编内存屏障指令实现</p>
+<h2 id="23-volatile">2.3 volatile不是什么</h2>
 <p>volatile不是原子操作，即volatile不提供CAS逻辑的原子性，要实现CAS的原子性必须用<code>Unsafe</code>类通过cpu指令实现</p>
-
-<h1 id="3-synchronized关键字-monitor">3. synchronized关键字(Monitor)</h1>
-
+<h1 id="3-synchronizedmonitor">3. synchronized关键字(Monitor)</h1>
 <p>synchronized关键字实现了monitor语义，monitor是：</p>
-
 <ul>
 <li>monitor内同一时间只允许一个线程访问(其余进入entry set)</li>
 <li>提供主动让出cpu时间片等待某个事件发生的方法(wait，进入wait set)</li>
 <li>提供通知其他线程某个事件发生的方法(notify)，唤醒wait set中的一个或多个线程</li>
 </ul>
-
 <p>jvm通过synchronized关键字原生提供moniterenter和monitorexit指令，进入/离开monitor。在synchronized块内部通过wait/notify/notifyAll实现monitor的后两条语义。</p>
-
 <p>wait/notify/notifyAll必须在synchronized块内执行(即当前线程是monitor的拥有者)，否则会抛<code>java.lang.IllegalMonitorStateException</code>异常</p>
-
 <p>被<code>notifyAll</code>唤醒的所有线程都必须等待monitor退出之后才能竞争monitor，按线程优先级、等待时间等条件计算哪个线程能获得monitor，得到monitor之后才能继续执行</p>
-
 <h1 id="4-lock">4. Lock</h1>
-
 <p><code>Lock</code>是Java标准库提供的比monitor更加灵活的同步机制，有相同也有不同。</p>
-
 <ul>
 <li>lock()/moniterenter</li>
 <li>unlock()/monitorexit</li>
 <li>Condition.await()/Object.wait()</li>
 <li>Condition.signal/Object.notify()</li>
 </ul>
-
 <p>不同之处在于，一个Lock可以关联多个Condition对象</p>
-
-<h2 id="4-1-常见的lock">4.1 常见的Lock</h2>
-
-<h3 id="4-1-1-reentrantlock">4.1.1 ReentrantLock</h3>
-
+<h2 id="41-lock">4.1 常见的Lock</h2>
+<h3 id="411-reentrantlock">4.1.1 ReentrantLock</h3>
 <p>可重入锁：已获得锁的线程可以再次获得锁而不阻塞，当锁拥有者数量为0时才释放锁</p>
-
-<h3 id="4-1-2-readwritelock-interface">4.1.2 ReadWriteLock(interface)</h3>
-
+<h3 id="412-readwritelockinterface">4.1.2 ReadWriteLock(interface)</h3>
 <p>读写锁：允许多个reader同时获得ReadLock，或者一个writer获得WriteLock。没有writer线程并且没有writer request时，可以允许成为reader。没有writer和reader时，允许成为writer。</p>
-
 <p>这只是个interface，由<code>ReentrantReadWriteLock</code>实现</p>
-
-<h3 id="4-1-3-reentrantreadwritelock">4.1.3 ReentrantReadWriteLock</h3>
-
+<h3 id="413-reentrantreadwritelock">4.1.3 ReentrantReadWriteLock</h3>
 <p>可重入读写锁：已获得ReadLock的线程，在没有其他reader并且没有writer的情况下，允许获得writer锁。已获得WriteLock的线程，如果已经是reader或者没有其他writer request的情况下，允许获得reader锁</p>
-
-<h2 id="4-2-lock实现">4.2 Lock实现</h2>
-
+<h2 id="42-lock">4.2 Lock实现</h2>
 <p><strong>篇幅所限，详细内容要新开一篇</strong></p>
-
-<h3 id="4-2-1-通用实现">4.2.1 通用实现</h3>
-
+<h3 id="421-">4.2.1 通用实现</h3>
 <h4 id="aqs">AQS</h4>
-
 <p>整个lock框架底层由<code>AbstractQueuedSynchronizer</code>提供实现，<code>AbstractQueuedSynchronizer</code>由<code>Unsafe</code>的CAS提供锁的实现，当线程没有抢到锁时，会进入基于链表的等待队列。</p>
-
-<h4 id="获得锁">获得锁</h4>
+<h4 id="heading">获得锁</h4>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="nf">final</span> <span class="kt">void</span> <span class="nf">acquire</span><span class="p">(</span><span class="kt">int</span> <span class="nf">arg</span><span class="p">)</span> <span class="p">{</span>
-	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">tryAcquire</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="o">&amp;&amp;</span>
-			<span class="n">acquireQueued</span><span class="p">(</span><span class="n">addWaiter</span><span class="p">(</span><span class="n">Node</span><span class="p">.</span><span class="na">EXCLUSIVE</span><span class="p">),</span> <span class="n">arg</span><span class="p">))</span>
-		<span class="n">selfInterrupt</span><span class="p">();</span>
-<span class="p">}</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">final</span> <span class="kt">void</span> <span class="nf">acquire</span><span class="o">(</span><span class="kt">int</span> <span class="n">arg</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">if</span> <span class="o">(</span><span class="o">!</span><span class="n">tryAcquire</span><span class="o">(</span><span class="n">arg</span><span class="o">)</span> <span class="o">&amp;</span><span class="o">&amp;</span>
+			<span class="n">acquireQueued</span><span class="o">(</span><span class="n">addWaiter</span><span class="o">(</span><span class="n">Node</span><span class="o">.</span><span class="na">EXCLUSIVE</span><span class="o">)</span><span class="o">,</span> <span class="n">arg</span><span class="o">)</span><span class="o">)</span>
+		<span class="n">selfInterrupt</span><span class="o">(</span><span class="o">)</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p><code>tryAcquire</code>为抽象方法，由各Lock子类提供实现，作用为尝试以独占模式获得锁</p>
-
+</div><p><code>tryAcquire</code>为抽象方法，由各Lock子类提供实现，作用为尝试以独占模式获得锁</p>
 <p><code>acquireQueued</code>当尝试获取锁失败时，将当前线程包装后加入等待队列</p>
-
-<h4 id="释放锁">释放锁</h4>
+<h4 id="heading-1">释放锁</h4>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -429,35 +354,28 @@
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="nf">final</span> <span class="kt">boolean</span> <span class="nf">release</span><span class="p">(</span><span class="kt">int</span> <span class="nf">arg</span><span class="p">)</span> <span class="p">{</span>
-	<span class="k">if</span> <span class="p">(</span><span class="n">tryRelease</span><span class="p">(</span><span class="n">arg</span><span class="p">))</span> <span class="p">{</span>
-		<span class="n">Node</span> <span class="nf">h</span> <span class="o">=</span> <span class="n">head</span><span class="p">;</span>
-		<span class="k">if</span> <span class="p">(</span><span class="n">h</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">h</span><span class="p">.</span><span class="na">waitStatus</span> <span class="o">!=</span> <span class="n">0</span><span class="p">)</span>
-			<span class="n">unparkSuccessor</span><span class="p">(</span><span class="n">h</span><span class="p">);</span>
-		<span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
-	<span class="p">}</span>
-	<span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
-<span class="p">}</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">final</span> <span class="kt">boolean</span> <span class="nf">release</span><span class="o">(</span><span class="kt">int</span> <span class="n">arg</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">tryRelease</span><span class="o">(</span><span class="n">arg</span><span class="o">)</span><span class="o">)</span> <span class="o">{</span>
+		<span class="n">Node</span> <span class="n">h</span> <span class="o">=</span> <span class="n">head</span><span class="o">;</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">h</span> <span class="o">!</span><span class="o">=</span> <span class="kc">null</span> <span class="o">&amp;</span><span class="o">&amp;</span> <span class="n">h</span><span class="o">.</span><span class="na">waitStatus</span> <span class="o">!</span><span class="o">=</span> <span class="n">0</span><span class="o">)</span>
+			<span class="n">unparkSuccessor</span><span class="o">(</span><span class="n">h</span><span class="o">)</span><span class="o">;</span>
+		<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p><code>tryRelease</code>为抽象方法，由各Lock子类实现，作为尝试在独占模式下解锁的方法</p>
-
+</div><p><code>tryRelease</code>为抽象方法，由各Lock子类实现，作为尝试在独占模式下解锁的方法</p>
 <p>然后从等待队列中拿出头部节点的线程，唤醒之</p>
-
-<h3 id="4-2-2-reentrantlock实现">4.2.2 ReentrantLock实现</h3>
-
+<h3 id="422-reentrantlock">4.2.2 ReentrantLock实现</h3>
 <p>ReentrantLock依赖内部一个成员变量sync，继承于AQS。fair和non-fair模式的锁取决于用的是哪个sync子类。</p>
-
 <p>类结构图如图所示</p>
-
-<p><img src="https://i.imgur.com/OkLnU4q.png" alt="image-20180929154724854" /></p>
-
+<p><img src="https://i.imgur.com/OkLnU4q.png" alt="image-20180929154724854"></p>
 <h4 id="nonfairsync">NonfairSync</h4>
-
 <p>非公平锁实现，<code>tryAcquire</code>方法最终会调用到这个方法</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -477,34 +395,32 @@
 </span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">final</span> <span class="nf">boolean</span> <span class="n">nonfairTryAcquire</span><span class="p">(</span><span class="kt">int</span> <span class="nf">acquires</span><span class="p">)</span> <span class="p">{</span>
-	<span class="kd">final</span> <span class="nf">Thread</span> <span class="n">current</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">.</span><span class="na">currentThread</span><span class="p">();</span>
-	<span class="kt">int</span> <span class="nf">c</span> <span class="o">=</span> <span class="n">getState</span><span class="p">();</span>
-	<span class="k">if</span> <span class="p">(</span><span class="n">c</span> <span class="o">==</span> <span class="n">0</span><span class="p">)</span> <span class="p">{</span>	<span class="c1">// 1⃣️
-</span><span class="c1"></span>		<span class="k">if</span> <span class="p">(</span><span class="n">compareAndSetState</span><span class="p">(</span><span class="n">0</span><span class="p">,</span> <span class="n">acquires</span><span class="p">))</span> <span class="p">{</span>	<span class="c1">// 2⃣️
-</span><span class="c1"></span>			<span class="n">setExclusiveOwnerThread</span><span class="p">(</span><span class="n">current</span><span class="p">);</span>
-			<span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
-		<span class="p">}</span>
-	<span class="p">}</span>
-	<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">current</span> <span class="o">==</span> <span class="n">getExclusiveOwnerThread</span><span class="p">())</span> <span class="p">{</span> <span class="c1">// 3⃣️
-</span><span class="c1"></span>		<span class="kt">int</span> <span class="nf">nextc</span> <span class="o">=</span> <span class="n">c</span> <span class="o">+</span> <span class="n">acquires</span><span class="p">;</span>
-		<span class="k">if</span> <span class="p">(</span><span class="n">nextc</span> <span class="o">&lt;</span> <span class="n">0</span><span class="p">)</span> <span class="c1">// overflow
-</span><span class="c1"></span>			<span class="k">throw</span> <span class="k">new</span> <span class="n">Error</span><span class="p">(</span><span class="s">&#34;Maximum lock count exceeded&#34;</span><span class="p">);</span>
-		<span class="n">setState</span><span class="p">(</span><span class="n">nextc</span><span class="p">);</span>
-		<span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
-	<span class="p">}</span>
-	<span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
-<span class="p">}</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">final</span> <span class="kt">boolean</span> <span class="nf">nonfairTryAcquire</span><span class="o">(</span><span class="kt">int</span> <span class="n">acquires</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kd">final</span> <span class="n">Thread</span> <span class="n">current</span> <span class="o">=</span> <span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">(</span><span class="o">)</span><span class="o">;</span>
+	<span class="kt">int</span> <span class="n">c</span> <span class="o">=</span> <span class="n">getState</span><span class="o">(</span><span class="o">)</span><span class="o">;</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">c</span> <span class="o">=</span><span class="o">=</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>	<span class="c1">// 1⃣️
+</span><span class="c1"></span>		<span class="k">if</span> <span class="o">(</span><span class="n">compareAndSetState</span><span class="o">(</span><span class="n">0</span><span class="o">,</span> <span class="n">acquires</span><span class="o">)</span><span class="o">)</span> <span class="o">{</span>	<span class="c1">// 2⃣️
+</span><span class="c1"></span>			<span class="n">setExclusiveOwnerThread</span><span class="o">(</span><span class="n">current</span><span class="o">)</span><span class="o">;</span>
+			<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+	<span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">current</span> <span class="o">=</span><span class="o">=</span> <span class="n">getExclusiveOwnerThread</span><span class="o">(</span><span class="o">)</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// 3⃣️
+</span><span class="c1"></span>		<span class="kt">int</span> <span class="n">nextc</span> <span class="o">=</span> <span class="n">c</span> <span class="o">+</span> <span class="n">acquires</span><span class="o">;</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">nextc</span> <span class="o">&lt;</span> <span class="n">0</span><span class="o">)</span> <span class="c1">// overflow
+</span><span class="c1"></span>			<span class="k">throw</span> <span class="k">new</span> <span class="n">Error</span><span class="o">(</span><span class="s">&#34;Maximum lock count exceeded&#34;</span><span class="o">)</span><span class="o">;</span>
+		<span class="n">setState</span><span class="o">(</span><span class="n">nextc</span><span class="o">)</span><span class="o">;</span>
+		<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>意思就是，如果没人占用这个锁(1⃣️)，那么尝试抢占(2⃣️)，如果成功了，就成功了，失败了就返回到AQS的<code>acquire</code>方法进等待队列并挂起。如果已经被占用了，并且自己就是占用者(3⃣️)，那么增加计数state</p>
-
+</div><p>意思就是，如果没人占用这个锁(1⃣️)，那么尝试抢占(2⃣️)，如果成功了，就成功了，失败了就返回到AQS的<code>acquire</code>方法进等待队列并挂起。如果已经被占用了，并且自己就是占用者(3⃣️)，那么增加计数state</p>
 <h4 id="fairsync">FairSync</h4>
-
 <p>公平锁实现</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -525,39 +441,35 @@
 </span><span class="lnt">19
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">protected</span> <span class="nf">final</span> <span class="kt">boolean</span> <span class="nf">tryAcquire</span><span class="p">(</span><span class="kt">int</span> <span class="nf">acquires</span><span class="p">)</span> <span class="p">{</span>
-	<span class="kd">final</span> <span class="nf">Thread</span> <span class="n">current</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">.</span><span class="na">currentThread</span><span class="p">();</span>
-	<span class="kt">int</span> <span class="nf">c</span> <span class="o">=</span> <span class="n">getState</span><span class="p">();</span>
-	<span class="k">if</span> <span class="p">(</span><span class="n">c</span> <span class="o">==</span> <span class="n">0</span><span class="p">)</span> <span class="p">{</span>
-		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">hasQueuedPredecessors</span><span class="p">()</span> <span class="o">&amp;&amp;</span>		<span class="c1">// 1⃣️
-</span><span class="c1"></span>				<span class="n">compareAndSetState</span><span class="p">(</span><span class="n">0</span><span class="p">,</span> <span class="n">acquires</span><span class="p">))</span> <span class="p">{</span>
-			<span class="n">setExclusiveOwnerThread</span><span class="p">(</span><span class="n">current</span><span class="p">);</span>
-			<span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
-		<span class="p">}</span>
-	<span class="p">}</span>
-	<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">current</span> <span class="o">==</span> <span class="n">getExclusiveOwnerThread</span><span class="p">())</span> <span class="p">{</span>
-		<span class="kt">int</span> <span class="nf">nextc</span> <span class="o">=</span> <span class="n">c</span> <span class="o">+</span> <span class="n">acquires</span><span class="p">;</span>
-		<span class="k">if</span> <span class="p">(</span><span class="n">nextc</span> <span class="o">&lt;</span> <span class="n">0</span><span class="p">)</span>
-			<span class="k">throw</span> <span class="k">new</span> <span class="n">Error</span><span class="p">(</span><span class="s">&#34;Maximum lock count exceeded&#34;</span><span class="p">);</span>
-		<span class="n">setState</span><span class="p">(</span><span class="n">nextc</span><span class="p">);</span>
-		<span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
-	<span class="p">}</span>
-	<span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
-<span class="p">}</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">protected</span> <span class="kd">final</span> <span class="kt">boolean</span> <span class="nf">tryAcquire</span><span class="o">(</span><span class="kt">int</span> <span class="n">acquires</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kd">final</span> <span class="n">Thread</span> <span class="n">current</span> <span class="o">=</span> <span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">(</span><span class="o">)</span><span class="o">;</span>
+	<span class="kt">int</span> <span class="n">c</span> <span class="o">=</span> <span class="n">getState</span><span class="o">(</span><span class="o">)</span><span class="o">;</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">c</span> <span class="o">=</span><span class="o">=</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">if</span> <span class="o">(</span><span class="o">!</span><span class="n">hasQueuedPredecessors</span><span class="o">(</span><span class="o">)</span> <span class="o">&amp;</span><span class="o">&amp;</span>		<span class="c1">// 1⃣️
+</span><span class="c1"></span>				<span class="n">compareAndSetState</span><span class="o">(</span><span class="n">0</span><span class="o">,</span> <span class="n">acquires</span><span class="o">)</span><span class="o">)</span> <span class="o">{</span>
+			<span class="n">setExclusiveOwnerThread</span><span class="o">(</span><span class="n">current</span><span class="o">)</span><span class="o">;</span>
+			<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+	<span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">current</span> <span class="o">=</span><span class="o">=</span> <span class="n">getExclusiveOwnerThread</span><span class="o">(</span><span class="o">)</span><span class="o">)</span> <span class="o">{</span>
+		<span class="kt">int</span> <span class="n">nextc</span> <span class="o">=</span> <span class="n">c</span> <span class="o">+</span> <span class="n">acquires</span><span class="o">;</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">nextc</span> <span class="o">&lt;</span> <span class="n">0</span><span class="o">)</span>
+			<span class="k">throw</span> <span class="k">new</span> <span class="n">Error</span><span class="o">(</span><span class="s">&#34;Maximum lock count exceeded&#34;</span><span class="o">)</span><span class="o">;</span>
+		<span class="n">setState</span><span class="o">(</span><span class="n">nextc</span><span class="o">)</span><span class="o">;</span>
+		<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>这比非公平锁只多了1⃣️这行，公平锁在尝试抢占之前，会看一眼等待队列里有没有线程已经在等待，如果有，乖乖返回AQS的<code>acquire</code>方法进等待队列。这样的好处是，不会导致等待队列里的线程饿死。坏处是，略微降低了吞吐量(TODO: 需要测试数据支撑)</p>
-
-<h3 id="4-2-3-reentrantreadwritelock实现">4.2.3 ReentrantReadWriteLock实现</h3>
-
+</div><p>这比非公平锁只多了1⃣️这行，公平锁在尝试抢占之前，会看一眼等待队列里有没有线程已经在等待，如果有，乖乖返回AQS的<code>acquire</code>方法进等待队列。这样的好处是，不会导致等待队列里的线程饿死。坏处是，略微降低了吞吐量(TODO: 需要测试数据支撑)</p>
+<h3 id="423-reentrantreadwritelock">4.2.3 ReentrantReadWriteLock实现</h3>
 <p>其中包含<code>ReadLock</code>和<code>WriteLock</code>，这两个最终又依赖继承于<code>AbstractQueuedSynchronizer</code>的实现Sync</p>
-
 <p>和<code>ReentrantLock</code>一样，也有FairSync和NonfairSync。不同于<code>ReentrantLock</code>,<code>ReentrantReadWriteLock</code>分别利用了state字段的高低4位来表示读锁和写锁占用数量</p>
-
 <p><code>WriteLock</code>会调用</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -579,72 +491,58 @@
 </span><span class="lnt">20
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">protected</span> <span class="nf">final</span> <span class="kt">boolean</span> <span class="nf">tryAcquire</span><span class="p">(</span><span class="kt">int</span> <span class="nf">acquires</span><span class="p">)</span> <span class="p">{</span>
-	<span class="n">Thread</span> <span class="nf">current</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">.</span><span class="na">currentThread</span><span class="p">();</span>
-	<span class="kt">int</span> <span class="nf">c</span> <span class="o">=</span> <span class="n">getState</span><span class="p">();</span>
-	<span class="kt">int</span> <span class="nf">w</span> <span class="o">=</span> <span class="n">exclusiveCount</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
-	<span class="k">if</span> <span class="p">(</span><span class="n">c</span> <span class="o">!=</span> <span class="n">0</span><span class="p">)</span> <span class="p">{</span>
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">protected</span> <span class="kd">final</span> <span class="kt">boolean</span> <span class="nf">tryAcquire</span><span class="o">(</span><span class="kt">int</span> <span class="n">acquires</span><span class="o">)</span> <span class="o">{</span>
+	<span class="n">Thread</span> <span class="n">current</span> <span class="o">=</span> <span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">(</span><span class="o">)</span><span class="o">;</span>
+	<span class="kt">int</span> <span class="n">c</span> <span class="o">=</span> <span class="n">getState</span><span class="o">(</span><span class="o">)</span><span class="o">;</span>
+	<span class="kt">int</span> <span class="n">w</span> <span class="o">=</span> <span class="n">exclusiveCount</span><span class="o">(</span><span class="n">c</span><span class="o">)</span><span class="o">;</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">c</span> <span class="o">!</span><span class="o">=</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
 		<span class="c1">// (Note: if c != 0 and w == 0 then shared count != 0)
-</span><span class="c1"></span>		<span class="k">if</span> <span class="p">(</span><span class="n">w</span> <span class="o">==</span> <span class="n">0</span> <span class="o">||</span> <span class="n">current</span> <span class="o">!=</span> <span class="n">getExclusiveOwnerThread</span><span class="p">())</span>		<span class="c1">// 1⃣️
-</span><span class="c1"></span>			<span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
-		<span class="k">if</span> <span class="p">(</span><span class="n">w</span> <span class="o">+</span> <span class="n">exclusiveCount</span><span class="p">(</span><span class="n">acquires</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">MAX_COUNT</span><span class="p">)</span>
-			<span class="k">throw</span> <span class="k">new</span> <span class="n">Error</span><span class="p">(</span><span class="s">&#34;Maximum lock count exceeded&#34;</span><span class="p">);</span>
+</span><span class="c1"></span>		<span class="k">if</span> <span class="o">(</span><span class="n">w</span> <span class="o">=</span><span class="o">=</span> <span class="n">0</span> <span class="o">|</span><span class="o">|</span> <span class="n">current</span> <span class="o">!</span><span class="o">=</span> <span class="n">getExclusiveOwnerThread</span><span class="o">(</span><span class="o">)</span><span class="o">)</span>		<span class="c1">// 1⃣️
+</span><span class="c1"></span>			<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">w</span> <span class="o">+</span> <span class="n">exclusiveCount</span><span class="o">(</span><span class="n">acquires</span><span class="o">)</span> <span class="o">&gt;</span> <span class="n">MAX_COUNT</span><span class="o">)</span>
+			<span class="k">throw</span> <span class="k">new</span> <span class="n">Error</span><span class="o">(</span><span class="s">&#34;Maximum lock count exceeded&#34;</span><span class="o">)</span><span class="o">;</span>
 		<span class="c1">// Reentrant acquire
-</span><span class="c1"></span>		<span class="n">setState</span><span class="p">(</span><span class="n">c</span> <span class="o">+</span> <span class="n">acquires</span><span class="p">);</span>
-		<span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
-	<span class="p">}</span>
-	<span class="k">if</span> <span class="p">(</span><span class="n">writerShouldBlock</span><span class="p">()</span> <span class="o">||</span>		<span class="c1">// 2⃣️
-</span><span class="c1"></span>			<span class="o">!</span><span class="n">compareAndSetState</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">c</span> <span class="o">+</span> <span class="n">acquires</span><span class="p">))</span>	<span class="c1">// 3⃣️
-</span><span class="c1"></span>		<span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
-	<span class="n">setExclusiveOwnerThread</span><span class="p">(</span><span class="n">current</span><span class="p">);</span>	<span class="c1">// 4⃣️
-</span><span class="c1"></span>	<span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
-<span class="p">}</span></code></pre></td></tr></table>
+</span><span class="c1"></span>		<span class="n">setState</span><span class="o">(</span><span class="n">c</span> <span class="o">+</span> <span class="n">acquires</span><span class="o">)</span><span class="o">;</span>
+		<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">writerShouldBlock</span><span class="o">(</span><span class="o">)</span> <span class="o">|</span><span class="o">|</span>		<span class="c1">// 2⃣️
+</span><span class="c1"></span>			<span class="o">!</span><span class="n">compareAndSetState</span><span class="o">(</span><span class="n">c</span><span class="o">,</span> <span class="n">c</span> <span class="o">+</span> <span class="n">acquires</span><span class="o">)</span><span class="o">)</span>	<span class="c1">// 3⃣️
+</span><span class="c1"></span>		<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+	<span class="n">setExclusiveOwnerThread</span><span class="o">(</span><span class="n">current</span><span class="o">)</span><span class="o">;</span>	<span class="c1">// 4⃣️
+</span><span class="c1"></span>	<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>代码1⃣️处分两种情况，都不能获得写锁</p>
-
+</div><p>代码1⃣️处分两种情况，都不能获得写锁</p>
 <ul>
 <li>w是写锁占用数，state != 0 &amp;&amp; w == 0 =&gt; 读锁占用数&gt;0，不能获得写锁</li>
 <li>w != 0 &amp;&amp; current != getExclusiveOwnerThread()，有人占了写锁，但不是当前线程，不能获得写锁</li>
 </ul>
-
 <p>当没人占用任何锁，并且writer不用阻塞的时候(2⃣️)，尝试抢占(3⃣️)，设置独占线程(4⃣️)。<code>writerShouldBlock()</code>是抽象方法由子类实现(是否公平锁)</p>
-
 <p><code>ReadLock</code>实现</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="o">//</span> <span class="n">todo</span> <span class="nf">篇幅较长</span><span class="err">，</span><span class="n">考虑独立</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="c1">// todo 篇幅较长，考虑独立
+</span></code></pre></td></tr></table>
 </div>
-</div>
-<h4 id="nonfairsync-fairsync">NonfairSync &amp; FairSync</h4>
-
+</div><h4 id="nonfairsync--fairsync">NonfairSync &amp; FairSync</h4>
 <p>由于主要工作都在父类<code>Sync</code>里完成了，这两个子类仅实现reader或者writer是否需要主动阻塞的逻辑</p>
-
 <p><strong>NonfairSync</strong></p>
-
 <p>writer永远不需要主动阻塞。</p>
-
 <p>reader会看等待队列里的第一个线程是否是写线程，如果是写线程，则主动阻塞。这里并不是让写线程有足够高的优先级优先执行，而是一定程度上减少写线程饿死的肯恩行。所以这个不公平锁对等待中的写线程还是有一点点公平的</p>
-
 <p><strong>FairSync</strong></p>
-
 <p>读写线程都会先看看等待队列里有没有线程在等待，有就去排队，主动阻塞</p>
-
-<h2 id="4-3-condition实现">4.3 Condition实现</h2>
-
+<h2 id="43-condition">4.3 Condition实现</h2>
 <p><code>Condition</code>是<code>ReentrantLock</code>派生出来的，可以在获得锁之后在线程间同步的机制。跟<code>ReentrantLock</code>关联，必须在获得锁之后使用。</p>
-
 <p><code>Condition</code>有<code>await</code>和<code>signal</code>方法，作用和Object的<code>wait</code>/<code>notify</code>一样。内部实现上，关联了生成它的<code>ReentrantLock</code>对象，自身也有类似<code>ReentrantLock</code>等待队列的条件队列。当await的时候先把当前线程加到条件队列里，等待signal将线程转移到<code>ReentrantLock</code>的等待队列上，等待<code>ReentrantLock</code>调度</p>
-
-<h3 id="4-3-1-await">4.3.1 await</h3>
-
+<h3 id="431-await">4.3.1 await</h3>
 <p>主逻辑如下</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -664,42 +562,36 @@
 </span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="nf">final</span> <span class="kt">void</span> <span class="nf">await</span><span class="p">()</span> <span class="kd">throws</span> <span class="nf">InterruptedException</span> <span class="p">{</span>
-	<span class="k">if</span> <span class="p">(</span><span class="n">Thread</span><span class="p">.</span><span class="na">interrupted</span><span class="p">())</span>
-		<span class="k">throw</span> <span class="k">new</span> <span class="n">InterruptedException</span><span class="p">();</span>
-	<span class="n">Node</span> <span class="nf">node</span> <span class="o">=</span> <span class="n">addConditionWaiter</span><span class="p">();</span>		<span class="c1">// 1⃣️
-</span><span class="c1"></span>	<span class="kt">int</span> <span class="nf">savedState</span> <span class="o">=</span> <span class="n">fullyRelease</span><span class="p">(</span><span class="n">node</span><span class="p">);</span>	<span class="c1">// 2⃣️
-</span><span class="c1"></span>	<span class="kt">int</span> <span class="nf">interruptMode</span> <span class="o">=</span> <span class="n">0</span><span class="p">;</span>
-	<span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="n">isOnSyncQueue</span><span class="p">(</span><span class="n">node</span><span class="p">))</span> <span class="p">{</span>			<span class="c1">// 3⃣️
-</span><span class="c1"></span>		<span class="n">LockSupport</span><span class="p">.</span><span class="na">park</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
-		<span class="k">if</span> <span class="p">((</span><span class="n">interruptMode</span> <span class="o">=</span> <span class="n">checkInterruptWhileWaiting</span><span class="p">(</span><span class="n">node</span><span class="p">))</span> <span class="o">!=</span> <span class="n">0</span><span class="p">)</span>
-			<span class="k">break</span><span class="p">;</span>
-	<span class="p">}</span>
-	<span class="k">if</span> <span class="p">(</span><span class="n">acquireQueued</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">savedState</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">interruptMode</span> <span class="o">!=</span> <span class="n">THROW_IE</span><span class="p">)</span>	<span class="c1">// 4⃣️
-</span><span class="c1"></span>		<span class="n">interruptMode</span> <span class="o">=</span> <span class="n">REINTERRUPT</span><span class="p">;</span>
-	<span class="k">if</span> <span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="na">nextWaiter</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="c1">// clean up if cancelled
-</span><span class="c1"></span>		<span class="n">unlinkCancelledWaiters</span><span class="p">();</span>
-	<span class="k">if</span> <span class="p">(</span><span class="n">interruptMode</span> <span class="o">!=</span> <span class="n">0</span><span class="p">)</span>
-		<span class="n">reportInterruptAfterWait</span><span class="p">(</span><span class="n">interruptMode</span><span class="p">);</span>
-<span class="p">}</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">final</span> <span class="kt">void</span> <span class="nf">await</span><span class="o">(</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">Thread</span><span class="o">.</span><span class="na">interrupted</span><span class="o">(</span><span class="o">)</span><span class="o">)</span>
+		<span class="k">throw</span> <span class="k">new</span> <span class="n">InterruptedException</span><span class="o">(</span><span class="o">)</span><span class="o">;</span>
+	<span class="n">Node</span> <span class="n">node</span> <span class="o">=</span> <span class="n">addConditionWaiter</span><span class="o">(</span><span class="o">)</span><span class="o">;</span>		<span class="c1">// 1⃣️
+</span><span class="c1"></span>	<span class="kt">int</span> <span class="n">savedState</span> <span class="o">=</span> <span class="n">fullyRelease</span><span class="o">(</span><span class="n">node</span><span class="o">)</span><span class="o">;</span>	<span class="c1">// 2⃣️
+</span><span class="c1"></span>	<span class="kt">int</span> <span class="n">interruptMode</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
+	<span class="k">while</span> <span class="o">(</span><span class="o">!</span><span class="n">isOnSyncQueue</span><span class="o">(</span><span class="n">node</span><span class="o">)</span><span class="o">)</span> <span class="o">{</span>			<span class="c1">// 3⃣️
+</span><span class="c1"></span>		<span class="n">LockSupport</span><span class="o">.</span><span class="na">park</span><span class="o">(</span><span class="k">this</span><span class="o">)</span><span class="o">;</span>
+		<span class="k">if</span> <span class="o">(</span><span class="o">(</span><span class="n">interruptMode</span> <span class="o">=</span> <span class="n">checkInterruptWhileWaiting</span><span class="o">(</span><span class="n">node</span><span class="o">)</span><span class="o">)</span> <span class="o">!</span><span class="o">=</span> <span class="n">0</span><span class="o">)</span>
+			<span class="k">break</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">acquireQueued</span><span class="o">(</span><span class="n">node</span><span class="o">,</span> <span class="n">savedState</span><span class="o">)</span> <span class="o">&amp;</span><span class="o">&amp;</span> <span class="n">interruptMode</span> <span class="o">!</span><span class="o">=</span> <span class="n">THROW_IE</span><span class="o">)</span>	<span class="c1">// 4⃣️
+</span><span class="c1"></span>		<span class="n">interruptMode</span> <span class="o">=</span> <span class="n">REINTERRUPT</span><span class="o">;</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">node</span><span class="o">.</span><span class="na">nextWaiter</span> <span class="o">!</span><span class="o">=</span> <span class="kc">null</span><span class="o">)</span> <span class="c1">// clean up if cancelled
+</span><span class="c1"></span>		<span class="n">unlinkCancelledWaiters</span><span class="o">(</span><span class="o">)</span><span class="o">;</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">interruptMode</span> <span class="o">!</span><span class="o">=</span> <span class="n">0</span><span class="o">)</span>
+		<span class="n">reportInterruptAfterWait</span><span class="o">(</span><span class="n">interruptMode</span><span class="o">)</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>几个关键逻辑</p>
-
+</div><p>几个关键逻辑</p>
 <p>1⃣️将当前线程加入<code>Condition</code>的等待队列(链表结构)中</p>
-
 <p>2⃣️释放当前线程持有的<code>ReentrantLock</code>，注意这里需要fullyRelease，因为锁可重入</p>
-
 <p>3⃣️循环等待，直到当前线程被signal转移到<code>ReentrantLock</code>的等待队列里</p>
-
 <p>4⃣️acquireQueued返回之后，当前线程就持有了<code>ReentrantLock</code></p>
-
-<h3 id="4-3-2-signal">4.3.2 signal</h3>
-
+<h3 id="432-signal">4.3.2 signal</h3>
 <p>关键逻辑</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -720,46 +612,40 @@
 </span><span class="lnt">19
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="nf">void</span> <span class="n">doSignal</span><span class="p">(</span><span class="n">Node</span> <span class="nf">first</span><span class="p">)</span> <span class="p">{</span>
-	<span class="k">do</span> <span class="p">{</span>
-		<span class="k">if</span> <span class="p">(</span> <span class="p">(</span><span class="n">firstWaiter</span> <span class="o">=</span> <span class="n">first</span><span class="p">.</span><span class="na">nextWaiter</span><span class="p">)</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span>
-			<span class="n">lastWaiter</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
-		<span class="n">first</span><span class="p">.</span><span class="na">nextWaiter</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
-	<span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="n">transferForSignal</span><span class="p">(</span><span class="n">first</span><span class="p">)</span> <span class="o">&amp;&amp;</span>
-			<span class="p">(</span><span class="n">first</span> <span class="o">=</span> <span class="n">firstWaiter</span><span class="p">)</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">);</span>
-<span class="p">}</span>
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kt">void</span> <span class="nf">doSignal</span><span class="o">(</span><span class="n">Node</span> <span class="n">first</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">do</span> <span class="o">{</span>
+		<span class="k">if</span> <span class="o">(</span> <span class="o">(</span><span class="n">firstWaiter</span> <span class="o">=</span> <span class="n">first</span><span class="o">.</span><span class="na">nextWaiter</span><span class="o">)</span> <span class="o">=</span><span class="o">=</span> <span class="kc">null</span><span class="o">)</span>
+			<span class="n">lastWaiter</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+		<span class="n">first</span><span class="o">.</span><span class="na">nextWaiter</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+	<span class="o">}</span> <span class="k">while</span> <span class="o">(</span><span class="o">!</span><span class="n">transferForSignal</span><span class="o">(</span><span class="n">first</span><span class="o">)</span> <span class="o">&amp;</span><span class="o">&amp;</span>
+			<span class="o">(</span><span class="n">first</span> <span class="o">=</span> <span class="n">firstWaiter</span><span class="o">)</span> <span class="o">!</span><span class="o">=</span> <span class="kc">null</span><span class="o">)</span><span class="o">;</span>
+<span class="o">}</span>
 
-<span class="kd">final</span> <span class="nf">boolean</span> <span class="n">transferForSignal</span><span class="p">(</span><span class="n">Node</span> <span class="nf">node</span><span class="p">)</span> <span class="p">{</span>
-	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">compareAndSetWaitStatus</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">Node</span><span class="p">.</span><span class="na">CONDITION</span><span class="p">,</span> <span class="n">0</span><span class="p">))</span>
-		<span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+<span class="kd">final</span> <span class="kt">boolean</span> <span class="nf">transferForSignal</span><span class="o">(</span><span class="n">Node</span> <span class="n">node</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">if</span> <span class="o">(</span><span class="o">!</span><span class="n">compareAndSetWaitStatus</span><span class="o">(</span><span class="n">node</span><span class="o">,</span> <span class="n">Node</span><span class="o">.</span><span class="na">CONDITION</span><span class="o">,</span> <span class="n">0</span><span class="o">)</span><span class="o">)</span>
+		<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
 
-	<span class="n">Node</span> <span class="nf">p</span> <span class="o">=</span> <span class="n">enq</span><span class="p">(</span><span class="n">node</span><span class="p">);</span>
-	<span class="kt">int</span> <span class="nf">ws</span> <span class="o">=</span> <span class="n">p</span><span class="p">.</span><span class="na">waitStatus</span><span class="p">;</span>
-	<span class="k">if</span> <span class="p">(</span><span class="n">ws</span> <span class="o">&gt;</span> <span class="n">0</span> <span class="o">||</span> <span class="o">!</span><span class="n">compareAndSetWaitStatus</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">ws</span><span class="p">,</span> <span class="n">Node</span><span class="p">.</span><span class="na">SIGNAL</span><span class="p">))</span>
-		<span class="n">LockSupport</span><span class="p">.</span><span class="na">unpark</span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="na">thread</span><span class="p">);</span>
-	<span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
-<span class="p">}</span></code></pre></td></tr></table>
+	<span class="n">Node</span> <span class="n">p</span> <span class="o">=</span> <span class="n">enq</span><span class="o">(</span><span class="n">node</span><span class="o">)</span><span class="o">;</span>
+	<span class="kt">int</span> <span class="n">ws</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="na">waitStatus</span><span class="o">;</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">ws</span> <span class="o">&gt;</span> <span class="n">0</span> <span class="o">|</span><span class="o">|</span> <span class="o">!</span><span class="n">compareAndSetWaitStatus</span><span class="o">(</span><span class="n">p</span><span class="o">,</span> <span class="n">ws</span><span class="o">,</span> <span class="n">Node</span><span class="o">.</span><span class="na">SIGNAL</span><span class="o">)</span><span class="o">)</span>
+		<span class="n">LockSupport</span><span class="o">.</span><span class="na">unpark</span><span class="o">(</span><span class="n">node</span><span class="o">.</span><span class="na">thread</span><span class="o">)</span><span class="o">;</span>
+	<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>doSignal遍历<code>Condition</code>的等待队列，直到遇到一个能被成功转移到<code>ReentrantLock</code>等待队列的线程，完成signal操作</p>
-
+</div><p>doSignal遍历<code>Condition</code>的等待队列，直到遇到一个能被成功转移到<code>ReentrantLock</code>等待队列的线程，完成signal操作</p>
 <p>transferForSignal第一个CAS注释上说如果waitStatus不是CONDITION，那么表示node被cancel，这块不是很理解什么时候会被cancel，总之就是当前node无效，转移失败。当waitStatus成功变成0(等待队列上的node类型)之后，将node通过enq放到等待队列里，p是node的前序节点。</p>
-
 <p>这里不是很理解最后这个if的逻辑，看起来是如果前序节点的waitStatus不是SIGNAL(表示当前节点没在SIGNAL状态)，那么唤醒当前线程???</p>
-
 <h1 id="5-lock-free">5. Lock Free</h1>
-
 <p>个人理解，lock的最大问题在以下几点</p>
-
 <ul>
 <li>竞争失败需要入等待队列，入队出队需要跟等待队列有交互</li>
 <li>线程挂起/切换代价大，引发context保存/恢复、cpu cache miss等问题</li>
 </ul>
-
 <p>lock free相对于lock based算法会有以上优势，但不是银弹。lock free的主要算法是spin + cas</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -784,59 +670,56 @@
 </span><span class="lnt">23
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="nf">class</span> <span class="n">LockFree</span> <span class="p">{</span>
-    <span class="kd">private</span> <span class="nf">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="p">;</span>	<span class="c1">// ①
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LockFree</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>	<span class="c1">// ①
 </span><span class="c1"></span>
-    <span class="kd">private</span> <span class="nf">static</span> <span class="kd">final</span> <span class="nf">Unsafe</span> <span class="n">UNSAFE</span> <span class="o">=</span> <span class="n">Unsafe</span><span class="p">.</span><span class="na">getUnsafe</span><span class="p">();</span>
-    <span class="kd">private</span> <span class="nf">static</span> <span class="kt">long</span> <span class="nf">iOffset</span> <span class="o">=</span> <span class="n">0</span><span class="p">;</span>	<span class="c1">// ②
-</span><span class="c1"></span>    <span class="kd">static</span> <span class="p">{</span>
-        <span class="k">try</span> <span class="p">{</span>
-            <span class="n">iOffset</span> <span class="o">=</span> <span class="n">UNSAFE</span><span class="p">.</span><span class="na">objectFieldOffset</span><span class="p">(</span><span class="n">LockFree</span><span class="p">.</span><span class="na">class</span><span class="p">.</span><span class="na">getDeclaredField</span><span class="p">(</span><span class="s">&#34;i&#34;</span><span class="p">));</span>
-        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="n">NoSuchFieldException</span> <span class="nf">e</span><span class="p">)</span> <span class="p">{</span>
-            <span class="k">throw</span> <span class="k">new</span> <span class="n">Error</span><span class="p">(</span><span class="n">e</span><span class="p">);</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Unsafe</span> <span class="n">UNSAFE</span> <span class="o">=</span> <span class="n">Unsafe</span><span class="o">.</span><span class="na">getUnsafe</span><span class="o">(</span><span class="o">)</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">long</span> <span class="n">iOffset</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>	<span class="c1">// ②
+</span><span class="c1"></span>    <span class="kd">static</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">iOffset</span> <span class="o">=</span> <span class="n">UNSAFE</span><span class="o">.</span><span class="na">objectFieldOffset</span><span class="o">(</span><span class="n">LockFree</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getDeclaredField</span><span class="o">(</span><span class="s">&#34;i&#34;</span><span class="o">)</span><span class="o">)</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">NoSuchFieldException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="n">Error</span><span class="o">(</span><span class="n">e</span><span class="o">)</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="nf">void</span> <span class="n">incr</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">while</span> <span class="p">(</span><span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
-            <span class="kt">int</span> <span class="nf">old</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
-            <span class="n">i</span><span class="o">++</span><span class="p">;</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">UNSAFE</span><span class="p">.</span><span class="na">compareAndSwapInt</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="n">iOffset</span><span class="p">,</span> <span class="n">old</span><span class="p">,</span> <span class="n">i</span><span class="p">))</span> <span class="p">{</span>		<span class="c1">// ③
-</span><span class="c1"></span>                <span class="k">break</span><span class="p">;</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></td></tr></table>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">incr</span><span class="o">(</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">while</span> <span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+            <span class="kt">int</span> <span class="n">old</span> <span class="o">=</span> <span class="n">i</span><span class="o">;</span>
+            <span class="n">i</span><span class="o">+</span><span class="o">+</span><span class="o">;</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">UNSAFE</span><span class="o">.</span><span class="na">compareAndSwapInt</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">iOffset</span><span class="o">,</span> <span class="n">old</span><span class="o">,</span> <span class="n">i</span><span class="o">)</span><span class="o">)</span> <span class="o">{</span>		<span class="c1">// ③
+</span><span class="c1"></span>                <span class="k">break</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<ol>
-<li><p>数据字段</p></li>
-
-<li><p>unsafe得到的这个字段在内存中的偏移量，约等于C里的(&amp;struct.field - &amp;struct)</p></li>
-
-<li><p>CAS操作，在native方法中最终会调用到CPU的CAS指令，原子赋值</p></li>
+</div><ol>
+<li>
+<p>数据字段</p>
+</li>
+<li>
+<p>unsafe得到的这个字段在内存中的偏移量，约等于C里的(&amp;struct.field - &amp;struct)</p>
+</li>
+<li>
+<p>CAS操作，在native方法中最终会调用到CPU的CAS指令，原子赋值</p>
+</li>
 </ol>
-
 <p>乐观锁实现，只有一个线程能看到old和i的值相等而改变值，其他线程返回while开头重新竞争。个人认为Lock Free会有以下问题</p>
-
 <ul>
 <li>在竞争非常激烈的场合，即长期有大量竞争，那么就会导致有很多线程在空耗CPU自旋</li>
 <li>只适合临界区非常轻量的场合，即临界区内执行时间很短</li>
 <li>非公平实现，可能会有线程饿死</li>
 </ul>
-
-<h1 id="6-常用同步工具">6. 常用同步工具</h1>
-
+<h1 id="6-">6. 常用同步工具</h1>
 <p>concurrent包下的同步工具基本都是<code>AbstractQueuedSynchronizer</code>的直接使用(内部使用其子类)，或者间接使用(用<code>ReentrantLock</code>)</p>
-
 <h2 id="countdownlatch">CountDownLatch</h2>
-
 <p>设置等待数量，允许一个线程等在latch上，N个线程countDown()，在所有线程countDown()完之后，等待线程放行。典型场景就是多线程统计的时候，N个线程统计完了之后在等待线程上归并</p>
-
 <p>实现上，内部继承AQS，以share mode使用，state归零之后可以获得锁</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -853,49 +736,38 @@
 </span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">protected</span> <span class="nf">int</span> <span class="n">tryAcquireShared</span><span class="p">(</span><span class="kt">int</span> <span class="nf">acquires</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">getState</span><span class="p">()</span> <span class="o">==</span> <span class="n">0</span><span class="p">)</span> <span class="o">?</span> <span class="n">1</span> <span class="o">:</span> <span class="o">-</span><span class="n">1</span><span class="p">;</span>
-<span class="p">}</span>
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">protected</span> <span class="kt">int</span> <span class="nf">tryAcquireShared</span><span class="o">(</span><span class="kt">int</span> <span class="n">acquires</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="o">(</span><span class="n">getState</span><span class="o">(</span><span class="o">)</span> <span class="o">=</span><span class="o">=</span> <span class="n">0</span><span class="o">)</span> <span class="o">?</span> <span class="n">1</span> <span class="o">:</span> <span class="o">-</span><span class="n">1</span><span class="o">;</span>
+<span class="o">}</span>
 
-<span class="kd">protected</span> <span class="nf">boolean</span> <span class="n">tryReleaseShared</span><span class="p">(</span><span class="kt">int</span> <span class="nf">releases</span><span class="p">)</span> <span class="p">{</span>
+<span class="kd">protected</span> <span class="kt">boolean</span> <span class="nf">tryReleaseShared</span><span class="o">(</span><span class="kt">int</span> <span class="n">releases</span><span class="o">)</span> <span class="o">{</span>
     <span class="c1">// Decrement count; signal when transition to zero
-</span><span class="c1"></span>    <span class="k">for</span> <span class="p">(;;)</span> <span class="p">{</span>
-        <span class="kt">int</span> <span class="nf">c</span> <span class="o">=</span> <span class="n">getState</span><span class="p">();</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">c</span> <span class="o">==</span> <span class="n">0</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
-        <span class="kt">int</span> <span class="nf">nextc</span> <span class="o">=</span> <span class="n">c</span><span class="o">-</span><span class="n">1</span><span class="p">;</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">compareAndSetState</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">nextc</span><span class="p">))</span>
-            <span class="k">return</span> <span class="n">nextc</span> <span class="o">==</span> <span class="n">0</span><span class="p">;</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></td></tr></table>
+</span><span class="c1"></span>    <span class="k">for</span> <span class="o">(</span><span class="o">;</span><span class="o">;</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">int</span> <span class="n">c</span> <span class="o">=</span> <span class="n">getState</span><span class="o">(</span><span class="o">)</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">c</span> <span class="o">=</span><span class="o">=</span> <span class="n">0</span><span class="o">)</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="kt">int</span> <span class="n">nextc</span> <span class="o">=</span> <span class="n">c</span><span class="o">-</span><span class="n">1</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">compareAndSetState</span><span class="o">(</span><span class="n">c</span><span class="o">,</span> <span class="n">nextc</span><span class="o">)</span><span class="o">)</span>
+            <span class="k">return</span> <span class="n">nextc</span> <span class="o">=</span><span class="o">=</span> <span class="n">0</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<h2 id="semaphore">Semaphore</h2>
-
+</div><h2 id="semaphore">Semaphore</h2>
 <p>容量为N的资源，每acquire()一次-1，到0的时候阻塞，等前面持有资源的人release()</p>
-
 <p>实现上，很直接的AQS应用，share mode，设置初始state值，大于0的时候允许获得锁，到0阻塞</p>
-
 <p>也分fair和non-fair，区别和<code>ReentrantLock</code>一样，在于抢锁前是否会看一眼队列里有没有等待线程</p>
-
 <h2 id="cyclicbarrier">CyclicBarrier</h2>
-
 <p>设置个初始量N，在这N个线程都await()之后所有线程才能继续执行，否则阻塞。线程中断可以打破这个barrier，所有await中的线程抛<code>InterruptedException</code></p>
-
 <p>实现上，用<code>ReentrantLock</code>做同步，内部用一个generation的概念区分每一次全员到达barrier之前的状态，每次到达barrier之后重置这个generation</p>
-
-<h1 id="7-线程池">7. 线程池</h1>
-
+<h1 id="7-">7. 线程池</h1>
 <p>线程创建的时候有额外的开销，OS需要创建线程内核数据结构、分配栈内存(fork/COW)、管理调度队列，JVM需要创建<code>Thread</code>对象、分配栈空间、关联OS线程等操作，所以一般多线程程序不会频繁创建/结束线程，而是将线程池化，要用的时候向线程池提交任务，由线程池去找线程执行(如果找得到的话)，结束后归还线程池等待新任务。</p>
-
-<h2 id="使用">使用</h2>
-
+<h2 id="heading-2">使用</h2>
 <p>Java线程池主要由<code>ThreadPoolExecutor</code>(及其子类)实现，通过<code>void execute(Runnable command)</code>(或<code>Future&lt;?&gt; submit(Runnable task)</code>，如果需要后续拿返回结果)向线程池提交任务执行，submit最终也是调用execute。</p>
-
 <p>完整版构造函数</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -904,16 +776,16 @@
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="nf">ThreadPoolExecutor</span><span class="p">(</span><span class="kt">int</span> <span class="nf">corePoolSize</span><span class="p">,</span>
-                          <span class="kt">int</span> <span class="nf">maximumPoolSize</span><span class="p">,</span>
-                          <span class="kt">long</span> <span class="nf">keepAliveTime</span><span class="p">,</span>
-                          <span class="n">TimeUnit</span> <span class="nf">unit</span><span class="p">,</span>
-                          <span class="n">BlockingQueue</span><span class="o">&lt;</span><span class="n">Runnable</span><span class="o">&gt;</span> <span class="nf">workQueue</span><span class="p">,</span>
-                          <span class="n">ThreadFactory</span> <span class="nf">threadFactory</span><span class="p">,</span>
-                          <span class="n">RejectedExecutionHandler</span> <span class="nf">handler</span><span class="p">)</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="nf">ThreadPoolExecutor</span><span class="o">(</span><span class="kt">int</span> <span class="n">corePoolSize</span><span class="o">,</span>
+                          <span class="kt">int</span> <span class="n">maximumPoolSize</span><span class="o">,</span>
+                          <span class="kt">long</span> <span class="n">keepAliveTime</span><span class="o">,</span>
+                          <span class="n">TimeUnit</span> <span class="n">unit</span><span class="o">,</span>
+                          <span class="n">BlockingQueue</span><span class="o">&lt;</span><span class="n">Runnable</span><span class="o">&gt;</span> <span class="n">workQueue</span><span class="o">,</span>
+                          <span class="n">ThreadFactory</span> <span class="n">threadFactory</span><span class="o">,</span>
+                          <span class="n">RejectedExecutionHandler</span> <span class="n">handler</span><span class="o">)</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<ul>
+</div><ul>
 <li>corePoolSize，池内idle线程数量限制，一般不会被回收，除非设置了allowCoreThreadTimeOut</li>
 <li>maximumPoolSize，总线程数量，线程数量在(corePoolSize, maximumPoolSize]区间时，idle线程超时会被回收</li>
 <li>keepAliveTime，idle线程超时时间</li>
@@ -922,15 +794,12 @@
 <li>ThreadFactory，创建线程的工厂类</li>
 <li>RejectedExecutionHandler，线程池拒绝任务后的回调</li>
 </ul>
-
-<h2 id="实现">实现</h2>
-
+<h2 id="heading-3">实现</h2>
 <p>实现上，内部由<code>AtomicInteger ctl</code>控制线程池内部状态，其中高3位存储执行状态(RUNNING/SHUTDOWN/STOP/TIDYING/TERMINATED)，低3位存储工作线程数。</p>
-
 <p><code>execute(Runnable command)</code>实现如下</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -951,41 +820,38 @@
 </span><span class="lnt">19
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="nf">void</span> <span class="n">execute</span><span class="p">(</span><span class="n">Runnable</span> <span class="nf">command</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">command</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span>
-        <span class="k">throw</span> <span class="k">new</span> <span class="n">NullPointerException</span><span class="p">();</span>
-    <span class="kt">int</span> <span class="nf">c</span> <span class="o">=</span> <span class="n">ctl</span><span class="p">.</span><span class="na">get</span><span class="p">();</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">workerCountOf</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">corePoolSize</span><span class="p">)</span> <span class="p">{</span>	<span class="c1">// ①
-</span><span class="c1"></span>        <span class="k">if</span> <span class="p">(</span><span class="n">addWorker</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="kc">true</span><span class="p">))</span>
-            <span class="k">return</span><span class="p">;</span>
-        <span class="n">c</span> <span class="o">=</span> <span class="n">ctl</span><span class="p">.</span><span class="na">get</span><span class="p">();</span>
-    <span class="p">}</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">isRunning</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">workQueue</span><span class="p">.</span><span class="na">offer</span><span class="p">(</span><span class="n">command</span><span class="p">))</span> <span class="p">{</span>	<span class="c1">// ②
-</span><span class="c1"></span>        <span class="kt">int</span> <span class="nf">recheck</span> <span class="o">=</span> <span class="n">ctl</span><span class="p">.</span><span class="na">get</span><span class="p">();</span>
-        <span class="k">if</span> <span class="p">(</span><span class="o">!</span> <span class="n">isRunning</span><span class="p">(</span><span class="n">recheck</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">remove</span><span class="p">(</span><span class="n">command</span><span class="p">))</span>
-            <span class="n">reject</span><span class="p">(</span><span class="n">command</span><span class="p">);</span>
-        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">workerCountOf</span><span class="p">(</span><span class="n">recheck</span><span class="p">)</span> <span class="o">==</span> <span class="n">0</span><span class="p">)</span>
-            <span class="n">addWorker</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
-    <span class="p">}</span>
-    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">addWorker</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="kc">false</span><span class="p">))</span>	<span class="c1">// ③
-</span><span class="c1"></span>        <span class="n">reject</span><span class="p">(</span><span class="n">command</span><span class="p">);</span>
-<span class="p">}</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">execute</span><span class="o">(</span><span class="n">Runnable</span> <span class="n">command</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">command</span> <span class="o">=</span><span class="o">=</span> <span class="kc">null</span><span class="o">)</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="n">NullPointerException</span><span class="o">(</span><span class="o">)</span><span class="o">;</span>
+    <span class="kt">int</span> <span class="n">c</span> <span class="o">=</span> <span class="n">ctl</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="o">)</span><span class="o">;</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">workerCountOf</span><span class="o">(</span><span class="n">c</span><span class="o">)</span> <span class="o">&lt;</span> <span class="n">corePoolSize</span><span class="o">)</span> <span class="o">{</span>	<span class="c1">// ①
+</span><span class="c1"></span>        <span class="k">if</span> <span class="o">(</span><span class="n">addWorker</span><span class="o">(</span><span class="n">command</span><span class="o">,</span> <span class="kc">true</span><span class="o">)</span><span class="o">)</span>
+            <span class="k">return</span><span class="o">;</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">ctl</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="o">)</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">isRunning</span><span class="o">(</span><span class="n">c</span><span class="o">)</span> <span class="o">&amp;</span><span class="o">&amp;</span> <span class="n">workQueue</span><span class="o">.</span><span class="na">offer</span><span class="o">(</span><span class="n">command</span><span class="o">)</span><span class="o">)</span> <span class="o">{</span>	<span class="c1">// ②
+</span><span class="c1"></span>        <span class="kt">int</span> <span class="n">recheck</span> <span class="o">=</span> <span class="n">ctl</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="o">)</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="o">!</span> <span class="n">isRunning</span><span class="o">(</span><span class="n">recheck</span><span class="o">)</span> <span class="o">&amp;</span><span class="o">&amp;</span> <span class="n">remove</span><span class="o">(</span><span class="n">command</span><span class="o">)</span><span class="o">)</span>
+            <span class="n">reject</span><span class="o">(</span><span class="n">command</span><span class="o">)</span><span class="o">;</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">workerCountOf</span><span class="o">(</span><span class="n">recheck</span><span class="o">)</span> <span class="o">=</span><span class="o">=</span> <span class="n">0</span><span class="o">)</span>
+            <span class="n">addWorker</span><span class="o">(</span><span class="kc">null</span><span class="o">,</span> <span class="kc">false</span><span class="o">)</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="o">!</span><span class="n">addWorker</span><span class="o">(</span><span class="n">command</span><span class="o">,</span> <span class="kc">false</span><span class="o">)</span><span class="o">)</span>	<span class="c1">// ③
+</span><span class="c1"></span>        <span class="n">reject</span><span class="o">(</span><span class="n">command</span><span class="o">)</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>主要逻辑是</p>
-
+</div><p>主要逻辑是</p>
 <ol>
 <li>如果工作线程数比core数量少，直接通过<code>addWorker</code>增加工作线程，并执行当前这个任务</li>
 <li>超过core数量之后，后续任务先塞等待队列</li>
 <li>如果等待队列满了(2的offer失败)，再新开线程执行</li>
 </ol>
-
-<p>以上可以看出，如果等待队列是有容量的，很可能后来没机会进队列的任务比早先先进等待队列的先执行，这块可能某些业务场景<strong><em>会有问题</em></strong></p>
-
+<p>以上可以看出，如果等待队列是有容量的，很可能后来没机会进队列的任务比早先先进等待队列的先执行，这块可能某些业务场景<em><strong>会有问题</strong></em></p>
 <p><code>addWorker(Runnable firstTask, boolean core)</code>主干逻辑如下(有删节，主要是维护计数相关的代码)</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -1016,46 +882,45 @@
 </span><span class="lnt">29
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="nf">boolean</span> <span class="n">addWorker</span><span class="p">(</span><span class="n">Runnable</span> <span class="nf">firstTask</span><span class="p">,</span> <span class="kt">boolean</span> <span class="nf">core</span><span class="p">)</span> <span class="p">{</span>
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">addWorker</span><span class="o">(</span><span class="n">Runnable</span> <span class="n">firstTask</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">core</span><span class="o">)</span> <span class="o">{</span>
     <span class="c1">// 内部计数......
 </span><span class="c1"></span>    
-    <span class="kt">boolean</span> <span class="nf">workerStarted</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-    <span class="kt">boolean</span> <span class="nf">workerAdded</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-    <span class="n">Worker</span> <span class="nf">w</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
-    <span class="k">try</span> <span class="p">{</span>
-        <span class="n">w</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Worker</span><span class="p">(</span><span class="n">firstTask</span><span class="p">);</span>		<span class="c1">// ①
-</span><span class="c1"></span>        <span class="kd">final</span> <span class="nf">Thread</span> <span class="n">t</span> <span class="o">=</span> <span class="n">w</span><span class="p">.</span><span class="na">thread</span><span class="p">;</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">t</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">boolean</span> <span class="n">workerStarted</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="kt">boolean</span> <span class="n">workerAdded</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="n">Worker</span> <span class="n">w</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Worker</span><span class="o">(</span><span class="n">firstTask</span><span class="o">)</span><span class="o">;</span>		<span class="c1">// ①
+</span><span class="c1"></span>        <span class="kd">final</span> <span class="n">Thread</span> <span class="n">t</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="na">thread</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">t</span> <span class="o">!</span><span class="o">=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
             <span class="c1">// worker集合操作......
 </span><span class="c1"></span>            
-            <span class="k">if</span> <span class="p">(</span><span class="n">workerAdded</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">t</span><span class="p">.</span><span class="na">start</span><span class="p">();</span>			<span class="c1">// ②
-</span><span class="c1"></span>                <span class="n">workerStarted</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-    <span class="p">}</span> <span class="k">finally</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="p">(</span><span class="o">!</span> <span class="n">workerStarted</span><span class="p">)</span>
-            <span class="n">addWorkerFailed</span><span class="p">(</span><span class="n">w</span><span class="p">);</span>
-    <span class="p">}</span>
-    <span class="k">return</span> <span class="n">workerStarted</span><span class="p">;</span>
-<span class="p">}</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">workerAdded</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">t</span><span class="o">.</span><span class="na">start</span><span class="o">(</span><span class="o">)</span><span class="o">;</span>			<span class="c1">// ②
+</span><span class="c1"></span>                <span class="n">workerStarted</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="o">!</span> <span class="n">workerStarted</span><span class="o">)</span>
+            <span class="n">addWorkerFailed</span><span class="o">(</span><span class="n">w</span><span class="o">)</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="n">workerStarted</span><span class="o">;</span>
+<span class="o">}</span>
 
-<span class="kd">private</span> <span class="nf">final</span> <span class="kd">class</span> <span class="nf">Worker</span>
-    <span class="kd">extends</span> <span class="nf">AbstractQueuedSynchronizer</span>
-    <span class="kd">implements</span> <span class="nf">Runnable</span> <span class="p">{</span>
-    <span class="kd">final</span> <span class="nf">Thread</span> <span class="n">thread</span><span class="p">;</span>
-    <span class="p">}</span></code></pre></td></tr></table>
+<span class="kd">private</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">Worker</span>
+    <span class="kd">extends</span> <span class="n">AbstractQueuedSynchronizer</span>
+    <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
+    <span class="kd">final</span> <span class="n">Thread</span> <span class="n">thread</span><span class="o">;</span>
+    <span class="o">}</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<ol>
+</div><ol>
 <li>addWorker主要new了一个Worker对象，看Worker对象的定义可以发现它实现了Runnable接口，并且内部维护了一个Thread，并且本身就是个AQS。就是说可以把他同时当一个线程和一个锁来用</li>
 <li>初始化工作完成之后启动Worker内部维护的线程，最终会调用到<code>java.util.concurrent.ThreadPoolExecutor#runWorker</code>，<code>runWorker</code>主要逻辑是死循环调用<code>getTask</code>从等待队列中取任务执行</li>
 </ol>
-
 <p><code>Runnable getTask()</code>逻辑</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -1087,40 +952,39 @@
 </span><span class="lnt">30
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="nf">Runnable</span> <span class="n">getTask</span><span class="p">()</span> <span class="p">{</span>
-    <span class="kt">boolean</span> <span class="nf">timedOut</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span> <span class="c1">// Did the last poll() time out?
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="n">Runnable</span> <span class="nf">getTask</span><span class="o">(</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kt">boolean</span> <span class="n">timedOut</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span> <span class="c1">// Did the last poll() time out?
 </span><span class="c1"></span>
-    <span class="k">for</span> <span class="p">(;;)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="o">(</span><span class="o">;</span><span class="o">;</span><span class="o">)</span> <span class="o">{</span>
         <span class="c1">// ...
 </span><span class="c1"></span>
-        <span class="kt">int</span> <span class="nf">wc</span> <span class="o">=</span> <span class="n">workerCountOf</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+        <span class="kt">int</span> <span class="n">wc</span> <span class="o">=</span> <span class="n">workerCountOf</span><span class="o">(</span><span class="n">c</span><span class="o">)</span><span class="o">;</span>
 
         <span class="c1">// Are workers subject to culling?
-</span><span class="c1"></span>        <span class="kt">boolean</span> <span class="nf">timed</span> <span class="o">=</span> <span class="n">allowCoreThreadTimeOut</span> <span class="o">||</span> <span class="n">wc</span> <span class="o">&gt;</span> <span class="n">corePoolSize</span><span class="p">;</span>	<span class="c1">// ①
+</span><span class="c1"></span>        <span class="kt">boolean</span> <span class="n">timed</span> <span class="o">=</span> <span class="n">allowCoreThreadTimeOut</span> <span class="o">|</span><span class="o">|</span> <span class="n">wc</span> <span class="o">&gt;</span> <span class="n">corePoolSize</span><span class="o">;</span>	<span class="c1">// ①
 </span><span class="c1"></span>
-        <span class="k">if</span> <span class="p">((</span><span class="n">wc</span> <span class="o">&gt;</span> <span class="n">maximumPoolSize</span> <span class="o">||</span> <span class="p">(</span><span class="n">timed</span> <span class="o">&amp;&amp;</span> <span class="n">timedOut</span><span class="p">))</span>
-            <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">wc</span> <span class="o">&gt;</span> <span class="n">1</span> <span class="o">||</span> <span class="n">workQueue</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">()))</span> <span class="p">{</span>	<span class="c1">// ③
-</span><span class="c1"></span>            <span class="k">if</span> <span class="p">(</span><span class="n">compareAndDecrementWorkerCount</span><span class="p">(</span><span class="n">c</span><span class="p">))</span>
-                <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
-            <span class="k">continue</span><span class="p">;</span>
-        <span class="p">}</span>
+        <span class="k">if</span> <span class="o">(</span><span class="o">(</span><span class="n">wc</span> <span class="o">&gt;</span> <span class="n">maximumPoolSize</span> <span class="o">|</span><span class="o">|</span> <span class="o">(</span><span class="n">timed</span> <span class="o">&amp;</span><span class="o">&amp;</span> <span class="n">timedOut</span><span class="o">)</span><span class="o">)</span>
+            <span class="o">&amp;</span><span class="o">&amp;</span> <span class="o">(</span><span class="n">wc</span> <span class="o">&gt;</span> <span class="n">1</span> <span class="o">|</span><span class="o">|</span> <span class="n">workQueue</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="o">)</span><span class="o">)</span><span class="o">)</span> <span class="o">{</span>	<span class="c1">// ③
+</span><span class="c1"></span>            <span class="k">if</span> <span class="o">(</span><span class="n">compareAndDecrementWorkerCount</span><span class="o">(</span><span class="n">c</span><span class="o">)</span><span class="o">)</span>
+                <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+            <span class="k">continue</span><span class="o">;</span>
+        <span class="o">}</span>
 
-        <span class="k">try</span> <span class="p">{</span>
-            <span class="n">Runnable</span> <span class="nf">r</span> <span class="o">=</span> <span class="n">timed</span> <span class="o">?</span>
-                <span class="n">workQueue</span><span class="p">.</span><span class="na">poll</span><span class="p">(</span><span class="n">keepAliveTime</span><span class="p">,</span> <span class="n">TimeUnit</span><span class="p">.</span><span class="na">NANOSECONDS</span><span class="p">)</span> <span class="o">:</span>
-                <span class="n">workQueue</span><span class="p">.</span><span class="na">take</span><span class="p">();</span>		<span class="c1">// ②
-</span><span class="c1"></span>            <span class="k">if</span> <span class="p">(</span><span class="n">r</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span>
-                <span class="k">return</span> <span class="n">r</span><span class="p">;</span>
-            <span class="n">timedOut</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="n">InterruptedException</span> <span class="nf">retry</span><span class="p">)</span> <span class="p">{</span>
-            <span class="n">timedOut</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></td></tr></table>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">Runnable</span> <span class="n">r</span> <span class="o">=</span> <span class="n">timed</span> <span class="o">?</span>
+                <span class="n">workQueue</span><span class="o">.</span><span class="na">poll</span><span class="o">(</span><span class="n">keepAliveTime</span><span class="o">,</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">NANOSECONDS</span><span class="o">)</span> <span class="o">:</span>
+                <span class="n">workQueue</span><span class="o">.</span><span class="na">take</span><span class="o">(</span><span class="o">)</span><span class="o">;</span>		<span class="c1">// ②
+</span><span class="c1"></span>            <span class="k">if</span> <span class="o">(</span><span class="n">r</span> <span class="o">!</span><span class="o">=</span> <span class="kc">null</span><span class="o">)</span>
+                <span class="k">return</span> <span class="n">r</span><span class="o">;</span>
+            <span class="n">timedOut</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">retry</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">timedOut</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>注意编号顺序</p>
-
+</div><p>注意编号顺序</p>
 <ol>
 <li>在标记了allowCoreThreadTimeOut或者工作线程数大于core数量时需要设置超时</li>
 <li>从队列里拿task，看1有没有设置超时来决定等待是否需要超时</li>

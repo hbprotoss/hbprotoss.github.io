@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.58.3 with theme even" />
+<meta name="generator" content="Hugo 0.62.0 with theme even" />
 
 
 <link rel="canonical" href="http://hbprotoss.github.io/post/io%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/" />
@@ -46,16 +46,13 @@
 <meta property="article:modified_time" content="2018-08-08T14:17:19+08:00" />
 <meta itemprop="name" content="IO多路复用">
 <meta itemprop="description" content="以简单的echo server举例说明三种不同方式IO的原理和影响，示例代码仅做演示说明之用，有些异常处理和elegant quit都未实现，错">
-
-
 <meta itemprop="datePublished" content="2018-08-08T14:17:19&#43;08:00" />
 <meta itemprop="dateModified" content="2018-08-08T14:17:19&#43;08:00" />
 <meta itemprop="wordCount" content="1464">
 
 
 
-<meta itemprop="keywords" content="IO,Linux,Python,Network," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="IO,Linux,Python,Network," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="IO多路复用"/>
 <meta name="twitter:description" content="以简单的echo server举例说明三种不同方式IO的原理和影响，示例代码仅做演示说明之用，有些异常处理和elegant quit都未实现，错"/>
 
@@ -135,28 +132,21 @@
   <h2 class="post-toc-title">Contents</h2>
   <div class="post-toc-content always-active">
     <nav id="TableOfContents">
-<ul>
-<li><a href="#几种io方式">几种IO方式</a>
-<ul>
-<li><a href="#简单的循环等待">简单的循环等待</a></li>
-<li><a href="#select">select</a></li>
-<li><a href="#epoll">epoll</a></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#heading">简单的循环等待</a></li>
+    <li><a href="#select">select</a></li>
+    <li><a href="#epoll">epoll</a></li>
+  </ul>
 </nav>
   </div>
 </div>
     <div class="post-content">
-      
-
-<p>以简单的echo server举例说明三种不同方式IO的原理和影响，示例代码仅做演示说明之用，有些异常处理和elegant quit都未实现，错误之处请批评指正</p>
-
-<h1 id="几种io方式">几种IO方式</h1>
-
-<h2 id="简单的循环等待">简单的循环等待</h2>
+      <p>以简单的echo server举例说明三种不同方式IO的原理和影响，示例代码仅做演示说明之用，有些异常处理和elegant quit都未实现，错误之处请批评指正</p>
+<h1 id="io">几种IO方式</h1>
+<h2 id="heading">简单的循环等待</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-python" data-lang="python"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -191,31 +181,29 @@
 <span class="n">SOCKET_TYPE</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span>
 
 <span class="n">sockServer</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">SOCKET_FAMILY</span><span class="p">,</span> <span class="n">SOCKET_TYPE</span><span class="p">)</span>
-<span class="n">sockServer</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="mi">8888</span><span class="p">))</span>
-<span class="n">sockServer</span><span class="o">.</span><span class="n">listen</span><span class="p">()</span>
+<span class="n">sockServer</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">0.0.0.0</span><span class="s1">&#39;</span><span class="p">,</span> <span class="mi">8888</span><span class="p">)</span><span class="p">)</span>
+<span class="n">sockServer</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="p">)</span>
 
 <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
-    <span class="n">conn</span><span class="p">,</span> <span class="n">address</span> <span class="o">=</span> <span class="n">sockServer</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
-    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;connected from&#39;</span><span class="p">,</span> <span class="n">conn</span><span class="o">.</span><span class="n">getpeername</span><span class="p">())</span>
+    <span class="n">conn</span><span class="p">,</span> <span class="n">address</span> <span class="o">=</span> <span class="n">sockServer</span><span class="o">.</span><span class="n">accept</span><span class="p">(</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">connected from</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">conn</span><span class="o">.</span><span class="n">getpeername</span><span class="p">(</span><span class="p">)</span><span class="p">)</span>
     <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
-            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;data recv:&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
-            <span class="n">conn</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="s2">&#34;echo: &#34;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="o">+</span> <span class="n">data</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">data recv:</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="p">)</span><span class="p">)</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="sa"></span><span class="s2">&#34;</span><span class="s2">echo: </span><span class="s2">&#34;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="p">)</span> <span class="o">+</span> <span class="n">data</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;disconnected from&#39;</span><span class="p">,</span> <span class="n">conn</span><span class="o">.</span><span class="n">getpeername</span><span class="p">())</span>
-            <span class="k">break</span></code></pre></td></tr></table>
+            <span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">disconnected from</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">conn</span><span class="o">.</span><span class="n">getpeername</span><span class="p">(</span><span class="p">)</span><span class="p">)</span>
+            <span class="k">break</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>整体逻辑在一个死循环中等待客户端链接，accept到连接之后，直接进入数据接收/处理循环处理数据，完成之后关闭连接，进入下一个循环的accept。</p>
-
+</div><p>整体逻辑在一个死循环中等待客户端链接，accept到连接之后，直接进入数据接收/处理循环处理数据，完成之后关闭连接，进入下一个循环的accept。</p>
 <p>这种写法逻辑简明，但是问题是，在进入数据处理循环之后，服务端不再处理新的连接，客户端的新连接被挂起，必须等到前一个数据处理循环出来之后才能继续</p>
-
 <h2 id="select">select</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-python" data-lang="python"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -270,59 +258,55 @@
 <span class="kn">import</span> <span class="nn">select</span>
 <span class="kn">import</span> <span class="nn">queue</span>
 
-<span class="n">server</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">()</span>
+<span class="n">server</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="p">)</span>
 <span class="n">server</span><span class="o">.</span><span class="n">setblocking</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
-<span class="n">server</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="mi">8888</span><span class="p">))</span>
-<span class="n">server</span><span class="o">.</span><span class="n">listen</span><span class="p">()</span>
+<span class="n">server</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">0.0.0.0</span><span class="s1">&#39;</span><span class="p">,</span> <span class="mi">8888</span><span class="p">)</span><span class="p">)</span>
+<span class="n">server</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="p">)</span>
 
-<span class="n">message_queue</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">message_queue</span> <span class="o">=</span> <span class="p">{</span><span class="p">}</span>
 <span class="n">rlist</span> <span class="o">=</span> <span class="p">{</span><span class="n">server</span><span class="p">}</span>
-<span class="n">wlist</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+<span class="n">wlist</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="p">)</span>
 
 <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
     <span class="n">readable</span><span class="p">,</span> <span class="n">writable</span><span class="p">,</span> <span class="n">exceptional</span> <span class="o">=</span> <span class="n">select</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">rlist</span><span class="p">,</span> <span class="n">wlist</span><span class="p">,</span> <span class="n">rlist</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">rsocket</span> <span class="ow">in</span> <span class="n">readable</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">rsocket</span> <span class="ow">is</span> <span class="n">server</span><span class="p">:</span>
-            <span class="n">conn</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">rsocket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
-            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;connected from&#39;</span><span class="p">,</span> <span class="n">conn</span><span class="o">.</span><span class="n">getpeername</span><span class="p">())</span>
+            <span class="n">conn</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">rsocket</span><span class="o">.</span><span class="n">accept</span><span class="p">(</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">connected from</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">conn</span><span class="o">.</span><span class="n">getpeername</span><span class="p">(</span><span class="p">)</span><span class="p">)</span>
             <span class="n">rlist</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
-            <span class="n">message_queue</span><span class="p">[</span><span class="n">conn</span><span class="p">]</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
+            <span class="n">message_queue</span><span class="p">[</span><span class="n">conn</span><span class="p">]</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">Queue</span><span class="p">(</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">rsocket</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
-                <span class="n">data_str</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
-                <span class="k">print</span><span class="p">(</span><span class="s1">&#39;data recv from </span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">rsocket</span><span class="o">.</span><span class="n">getpeername</span><span class="p">(),</span> <span class="n">data_str</span><span class="p">))</span>
+                <span class="n">data_str</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="p">)</span>
+                <span class="k">print</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">data recv from </span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">rsocket</span><span class="o">.</span><span class="n">getpeername</span><span class="p">(</span><span class="p">)</span><span class="p">,</span> <span class="n">data_str</span><span class="p">)</span><span class="p">)</span>
                 <span class="n">message_queue</span><span class="p">[</span><span class="n">rsocket</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">data_str</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">rsocket</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">wlist</span><span class="p">:</span>
                     <span class="n">wlist</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">rsocket</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">print</span><span class="p">(</span><span class="s1">&#39;disconnected from&#39;</span><span class="p">,</span> <span class="n">rsocket</span><span class="o">.</span><span class="n">getpeername</span><span class="p">())</span>
+                <span class="k">print</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">disconnected from</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">rsocket</span><span class="o">.</span><span class="n">getpeername</span><span class="p">(</span><span class="p">)</span><span class="p">)</span>
                 <span class="n">rlist</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">rsocket</span><span class="p">)</span>
-                <span class="n">rsocket</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="n">rsocket</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="p">)</span>
                 <span class="k">del</span> <span class="n">message_queue</span><span class="p">[</span><span class="n">rsocket</span><span class="p">]</span>
 
     <span class="k">for</span> <span class="n">wsocket</span> <span class="ow">in</span> <span class="n">writable</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">message_queue</span><span class="p">[</span><span class="n">wsocket</span><span class="p">]</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">message_queue</span><span class="p">[</span><span class="n">wsocket</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
-            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;send </span><span class="si">%s</span><span class="s1"> to </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">wsocket</span><span class="o">.</span><span class="n">getpeername</span><span class="p">()))</span>
-            <span class="n">wsocket</span><span class="o">.</span><span class="n">sendall</span><span class="p">((</span><span class="s1">&#39;echo: &#39;</span> <span class="o">+</span> <span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">message_queue</span><span class="p">[</span><span class="n">wsocket</span><span class="p">]</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="p">)</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">message_queue</span><span class="p">[</span><span class="n">wsocket</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">send </span><span class="si">%s</span><span class="s1"> to </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">wsocket</span><span class="o">.</span><span class="n">getpeername</span><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="p">)</span>
+            <span class="n">wsocket</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">echo: </span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="p">)</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;empty message queue:&#39;</span><span class="p">,</span> <span class="n">wsocket</span><span class="o">.</span><span class="n">getpeername</span><span class="p">())</span>
-            <span class="n">wlist</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">wsocket</span><span class="p">)</span></code></pre></td></tr></table>
+            <span class="k">print</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">empty message queue:</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">wsocket</span><span class="o">.</span><span class="n">getpeername</span><span class="p">(</span><span class="p">)</span><span class="p">)</span>
+            <span class="n">wlist</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">wsocket</span><span class="p">)</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>select接受三个文件描述符列表（读+写+异常），select会等待这三个列表中的至少一个描述符就绪（或者等待超时），然后返回三个对应的已就绪描述符列表。底层的c实现只接受描述符，python的wrapper中支持描述符或者实现了返回描述符的<code>fileno()</code>方法的对象。</p>
-
+</div><p>select接受三个文件描述符列表（读+写+异常），select会等待这三个列表中的至少一个描述符就绪（或者等待超时），然后返回三个对应的已就绪描述符列表。底层的c实现只接受描述符，python的wrapper中支持描述符或者实现了返回描述符的<code>fileno()</code>方法的对象。</p>
 <p>select解决了面对大量连接时，空耗CPU去轮询连接是否就绪的时间，kernel会告诉你哪些连接已经就绪，可以读写数据了。</p>
-
 <p>select的劣势是，每次调用select等待描述符就绪时，kernel都要遍历传进去的所有描述符以检查他们是否就绪，在描述符数量很多的时候，遍历就会非常耗时。并且描述符列表需要从user space复制到kernel space，返回的时候需要从kernel space再次复制到user space。</p>
-
 <p>跟select类似的还有个poll调用，poll本质上和select一样，只是参数封装形式不同。python的poll wrapper已经封装得跟原始调用不一样了，这里不再举例</p>
-
 <h2 id="epoll">epoll</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-python" data-lang="python"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -386,65 +370,62 @@
 <span class="kn">import</span> <span class="nn">select</span>
 <span class="kn">import</span> <span class="nn">queue</span>
 
-<span class="n">server</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">()</span>
+<span class="n">server</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="p">)</span>
 <span class="n">server</span><span class="o">.</span><span class="n">setblocking</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
-<span class="n">server</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="mi">8888</span><span class="p">))</span>
-<span class="n">server</span><span class="o">.</span><span class="n">listen</span><span class="p">()</span>
+<span class="n">server</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">0.0.0.0</span><span class="s1">&#39;</span><span class="p">,</span> <span class="mi">8888</span><span class="p">)</span><span class="p">)</span>
+<span class="n">server</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="p">)</span>
 
-<span class="n">epoll</span> <span class="o">=</span> <span class="n">select</span><span class="o">.</span><span class="n">epoll</span><span class="p">()</span>
-<span class="n">epoll</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">server</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span> <span class="n">select</span><span class="o">.</span><span class="n">EPOLLIN</span><span class="p">)</span>
+<span class="n">epoll</span> <span class="o">=</span> <span class="n">select</span><span class="o">.</span><span class="n">epoll</span><span class="p">(</span><span class="p">)</span>
+<span class="n">epoll</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">server</span><span class="o">.</span><span class="n">fileno</span><span class="p">(</span><span class="p">)</span><span class="p">,</span> <span class="n">select</span><span class="o">.</span><span class="n">EPOLLIN</span><span class="p">)</span>
 
-<span class="n">message_queue</span> <span class="o">=</span> <span class="p">{}</span>
-<span class="n">connections</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">message_queue</span> <span class="o">=</span> <span class="p">{</span><span class="p">}</span>
+<span class="n">connections</span> <span class="o">=</span> <span class="p">{</span><span class="p">}</span>
 <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
-    <span class="n">events</span> <span class="o">=</span> <span class="n">epoll</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span>
+    <span class="n">events</span> <span class="o">=</span> <span class="n">epoll</span><span class="o">.</span><span class="n">poll</span><span class="p">(</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">fileno</span><span class="p">,</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">fileno</span> <span class="o">==</span> <span class="n">server</span><span class="o">.</span><span class="n">fileno</span><span class="p">():</span>
-            <span class="n">conn</span><span class="p">,</span> <span class="n">address</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
-            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;connected from&#39;</span><span class="p">,</span> <span class="n">conn</span><span class="o">.</span><span class="n">getpeername</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">fileno</span> <span class="o">==</span> <span class="n">server</span><span class="o">.</span><span class="n">fileno</span><span class="p">(</span><span class="p">)</span><span class="p">:</span>
+            <span class="n">conn</span><span class="p">,</span> <span class="n">address</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">accept</span><span class="p">(</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">connected from</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">conn</span><span class="o">.</span><span class="n">getpeername</span><span class="p">(</span><span class="p">)</span><span class="p">)</span>
             <span class="n">conn</span><span class="o">.</span><span class="n">setblocking</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
-            <span class="n">epoll</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">conn</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span> <span class="n">select</span><span class="o">.</span><span class="n">EPOLLIN</span><span class="p">)</span>
-            <span class="n">connections</span><span class="p">[</span><span class="n">conn</span><span class="o">.</span><span class="n">fileno</span><span class="p">()]</span> <span class="o">=</span> <span class="n">conn</span>
-            <span class="n">message_queue</span><span class="p">[</span><span class="n">conn</span><span class="o">.</span><span class="n">fileno</span><span class="p">()]</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
+            <span class="n">epoll</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">conn</span><span class="o">.</span><span class="n">fileno</span><span class="p">(</span><span class="p">)</span><span class="p">,</span> <span class="n">select</span><span class="o">.</span><span class="n">EPOLLIN</span><span class="p">)</span>
+            <span class="n">connections</span><span class="p">[</span><span class="n">conn</span><span class="o">.</span><span class="n">fileno</span><span class="p">(</span><span class="p">)</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn</span>
+            <span class="n">message_queue</span><span class="p">[</span><span class="n">conn</span><span class="o">.</span><span class="n">fileno</span><span class="p">(</span><span class="p">)</span><span class="p">]</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">Queue</span><span class="p">(</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">event</span> <span class="o">&amp;</span> <span class="n">select</span><span class="o">.</span><span class="n">EPOLLIN</span><span class="p">:</span>
             <span class="n">conn</span> <span class="o">=</span> <span class="n">connections</span><span class="p">[</span><span class="n">fileno</span><span class="p">]</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
-                <span class="n">data_str</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
-                <span class="k">print</span><span class="p">(</span><span class="s1">&#39;data recv from </span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">conn</span><span class="o">.</span><span class="n">getpeername</span><span class="p">(),</span> <span class="n">data_str</span><span class="p">))</span>
+                <span class="n">data_str</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="p">)</span>
+                <span class="k">print</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">data recv from </span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">conn</span><span class="o">.</span><span class="n">getpeername</span><span class="p">(</span><span class="p">)</span><span class="p">,</span> <span class="n">data_str</span><span class="p">)</span><span class="p">)</span>
                 <span class="n">message_queue</span><span class="p">[</span><span class="n">fileno</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">data_str</span><span class="p">)</span>
                 <span class="n">epoll</span><span class="o">.</span><span class="n">modify</span><span class="p">(</span><span class="n">fileno</span><span class="p">,</span> <span class="n">select</span><span class="o">.</span><span class="n">EPOLLIN</span> <span class="o">|</span> <span class="n">select</span><span class="o">.</span><span class="n">EPOLLOUT</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">print</span><span class="p">(</span><span class="s1">&#39;disconnected from&#39;</span><span class="p">,</span> <span class="n">conn</span><span class="o">.</span><span class="n">getpeername</span><span class="p">())</span>
-                <span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="k">print</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">disconnected from</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">conn</span><span class="o">.</span><span class="n">getpeername</span><span class="p">(</span><span class="p">)</span><span class="p">)</span>
+                <span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="p">)</span>
                 <span class="n">epoll</span><span class="o">.</span><span class="n">modify</span><span class="p">(</span><span class="n">fileno</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
                 <span class="k">del</span> <span class="n">message_queue</span><span class="p">[</span><span class="n">fileno</span><span class="p">]</span>
                 <span class="k">del</span> <span class="n">connections</span><span class="p">[</span><span class="n">fileno</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">event</span> <span class="o">&amp;</span> <span class="n">select</span><span class="o">.</span><span class="n">EPOLLOUT</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">message_queue</span><span class="p">[</span><span class="n">fileno</span><span class="p">]</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
-                <span class="n">data</span> <span class="o">=</span> <span class="n">message_queue</span><span class="p">[</span><span class="n">fileno</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">message_queue</span><span class="p">[</span><span class="n">fileno</span><span class="p">]</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="p">)</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">message_queue</span><span class="p">[</span><span class="n">fileno</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="p">)</span>
                 <span class="n">conn</span> <span class="o">=</span> <span class="n">connections</span><span class="p">[</span><span class="n">fileno</span><span class="p">]</span>
-                <span class="k">print</span><span class="p">(</span><span class="s1">&#39;send </span><span class="si">%s</span><span class="s1"> to </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">conn</span><span class="o">.</span><span class="n">getpeername</span><span class="p">()))</span>
-                <span class="n">conn</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+                <span class="k">print</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">send </span><span class="si">%s</span><span class="s1"> to </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">conn</span><span class="o">.</span><span class="n">getpeername</span><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="p">)</span>
+                <span class="n">conn</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="p">)</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">epoll</span><span class="o">.</span><span class="n">modify</span><span class="p">(</span><span class="n">fileno</span><span class="p">,</span> <span class="n">select</span><span class="o">.</span><span class="n">EPOLLIN</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">event</span> <span class="o">&amp;</span> <span class="n">select</span><span class="o">.</span><span class="n">EPOLLHUP</span><span class="p">:</span>
             <span class="n">conn</span> <span class="o">=</span> <span class="n">connections</span><span class="p">[</span><span class="n">fileno</span><span class="p">]</span>
-            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;disconnected from&#39;</span><span class="p">,</span> <span class="n">conn</span><span class="o">.</span><span class="n">getpeername</span><span class="p">())</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">disconnected from</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">conn</span><span class="o">.</span><span class="n">getpeername</span><span class="p">(</span><span class="p">)</span><span class="p">)</span>
             <span class="n">epoll</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">fileno</span><span class="p">)</span>
             <span class="k">del</span> <span class="n">message_queue</span><span class="p">[</span><span class="n">fileno</span><span class="p">]</span>
-            <span class="k">del</span> <span class="n">connections</span><span class="p">[</span><span class="n">fileno</span><span class="p">]</span></code></pre></td></tr></table>
+            <span class="k">del</span> <span class="n">connections</span><span class="p">[</span><span class="n">fileno</span><span class="p">]</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>造成select劣势的原因是</p>
-
+</div><p>造成select劣势的原因是</p>
 <ol>
 <li>kernel不去记哪些描述符是进程感兴趣的，导致每次select等待时都得把那一坨描述符复制进kernel，返回时再复制出来</li>
 <li>kernel不主动通知就绪事件，而是需要select去遍历</li>
 </ol>
-
 <p>epoll就解决了上面那的问题。<code>epoll_create</code>创建的时候会初始化一颗红黑树用于记录描述符以及他们感兴趣的事件，同时提供了<code>epoll_ctl</code>对这颗红黑树的增删改查（即改变描述符，或者他们感兴趣的事件），以及<code>epoll_wait</code>等待事件发生。</p>
-
 <p><code>epoll_create</code>不仅初始化了红黑树，还初始化了一个就绪列表，并向kernel(网卡驱动？)注册了事件触发callback，在callback中做插入就绪列表的逻辑，这样在<code>epoll_wait</code>返回的时候就不需要遍历整个红黑树，而是去取这个就绪列表就能知道哪些描述符已经就绪，提高了效率</p>
 
     </div>

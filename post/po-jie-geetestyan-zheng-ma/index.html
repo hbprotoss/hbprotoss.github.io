@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.58.3 with theme even" />
+<meta name="generator" content="Hugo 0.62.0 with theme even" />
 
 
 <link rel="canonical" href="http://hbprotoss.github.io/post/po-jie-geetestyan-zheng-ma/" />
@@ -46,16 +46,13 @@
 <meta property="article:modified_time" content="2018-04-23T00:00:00+00:00" />
 <meta itemprop="name" content="破解geetest验证码">
 <meta itemprop="description" content="本文所述内容仅用于实验学习之用，任何因非法商业用途造成的法律纠纷作者概不负责 破解geetest验证码 写过爬虫的基本都碰到过验证码问题，滑动验">
-
-
 <meta itemprop="datePublished" content="2018-04-23T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2018-04-23T00:00:00&#43;00:00" />
 <meta itemprop="wordCount" content="1297">
 
 
 
-<meta itemprop="keywords" content="Python,Selenium,验证码,破解," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="Python,Selenium,验证码,破解," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="破解geetest验证码"/>
 <meta name="twitter:description" content="本文所述内容仅用于实验学习之用，任何因非法商业用途造成的法律纠纷作者概不负责 破解geetest验证码 写过爬虫的基本都碰到过验证码问题，滑动验"/>
 
@@ -135,38 +132,29 @@
   <h2 class="post-toc-title">Contents</h2>
   <div class="post-toc-content always-active">
     <nav id="TableOfContents">
-<ul>
-<li><a href="#破解geetest验证码">破解geetest验证码</a>
-<ul>
-<li><a href="#1-依赖">1. 依赖</a></li>
-<li><a href="#2-过程">2. 过程</a>
-<ul>
-<li><a href="#2-1-dom解析">2.1 dom解析</a></li>
-<li><a href="#2-2-还原原图">2.2 还原原图</a></li>
-<li><a href="#2-3-获取待验证图片">2.3 获取待验证图片</a></li>
-<li><a href="#2-4-获取拼图块大小">2.4 获取拼图块大小</a></li>
-<li><a href="#2-5-图像处理">2.5 图像处理</a></li>
-<li><a href="#2-6-移动滑块">2.6 移动滑块</a></li>
-<li><a href="#2-7-完成">2.7 完成</a></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#1-">1. 依赖</a></li>
+    <li><a href="#2-">2. 过程</a>
+      <ul>
+        <li><a href="#21-dom">2.1 dom解析</a></li>
+        <li><a href="#22-">2.2 还原原图</a></li>
+        <li><a href="#23-">2.3 获取待验证图片</a></li>
+        <li><a href="#24-">2.4 获取拼图块大小</a></li>
+        <li><a href="#25-">2.5 图像处理</a></li>
+        <li><a href="#26-">2.6 移动滑块</a></li>
+        <li><a href="#27-">2.7 完成</a></li>
+      </ul>
+    </li>
+  </ul>
 </nav>
   </div>
 </div>
     <div class="post-content">
-      
-
-<p>本文所述内容仅用于实验学习之用，任何因非法商业用途造成的法律纠纷作者概不负责</p>
-
-<hr />
-
-<h1 id="破解geetest验证码">破解geetest验证码</h1>
-
+      <p>本文所述内容仅用于实验学习之用，任何因非法商业用途造成的法律纠纷作者概不负责</p>
+<hr>
+<h1 id="geetest">破解geetest验证码</h1>
 <p>写过爬虫的基本都碰到过验证码问题，滑动验证码是其中一类略微高级的验证码类型。国内的滑动验证码基本由geetest提供，本文主要叙述如何绕过（破解）geetest滑动验证码</p>
-
-<h2 id="1-依赖">1. 依赖</h2>
-
+<h2 id="1-">1. 依赖</h2>
 <ul>
 <li>python 3.6</li>
 <li>selenium，模拟浏览器请求/渲染</li>
@@ -174,52 +162,38 @@
 <li>pillow，python图像库</li>
 <li>numpy+peakutils，数学运算</li>
 </ul>
-
-<h2 id="2-过程">2. 过程</h2>
-
+<h2 id="2-">2. 过程</h2>
 <p>以国内某著名二次元网站为例(不是我说的啊！)，登陆界面如图所示，点击验证码的滑块就会弹出验证码，你需要将滑块滑到对应的空缺位置上即可验证成功</p>
-
-<p><img src="/images/geetest/login.png" alt="login" /></p>
-
-<h3 id="2-1-dom解析">2.1 dom解析</h3>
-
+<p><img src="/images/geetest/login.png" alt="login"></p>
+<h3 id="21-dom">2.1 dom解析</h3>
 <p>主要dom如图所示</p>
-
-<p><img src="/images/geetest/dom.png" alt="dom" /></p>
-
+<p><img src="/images/geetest/dom.png" alt="dom"></p>
 <p>你所看到的图不是原图，原图经过切片乱序之后由css拼成的，如图所示</p>
-
-<p><img src="/images/geetest/disordered_image.png" alt="disordered_image" /></p>
-
-<h3 id="2-2-还原原图">2.2 还原原图</h3>
-
+<p><img src="/images/geetest/disordered_image.png" alt="disordered_image"></p>
+<h3 id="22-">2.2 还原原图</h3>
 <p>观察可得，乱序图有<code>(parts_per_line=26)*2=52</code>块切片，每块切片的宽度<code>part_width</code>和高度可以自行计算得<code>part_height</code>，查阅css手册得<code>background-position</code>的坐标系第一象限在右下角。</p>
-
 <p>对第<code>idx</code>个切片来说，它在乱序图中的位置为<code>background-position</code>取负</p>
-
 <p>它在原图中的位置<code>dest_x=(idx % parts_per_line) * part_width</code>，<code>dest_y=(idx // parts_per_line) * part_height</code>。</p>
-
 <p>有了计算公式，可以用pillow的方法切割和拼接图片</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-python" data-lang="python"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-python" data-lang="python"><span class="c1"># 切割</span>
-<span class="n">image</span><span class="o">.</span><span class="n">crop</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="o">+</span><span class="n">w</span><span class="p">,</span> <span class="n">y</span><span class="o">+</span><span class="n">h</span><span class="p">))</span>
+<span class="n">image</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="o">+</span><span class="n">w</span><span class="p">,</span> <span class="n">y</span><span class="o">+</span><span class="n">h</span><span class="p">)</span><span class="p">)</span>
 <span class="c1"># 拼接</span>
-<span class="n">image</span><span class="o">.</span><span class="n">paste</span><span class="p">(</span><span class="n">target_image</span><span class="p">,</span> <span class="p">(</span><span class="n">dest_x</span><span class="p">,</span> <span class="n">dest_y</span><span class="p">))</span></code></pre></td></tr></table>
+<span class="n">image</span><span class="o">.</span><span class="n">paste</span><span class="p">(</span><span class="n">target_image</span><span class="p">,</span> <span class="p">(</span><span class="n">dest_x</span><span class="p">,</span> <span class="n">dest_y</span><span class="p">)</span><span class="p">)</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<h3 id="2-3-获取待验证图片">2.3 获取待验证图片</h3>
-
+</div><h3 id="23-">2.3 获取待验证图片</h3>
 <p>鼠标悬停在滑块上并不会显示待验证位置在哪，需要点击之后才会显示，需要让selenium执行鼠标点击并且不放这个动作</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-python" data-lang="python"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -227,20 +201,18 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-python" data-lang="python"><span class="c1"># 获得滑块对象</span>
-<span class="n">drag</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">find_element_by_css_selector</span><span class="p">(</span><span class="s1">&#39;.gt_slider_knob.gt_show&#39;</span><span class="p">)</span>
+<span class="n">drag</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">find_element_by_css_selector</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">.gt_slider_knob.gt_show</span><span class="s1">&#39;</span><span class="p">)</span>
 <span class="c1"># 执行点击并且不放的动作</span>
 <span class="n">action</span> <span class="o">=</span> <span class="n">ActionChains</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span>
-<span class="n">action</span><span class="o">.</span><span class="n">click_and_hold</span><span class="p">(</span><span class="n">drag</span><span class="p">)</span><span class="o">.</span><span class="n">perform</span><span class="p">()</span></code></pre></td></tr></table>
+<span class="n">action</span><span class="o">.</span><span class="n">click_and_hold</span><span class="p">(</span><span class="n">drag</span><span class="p">)</span><span class="o">.</span><span class="n">perform</span><span class="p">(</span><span class="p">)</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>这个时候浏览器中应该是这个样子</p>
-
-<p><img src="/images/geetest/click_hold.png" alt="click_hold" /></p>
-
+</div><p>这个时候浏览器中应该是这个样子</p>
+<p><img src="/images/geetest/click_hold.png" alt="click_hold"></p>
 <p>之后截取待验证的图片</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-python" data-lang="python"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -250,46 +222,41 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-python" data-lang="python"><span class="c1"># selenium截图</span>
-<span class="n">image_to_verify</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">driver</span><span class="o">.</span><span class="n">get_screenshot_as_png</span><span class="p">()))</span>
+<span class="n">image_to_verify</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">driver</span><span class="o">.</span><span class="n">get_screenshot_as_png</span><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="p">)</span>
 <span class="c1"># 调用浏览器，执行js后返回框内图片相对于窗口的坐标</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">execute_script</span><span class="p">(</span><span class="s1">&#39;return $(&#34;div.gt_cut_fullbg&#34;)[0].getBoundingClientRect().left&#39;</span><span class="p">)</span>
-<span class="n">y</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">execute_script</span><span class="p">(</span><span class="s1">&#39;return $(&#34;div.gt_cut_fullbg&#34;)[0].getBoundingClientRect().top&#39;</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">execute_script</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">return $(</span><span class="s1">&#34;</span><span class="s1">div.gt_cut_fullbg</span><span class="s1">&#34;</span><span class="s1">)[0].getBoundingClientRect().left</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">execute_script</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">return $(</span><span class="s1">&#34;</span><span class="s1">div.gt_cut_fullbg</span><span class="s1">&#34;</span><span class="s1">)[0].getBoundingClientRect().top</span><span class="s1">&#39;</span><span class="p">)</span>
 <span class="c1"># 切割（同上）</span>
-<span class="n">image</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="o">...</span><span class="p">)</span></code></pre></td></tr></table>
+<span class="n">image</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="o">.</span><span class="o">.</span><span class="o">.</span><span class="p">)</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<h3 id="2-4-获取拼图块大小">2.4 获取拼图块大小</h3>
-
+</div><h3 id="24-">2.4 获取拼图块大小</h3>
 <p>拼图块的dom</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-html" data-lang="html"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-html" data-lang="html"><span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;gt_slice gt_show&#34;</span> <span class="na">style</span><span class="o">=</span><span class="s">&#34;left: 0px; background-image: url(&amp;quot;https://static.geetest.com/pictures/gt/375495539/slice/1d4a39f5d.png&amp;quot;); width: 53px; height: 52px; top: 47px;&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-html" data-lang="html"><span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;gt_slice gt_show&#34;</span> <span class="na">style</span><span class="o">=</span><span class="s">&#34;left: 0px; background-image: url(&amp;quot;https://static.geetest.com/pictures/gt/375495539/slice/1d4a39f5d.png&amp;quot;); width: 53px; height: 52px; top: 47px;&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>大小都写在style上了，<code>slice_width=53, slice_height=52</code></p>
-
-<h3 id="2-5-图像处理">2.5 图像处理</h3>
-
+</div><p>大小都写在style上了，<code>slice_width=53, slice_height=52</code></p>
+<h3 id="25-">2.5 图像处理</h3>
 <p>这块是破解的核心逻辑，主要思路就是尽可能过滤掉图像中相同的像素，留下的就是不同的，我们主要是去找由两块拼图块垂直方向上的边缘。</p>
-
 <p>我的做法是用自带滤波函数找到图像中的边缘，然后转灰度图，设置恰当阈值，做二值化</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-python" data-lang="python"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-python" data-lang="python"><span class="n">image</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">ImageFilter</span><span class="o">.</span><span class="n">FIND_EDGES</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;L&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="mi">120</span> <span class="k">else</span> <span class="mi">255</span><span class="p">)</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-python" data-lang="python"><span class="n">image</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">ImageFilter</span><span class="o">.</span><span class="n">FIND_EDGES</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">L</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="mi">120</span> <span class="k">else</span> <span class="mi">255</span><span class="p">)</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>这里二值化的分界阈值是120，你可以试试别的，看看最终效果。</p>
-
+</div><p>这里二值化的分界阈值是120，你可以试试别的，看看最终效果。</p>
 <p>从右往左，扫描垂直方向上，两幅图里的像素差异，并记录差异像素个数</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-python" data-lang="python"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -299,54 +266,48 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-python" data-lang="python"><span class="n">x_diff</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">origin_image</span><span class="o">.</span><span class="n">width</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">origin_image</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">origin_image</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="p">:</span>
         <span class="n">diff_count</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">origin_image</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">origin_image_grey</span><span class="o">.</span><span class="n">getpixel</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">))</span> <span class="o">!=</span> <span class="n">image_to_verify_grey</span><span class="o">.</span><span class="n">getpixel</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)):</span>
-                <span class="n">diff_count</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="n">x_diff</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">diff_count</span></code></pre></td></tr></table>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">origin_image</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">origin_image_grey</span><span class="o">.</span><span class="n">getpixel</span><span class="p">(</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span><span class="p">)</span> <span class="o">!=</span> <span class="n">image_to_verify_grey</span><span class="o">.</span><span class="n">getpixel</span><span class="p">(</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span><span class="p">)</span><span class="p">:</span>
+                <span class="n">diff_count</span> <span class="o">+</span><span class="o">=</span> <span class="mi">1</span>
+        <span class="n">x_diff</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">diff_count</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>将这个<code>x_diff</code>用excel绘制成折线图后，能很明显发现四个波峰</p>
-
-<p><img src="/images/geetest/waves.png" alt="waves" /></p>
-
+</div><p>将这个<code>x_diff</code>用excel绘制成折线图后，能很明显发现四个波峰</p>
+<p><img src="/images/geetest/waves.png" alt="waves"></p>
 <p>接下去要做的是从这个一维数组中提取四个波峰，这里用到了<code>peakutils</code></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-python" data-lang="python"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">peakutils.peak</span> <span class="kn">import</span> <span class="n">indexes</span>
-<span class="n">waves</span> <span class="o">=</span> <span class="n">indexes</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x_diff</span><span class="p">),</span> <span class="n">thres</span><span class="o">=</span><span class="mf">7.0</span><span class="o">/</span><span class="nb">max</span><span class="p">(</span><span class="n">x_diff</span><span class="p">),</span> <span class="n">min_dist</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span></code></pre></td></tr></table>
+<span class="n">waves</span> <span class="o">=</span> <span class="n">indexes</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x_diff</span><span class="p">)</span><span class="p">,</span> <span class="n">thres</span><span class="o">=</span><span class="mf">7.0</span><span class="o">/</span><span class="nb">max</span><span class="p">(</span><span class="n">x_diff</span><span class="p">)</span><span class="p">,</span> <span class="n">min_dist</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<ul>
+</div><ul>
 <li>thres，振幅阈值，振幅超过这个值才会被认为是波峰(不是很理解这个参数，求大佬解答)</li>
 <li>min_dist，波峰之间的最小间隔，理论上要接近拼图块宽度才比较合适，但是我试了效果并不好，不知道为什么</li>
 </ul>
-
-<h3 id="2-6-移动滑块">2.6 移动滑块</h3>
-
+<h3 id="26-">2.6 移动滑块</h3>
 <p>计算要移动的距离<code>offset=waves[2] - waves[0]</code>，并移动滑块</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-python" data-lang="python"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-python" data-lang="python"><span class="n">action</span> <span class="o">=</span> <span class="n">ActionChains</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span>
-<span class="n">action</span><span class="o">.</span><span class="n">drag_and_drop_by_offset</span><span class="p">(</span><span class="n">drag</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">perform</span><span class="p">()</span></code></pre></td></tr></table>
+<span class="n">action</span><span class="o">.</span><span class="n">drag_and_drop_by_offset</span><span class="p">(</span><span class="n">drag</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">perform</span><span class="p">(</span><span class="p">)</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<h3 id="2-7-完成">2.7 完成</h3>
-
+</div><h3 id="27-">2.7 完成</h3>
 <p>效果如图</p>
-
-<p><img src="/images/geetest/show.gif" alt="show" /></p>
+<p><img src="/images/geetest/show.gif" alt="show"></p>
 
     </div>
 

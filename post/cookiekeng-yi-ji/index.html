@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.58.3 with theme even" />
+<meta name="generator" content="Hugo 0.62.0 with theme even" />
 
 
 <link rel="canonical" href="http://hbprotoss.github.io/post/cookiekeng-yi-ji/" />
@@ -46,16 +46,13 @@
 <meta property="article:modified_time" content="2016-07-04T00:00:00+00:00" />
 <meta itemprop="name" content="Cookie坑一记">
 <meta itemprop="description" content="关于Cookie的domain属性，RFC6265上是这么说的： 如果domain属性缺失，那么该cookie只能对当前host可见。比如，x">
-
-
 <meta itemprop="datePublished" content="2016-07-04T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2016-07-04T00:00:00&#43;00:00" />
 <meta itemprop="wordCount" content="240">
 
 
 
-<meta itemprop="keywords" content="Cookie," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="Cookie," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Cookie坑一记"/>
 <meta name="twitter:description" content="关于Cookie的domain属性，RFC6265上是这么说的： 如果domain属性缺失，那么该cookie只能对当前host可见。比如，x"/>
 
@@ -134,12 +131,11 @@
     <div class="post-toc" id="post-toc">
   <h2 class="post-toc-title">Contents</h2>
   <div class="post-toc-content always-active">
-    
+    <nav id="TableOfContents"></nav>
   </div>
 </div>
     <div class="post-content">
       <p>关于Cookie的domain属性，<a href="https://tools.ietf.org/html/rfc6265#section-4.1.2.3">RFC6265</a>上是这么说的：</p>
-
 <ol>
 <li>如果domain属性缺失，那么该cookie只能对<strong>当前host</strong>可见。比如，xx.com下有个cookie，<code>Set-Cookie</code>头没有带domain属性，那么这个cookie只对xx.com下的页面可见，a.xx.com等子域名不可见</li>
 <li>.xx.com这种domain其实是不合法的，只不过浏览器在见到这种域名的时候，需要自动把最前面的.忽略掉，把xx.com作为cookie的domain，即xx.com及其子域名都可见</li>

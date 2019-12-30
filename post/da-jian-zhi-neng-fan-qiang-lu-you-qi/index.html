@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.58.3 with theme even" />
+<meta name="generator" content="Hugo 0.62.0 with theme even" />
 
 
 <link rel="canonical" href="http://hbprotoss.github.io/post/da-jian-zhi-neng-fan-qiang-lu-you-qi/" />
@@ -46,16 +46,13 @@
 <meta property="article:modified_time" content="2015-04-16T00:00:00+00:00" />
 <meta itemprop="name" content="搭建智能翻墙路由器">
 <meta itemprop="description" content="本文着重介绍如何搭建智能翻墙路由器，实现避免DNS污染，并且自动根据是否是国内IP来决定是否翻墙，从而使任何连接路由器的设备无障碍穿墙出去。">
-
-
 <meta itemprop="datePublished" content="2015-04-16T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2015-04-16T00:00:00&#43;00:00" />
 <meta itemprop="wordCount" content="1709">
 
 
 
-<meta itemprop="keywords" content="OpenWRT,DNS,ShadowSocks,翻墙," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="OpenWRT,DNS,ShadowSocks,翻墙," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="搭建智能翻墙路由器"/>
 <meta name="twitter:description" content="本文着重介绍如何搭建智能翻墙路由器，实现避免DNS污染，并且自动根据是否是国内IP来决定是否翻墙，从而使任何连接路由器的设备无障碍穿墙出去。"/>
 
@@ -135,33 +132,24 @@
   <h2 class="post-toc-title">Contents</h2>
   <div class="post-toc-content always-active">
     <nav id="TableOfContents">
-<ul>
-<li><a href="#准备材料">准备材料</a></li>
-<li><a href="#步骤">步骤</a>
-<ul>
-<li><a href="#shadowsocks-server">shadowsocks server</a></li>
-<li><a href="#shadowsocks-client">shadowsocks client</a>
-<ul>
-<li><a href="#ss-redir">ss-redir</a></li>
-<li><a href="#ss-tunnel">ss-tunnel</a></li>
-</ul></li>
-<li><a href="#chinadns">ChinaDNS</a></li>
-<li><a href="#iptables">iptables</a></li>
-</ul></li>
-<li><a href="#完工">完工</a></li>
-</ul>
+  <ul>
+    <li><a href="#shadowsocks-server">shadowsocks server</a></li>
+    <li><a href="#shadowsocks-client">shadowsocks client</a>
+      <ul>
+        <li><a href="#ss-redir">ss-redir</a></li>
+        <li><a href="#ss-tunnel">ss-tunnel</a></li>
+      </ul>
+    </li>
+    <li><a href="#chinadns">ChinaDNS</a></li>
+    <li><a href="#iptables">iptables</a></li>
+  </ul>
 </nav>
   </div>
 </div>
     <div class="post-content">
-      
-
-<p>本文着重介绍如何搭建智能翻墙路由器，实现避免DNS污染，并且自动根据是否是国内IP来决定是否翻墙，从而使任何连接路由器的设备无障碍穿墙出去。</p>
-
+      <p>本文着重介绍如何搭建智能翻墙路由器，实现避免DNS污染，并且自动根据是否是国内IP来决定是否翻墙，从而使任何连接路由器的设备无障碍穿墙出去。</p>
 <p>思路是，用shadowsocks建立起翻墙代理服务，用shadowsocks的udp relay模式转发DNS请求，解决DNS污染，再配置iptables根据IP决定是否走shadowsocks来翻墙。</p>
-
-<h1 id="准备材料">准备材料</h1>
-
+<h1 id="heading">准备材料</h1>
 <ul>
 <li>能刷OpenWrt的智能路由器。我用的是小米路由器MINI，16MB ROM，128MB DDR2内存，MT7620A处理器，运行毫无压力（真的不是广告。。。）</li>
 <li>OpenWrt。这里选的是<a href="http://downloads.openwrt.org.cn/PandoraBox/">PandoraBox</a>版</li>
@@ -170,95 +158,72 @@
 <li>VPS一台</li>
 <li>shadowsocks server，选用C实现：shadowsocks-libev，go和Python版没有UDP relay功能，不能实现DNS请求转发</li>
 </ul>
-
-<h1 id="步骤">步骤</h1>
-
+<h1 id="heading-1">步骤</h1>
 <h2 id="shadowsocks-server">shadowsocks server</h2>
-
 <p>shadowsocks-libev的安装参考<a href="http://shadowsocks.org/en/download/servers.html">http://shadowsocks.org/en/download/servers.html</a>中的“C with libev”一节</p>
-
 <p>安装完成之后将如下配置写入config.json</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span><span class="lnt">6
 </span><span class="lnt">7
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">{
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">{
 	&#34;server&#34;:&#34;0.0.0.0&#34;,
 	&#34;server_port&#34;:8025,
 	&#34;password&#34;:&#34;123456&#34;,
 	&#34;timeout&#34;:300,
 	&#34;method&#34;:&#34;aes-256-cfb&#34;
-}</pre></td></tr></table>
+}
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>分别指定了服务器的binding address，端口，密码，超时时间和加密方式。按需更改</p>
-
+</div><p>分别指定了服务器的binding address，端口，密码，超时时间和加密方式。按需更改</p>
 <p>在远程VPS上启动shadowsocks server: <code>ss-server -c config.json -u</code></p>
-
 <p>注意得加上<code>-u</code>选项，enable udprelay mode。用作DNS请求转发，避免DNS污染。</p>
-
 <h2 id="shadowsocks-client">shadowsocks client</h2>
-
 <p>在本地路由器上起shadowsocks client</p>
-
 <h3 id="ss-redir">ss-redir</h3>
-
 <p>ss-redir用于将客户端的原始数据封装成shadowsocks协议内容，转发给server，实现透明转发。</p>
-
 <p>在本地路由器启动ss-redir: <code>ss-redir -s &quot;your_server_ip&quot; -p &quot;your_server_port&quot; -l &quot;local_service_port&quot; -m &quot;encryption_method&quot; -k &quot;server_password&quot; -f &quot;pid_file_path&quot;</code>
 注意这里不需要<code>-u</code>选项，转发的是TCP包，ss-redir也不支持这个选项。</p>
-
 <h3 id="ss-tunnel">ss-tunnel</h3>
-
 <p>ss-tunnel用于实现本地port forward，和ssh的port forward一样，只是加密方式用了shadowsocks协议，用于在本地起服务，转发DNS请求</p>
-
 <p>在本地路由器启动ss-tunnel: <code>ss-tunnel -s &quot;your_server_ip&quot; -p &quot;your_server_port&quot; -l &quot;local_service_port&quot; -m &quot;encryption_method&quot; -k &quot;server_password&quot; -L &quot;server_ip:server_port&quot; -f &quot;pid_file_path&quot; -u</code></p>
-
 <p>这个<code>-L</code>选项理论上可以填国外DNS的IP/PORT，比如<code>8.8.8.8:53</code>，我在我的VPS起了一个DNS转发服务，填了自己的IP/PORT，效果应该一样。<code>-u</code>是开启udp relay，DNS是UDP包嘛</p>
-
 <h2 id="chinadns">ChinaDNS</h2>
-
 <p>如果所有DNS请求都走国外DNS server，国内有些网站（如微博）在海外有服务器，就会比较慢。ChinaDNS保证的就是国内域名能解析成国内IP，国外域名解析成国外IP。</p>
-
 <p>在本地路由器启动ChinaDNS: <code>chinadns -l /etc/chinadns_iplist.txt -c /etc/chinadns_chnroute.txt -d -p &quot;local_dns_port&quot; -s 114.114.114.114,127.0.0.1:8026</code></p>
-
 <p><code>-s</code>选项后加以逗号分隔的DNS服务器列表，最好国内、国外各有一个。由于前面通过ss-tunnel在本地起了一个端口转发到我的DNS服务，所以填的是<code>127.0.0.1:8026</code>。</p>
-
 <p>ChinaDNS原理是，向所有列表中的DNS server发DNS请求，判断结果可信任条件是：国内DNS解析出的是国内IP，国外DNS解析出的是国外IP，<code>/etc/chinadns_chnroute.txt</code>里包含了国内IP网段，<code>/etc/chinadns_iplist.txt</code>里包含的是常见的被污染后的DNS解析结果IP。这样只要通过<code>dnsmasq</code>之类的把本地DNS请求转发到ChinaDNS的端口上，就能解决DNS污染的问题。</p>
-
 <h2 id="iptables">iptables</h2>
-
 <p>前面的准备工作完成之后，只要配置一下iptables，将国内TCP流量直接放行，国外TCP流量转发到ss-redir起的端口就行，判断依据是IP。</p>
-
 <p>在nat表中新建一个SHADOWSOCKS链</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
-</span></pre></td>
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">iptables -t nat -N SHADOWSOCKS</pre></td></tr></table>
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">iptables -t nat -N SHADOWSOCKS
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>远程VPS流量直接放行</p>
+</div><p>远程VPS流量直接放行</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
-</span></pre></td>
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">iptables -t nat -A SHADOWSOCKS -d xxx.xxx.xx.xxx -j RETURN</pre></td></tr></table>
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">iptables -t nat -A SHADOWSOCKS -d xxx.xxx.xx.xxx -j RETURN
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>内网流量直接放行</p>
+</div><p>内网流量直接放行</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -266,33 +231,30 @@
 </span><span class="lnt">6
 </span><span class="lnt">7
 </span><span class="lnt">8
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">iptables -t nat -A SHADOWSOCKS -d 0.0.0.0/8 -j RETURN
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">iptables -t nat -A SHADOWSOCKS -d 0.0.0.0/8 -j RETURN
 iptables -t nat -A SHADOWSOCKS -d 10.0.0.0/8 -j RETURN
 iptables -t nat -A SHADOWSOCKS -d 127.0.0.0/8 -j RETURN
 iptables -t nat -A SHADOWSOCKS -d 169.254.0.0/16 -j RETURN
 iptables -t nat -A SHADOWSOCKS -d 172.16.0.0/12 -j RETURN
 iptables -t nat -A SHADOWSOCKS -d 192.168.0.0/16 -j RETURN
 iptables -t nat -A SHADOWSOCKS -d 224.0.0.0/4 -j RETURN
-iptables -t nat -A SHADOWSOCKS -d 240.0.0.0/4 -j RETURN</pre></td></tr></table>
+iptables -t nat -A SHADOWSOCKS -d 240.0.0.0/4 -j RETURN
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>国内IP流量直接放行(列表较长，这里不列举了，网上随便搜搜就有)</p>
-
+</div><p>国内IP流量直接放行(列表较长，这里不列举了，网上随便搜搜就有)</p>
 <p>剩下的TCP流量转发到ss-redir端口</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
-</span></pre></td>
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">iptables -t nat -A SHADOWSOCKS -p tcp -j REDIRECT --to-ports xxx</pre></td></tr></table>
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">iptables -t nat -A SHADOWSOCKS -p tcp -j REDIRECT --to-ports xxx
+</code></pre></td></tr></table>
 </div>
-</div>
-<h1 id="完工">完工</h1>
-
+</div><h1 id="heading-2">完工</h1>
 <p>搞定之后，任何连接这个路由器的设备都能实现透明翻墙了。</p>
-
 <p>以上</p>
 
     </div>

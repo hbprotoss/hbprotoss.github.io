@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Linux on hbprotoss的博客</title>
@@ -35,7 +35,7 @@
       <pubDate>Tue, 08 Oct 2013 00:00:00 +0000</pubDate>
       
       <guid>http://hbprotoss.github.io/post/linuxxia-bian-yi-lian-jie-dong-tai-ku/</guid>
-      <description>记录下Linux下编译和链接动态库的过程。 ##一、 编写动态库 头文件so.h： 1 2 3 4 5 6 7 #ifndef SO_H #define SO_H int add(int a, int b); #endif /*SO_H*/ 实现文件so.c： 1 2 3 4 5</description>
+      <description>记录下Linux下编译和链接动态库的过程。 ##一、 编写动态库 头文件so.h： 1 2 3 4 5 6 7 8 #ifndef SO_H#define SO_H int add(int a, int b); #endif /*SO_H*/ 实现文件so.c： 1 2 3 4 5</description>
     </item>
     
   </channel>

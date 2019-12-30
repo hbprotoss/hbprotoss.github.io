@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>python的import机制 - hbprotoss的博客</title>
+  <title>公众号迁移通知 - hbprotoss的博客</title>
   <meta name="renderer" content="webkit" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="hbprotoss" /><meta name="description" content="同一个模块以相同的模块名被导入时，模块内的代码只执行一遍（模块名必须相同）。 例： import/ test.py mo/ A.py # A.py a = 1 print(a) a &#43;= 1 # test.py #!/usr/bin/env python3 import os import sys import mo.A import mo.A path = os.path.abspath(&#39;./mo&#39;) print(path) sys.path.append(path)" /><meta name="keywords" content="Hugo, theme, even" />
+<meta name="author" content="hbprotoss" /><meta name="description" content="hi 各位，本博客数据库相关文章会逐步优先发布在我的微信公众号，欢迎移步交流 公众号：数据库不跑路" /><meta name="keywords" content="Hugo, theme, even" />
 
 
 
@@ -26,7 +26,7 @@
 <meta name="generator" content="Hugo 0.62.0 with theme even" />
 
 
-<link rel="canonical" href="http://hbprotoss.github.io/post/pythonde-importji-zhi/" />
+<link rel="canonical" href="http://hbprotoss.github.io/post/%E5%85%AC%E4%BC%97%E5%8F%B7%E8%BF%81%E7%A7%BB%E9%80%9A%E7%9F%A5/" />
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -38,23 +38,23 @@
 <link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
 
 
-<meta property="og:title" content="python的import机制" />
-<meta property="og:description" content="同一个模块以相同的模块名被导入时，模块内的代码只执行一遍（模块名必须相同）。 例： import/ test.py mo/ A.py # A.py a = 1 print(a) a &#43;= 1 # test.py #!/usr/bin/env python3 import os import sys import mo.A import mo.A path = os.path.abspath(&#39;./mo&#39;) print(path) sys.path.append(path)" />
+<meta property="og:title" content="公众号迁移通知" />
+<meta property="og:description" content="hi 各位，本博客数据库相关文章会逐步优先发布在我的微信公众号，欢迎移步交流 公众号：数据库不跑路" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://hbprotoss.github.io/post/pythonde-importji-zhi/" />
-<meta property="article:published_time" content="2013-03-18T00:00:00+00:00" />
-<meta property="article:modified_time" content="2013-03-18T00:00:00+00:00" />
-<meta itemprop="name" content="python的import机制">
-<meta itemprop="description" content="同一个模块以相同的模块名被导入时，模块内的代码只执行一遍（模块名必须相同）。 例： import/ test.py mo/ A.py # A.py a = 1 print(a) a &#43;= 1 # test.py #!/usr/bin/env python3 import os import sys import mo.A import mo.A path = os.path.abspath(&#39;./mo&#39;) print(path) sys.path.append(path)">
-<meta itemprop="datePublished" content="2013-03-18T00:00:00&#43;00:00" />
-<meta itemprop="dateModified" content="2013-03-18T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="253">
+<meta property="og:url" content="http://hbprotoss.github.io/post/%E5%85%AC%E4%BC%97%E5%8F%B7%E8%BF%81%E7%A7%BB%E9%80%9A%E7%9F%A5/" />
+<meta property="article:published_time" content="2019-12-30T20:33:59+08:00" />
+<meta property="article:modified_time" content="2019-12-30T20:33:59+08:00" />
+<meta itemprop="name" content="公众号迁移通知">
+<meta itemprop="description" content="hi 各位，本博客数据库相关文章会逐步优先发布在我的微信公众号，欢迎移步交流 公众号：数据库不跑路">
+<meta itemprop="datePublished" content="2019-12-30T20:33:59&#43;08:00" />
+<meta itemprop="dateModified" content="2019-12-30T20:33:59&#43;08:00" />
+<meta itemprop="wordCount" content="46">
 
 
 
-<meta itemprop="keywords" content="Python," /><meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="python的import机制"/>
-<meta name="twitter:description" content="同一个模块以相同的模块名被导入时，模块内的代码只执行一遍（模块名必须相同）。 例： import/ test.py mo/ A.py # A.py a = 1 print(a) a &#43;= 1 # test.py #!/usr/bin/env python3 import os import sys import mo.A import mo.A path = os.path.abspath(&#39;./mo&#39;) print(path) sys.path.append(path)"/>
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="公众号迁移通知"/>
+<meta name="twitter:description" content="hi 各位，本博客数据库相关文章会逐步优先发布在我的微信公众号，欢迎移步交流 公众号：数据库不跑路"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -117,12 +117,12 @@
           <article class="post">
     
     <header class="post-header">
-      <h1 class="post-title">python的import机制</h1>
+      <h1 class="post-title">公众号迁移通知</h1>
 
       <div class="post-meta">
-        <span class="post-time"> 2013-03-18 </span>
+        <span class="post-time"> 2019-12-30 </span>
         
-          <span class="more-meta"> 253 words </span>
+          <span class="more-meta"> 46 words </span>
           <span class="more-meta"> 1 min read </span>
         
       </div>
@@ -135,36 +135,9 @@
   </div>
 </div>
     <div class="post-content">
-      <p>同一个模块以相同的模块名被导入时，模块内的代码只执行一遍（模块名必须相同）。<br>
-例：</p>
-<blockquote>
-<p>import/<br>
-    test.py<br>
-    mo/<br>
-        A.py</p>
-</blockquote>
-<hr>
-<pre><code># A.py
-a = 1
-print(a)
-a += 1
-</code></pre>
-<hr>
-<pre><code># test.py
-#!/usr/bin/env python3
-import os
-import sys
-import mo.A
-import mo.A
-path = os.path.abspath('./mo')
-print(path)
-sys.path.append(path)
-import A
-</code></pre>
-<hr>
-<p>test.py中，第4行执行后输出1。第5行不输出，因为mo.A已经被导入当前namespace。</p>
-<p>但是第9行，虽然都是同一个物理文件A.py，但是被导入时的名字不同（mo.A和A），所以还是会输出1。mo.A和A作为两个独立的module对象存在当前namespace中。</p>
-<p>如果要把模块中的变量当全局变量来使用的话，一定要从项目顶部通过“.”一层一层import。</p>
+      <p>hi 各位，本博客数据库相关文章会逐步优先发布在我的微信公众号，欢迎移步交流</p>
+<p>公众号：数据库不跑路</p>
+<p><img src="/static/images/wechat.jpg" alt="wechat"></p>
 
     </div>
 
@@ -176,7 +149,7 @@ import A
   <p class="copyright-item">
     <span class="item-title">LastMod</span>
     <span class="item-content">
-        2013-03-18
+        2019-12-30
         
     </span>
   </p>
@@ -187,17 +160,11 @@ import A
   </p>
 </div>
 <footer class="post-footer">
-      <div class="post-tags">
-          <a href="/tags/python/">Python</a>
-          </div>
+      
       <nav class="post-nav">
-        <a class="prev" href="/post/nikolagitpageda-jian-bo-ke/">
-            <i class="iconfont icon-left"></i>
-            <span class="prev-text nav-default">nikola&#43;gitpage搭建博客</span>
-            <span class="prev-text nav-mobile">Prev</span>
-          </a>
-        <a class="next" href="/post/shi-xian-jian-dan-xian-cheng-chi/">
-            <span class="next-text nav-default">实现简单线程池</span>
+        
+        <a class="next" href="/post/mysql%E7%BB%84%E5%A4%8D%E5%88%B6-%E5%88%9D%E8%A7%81/">
+            <span class="next-text nav-default">MySQL组复制 初见</span>
             <span class="next-text nav-mobile">Next</span>
             <i class="iconfont icon-right"></i>
           </a>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on hbprotoss的博客</title>
@@ -6,10 +6,19 @@
     <description>Recent content in Posts on hbprotoss的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 21 Oct 2019 16:34:26 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 30 Dec 2019 20:33:59 +0800</lastBuildDate>
     
 	<atom:link href="http://hbprotoss.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>公众号迁移通知</title>
+      <link>http://hbprotoss.github.io/post/%E5%85%AC%E4%BC%97%E5%8F%B7%E8%BF%81%E7%A7%BB%E9%80%9A%E7%9F%A5/</link>
+      <pubDate>Mon, 30 Dec 2019 20:33:59 +0800</pubDate>
+      
+      <guid>http://hbprotoss.github.io/post/%E5%85%AC%E4%BC%97%E5%8F%B7%E8%BF%81%E7%A7%BB%E9%80%9A%E7%9F%A5/</guid>
+      <description>hi 各位，本博客数据库相关文章会逐步优先发布在我的微信公众号，欢迎移步交流 公众号：数据库不跑路</description>
+    </item>
     
     <item>
       <title>MySQL组复制 初见</title>
@@ -188,7 +197,7 @@
       <pubDate>Tue, 08 Oct 2013 00:00:00 +0000</pubDate>
       
       <guid>http://hbprotoss.github.io/post/linuxxia-bian-yi-lian-jie-dong-tai-ku/</guid>
-      <description>记录下Linux下编译和链接动态库的过程。 ##一、 编写动态库 头文件so.h： 1 2 3 4 5 6 7 #ifndef SO_H #define SO_H int add(int a, int b); #endif /*SO_H*/ 实现文件so.c： 1 2 3 4 5</description>
+      <description>记录下Linux下编译和链接动态库的过程。 ##一、 编写动态库 头文件so.h： 1 2 3 4 5 6 7 8 #ifndef SO_H#define SO_H int add(int a, int b); #endif /*SO_H*/ 实现文件so.c： 1 2 3 4 5</description>
     </item>
     
     <item>
@@ -260,7 +269,7 @@
       <pubDate>Mon, 18 Mar 2013 00:00:00 +0000</pubDate>
       
       <guid>http://hbprotoss.github.io/post/pythonde-importji-zhi/</guid>
-      <description>同一个模块以相同的模块名被导入时，模块内的代码只执行一遍（模块名必须相同）。 例： import/ test.py mo/ A.py 1 2 3 4 # A.py a = 1 print(a) a += 1 1 2 3 4 5 6 7 8 9 10 # test.py #!/usr/bin/env</description>
+      <description>同一个模块以相同的模块名被导入时，模块内的代码只执行一遍（模块名必须相同）。 例： import/ test.py mo/ A.py # A.py a = 1 print(a) a += 1 # test.py #!/usr/bin/env python3 import os import sys import mo.A import mo.A path = os.path.abspath(&#39;./mo&#39;) print(path) sys.path.append(path)</description>
     </item>
     
     <item>

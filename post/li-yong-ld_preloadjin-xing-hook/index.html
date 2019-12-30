@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.58.3 with theme even" />
+<meta name="generator" content="Hugo 0.62.0 with theme even" />
 
 
 <link rel="canonical" href="http://hbprotoss.github.io/post/li-yong-ld_preloadjin-xing-hook/" />
@@ -46,16 +46,13 @@
 <meta property="article:modified_time" content="2013-10-09T00:00:00+00:00" />
 <meta itemprop="name" content="利用LD_PRELOAD进行hook">
 <meta itemprop="description" content="好久没玩hook这种猥琐的东西里，今天在Linux下体验了一把。 loader在进行动态链接的时候，会将有相同符号名的符号覆盖成LD_PREL">
-
-
 <meta itemprop="datePublished" content="2013-10-09T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2013-10-09T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="730">
+<meta itemprop="wordCount" content="731">
 
 
 
-<meta itemprop="keywords" content="C,Linux,Hook,Security," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="C,Linux,Hook,Security," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="利用LD_PRELOAD进行hook"/>
 <meta name="twitter:description" content="好久没玩hook这种猥琐的东西里，今天在Linux下体验了一把。 loader在进行动态链接的时候，会将有相同符号名的符号覆盖成LD_PREL"/>
 
@@ -125,7 +122,7 @@
       <div class="post-meta">
         <span class="post-time"> 2013-10-09 </span>
         
-          <span class="more-meta"> 730 words </span>
+          <span class="more-meta"> 731 words </span>
           <span class="more-meta"> 2 mins read </span>
         
       </div>
@@ -134,20 +131,17 @@
     <div class="post-toc" id="post-toc">
   <h2 class="post-toc-title">Contents</h2>
   <div class="post-toc-content always-active">
-    
+    <nav id="TableOfContents"></nav>
   </div>
 </div>
     <div class="post-content">
       <p>好久没玩hook这种猥琐的东西里，今天在Linux下体验了一把。</p>
-
 <p>loader在进行动态链接的时候，会将有相同符号名的符号覆盖成LD_PRELOAD指定的so文件中的符号。换句话说，可以用我们自己的so库中的函数替换原来库里有的函数，从而达到hook的目的。这和Windows下通过修改import table来hook API很类似。相比较之下，LD_PRELOAD更方便了，都不用自己写代码了，系统的loader会帮我们搞定。但是LD_PRELOAD有个限制：只能hook动态链接的库，对静态链接的库无效，因为静态链接的代码都写到可执行文件里了嘛，没有坑让你填。</p>
-
 <p>上代码</p>
-
 <p>先是受害者，我们的主程序main.c，通过strcmp比较字符串是否相等：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -164,27 +158,27 @@
 </span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
-</span><span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="cp"></span><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
 </span><span class="cp"></span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[</span><span class="p">]</span><span class="p">)</span>
 <span class="p">{</span>
-	<span class="k">if</span><span class="p">(</span> <span class="n">strcmp</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s">&#34;test&#34;</span><span class="p">)</span> <span class="p">)</span>
+	<span class="k">if</span><span class="p">(</span> <span class="n">strcmp</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="p">,</span> <span class="sa"></span><span class="s">&#34;</span><span class="s">test</span><span class="s">&#34;</span><span class="p">)</span> <span class="p">)</span>
 	<span class="p">{</span>
-		<span class="n">printf</span><span class="p">(</span><span class="s">&#34;Incorrect password</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+		<span class="n">printf</span><span class="p">(</span><span class="sa"></span><span class="s">&#34;</span><span class="s">Incorrect password</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">)</span><span class="p">;</span>
 	<span class="p">}</span>
 	<span class="k">else</span>
 	<span class="p">{</span>
-		<span class="n">printf</span><span class="p">(</span><span class="s">&#34;Correct password</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+		<span class="n">printf</span><span class="p">(</span><span class="sa"></span><span class="s">&#34;</span><span class="s">Correct password</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">)</span><span class="p">;</span>
 	<span class="p">}</span>
 	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span></code></pre></td></tr></table>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>然后是用来hook的库hook.c：</p>
+</div><p>然后是用来hook的库hook.c：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -205,11 +199,11 @@
 </span><span class="lnt">19
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
-</span><span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
-</span><span class="cp">#include</span> <span class="cpf">&lt;dlfcn.h&gt;</span><span class="cp">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="cp"></span><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
+</span><span class="cp"></span><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;dlfcn.h&gt;</span><span class="cp">
 </span><span class="cp"></span>
-<span class="k">typedef</span> <span class="nf">int</span><span class="p">(</span><span class="o">*</span><span class="n">STRCMP</span><span class="p">)(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span><span class="p">);</span>
+<span class="k">typedef</span> <span class="nf">int</span><span class="p">(</span><span class="o">*</span><span class="n">STRCMP</span><span class="p">)</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="p">;</span>
 
 <span class="kt">int</span> <span class="nf">strcmp</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">s1</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">s2</span><span class="p">)</span>
 <span class="p">{</span>
@@ -218,37 +212,38 @@
 
 	<span class="k">if</span><span class="p">(</span> <span class="o">!</span><span class="n">handle</span> <span class="p">)</span>
 	<span class="p">{</span>
-		<span class="n">handle</span> <span class="o">=</span> <span class="n">dlopen</span><span class="p">(</span><span class="s">&#34;libc.so.6&#34;</span><span class="p">,</span> <span class="n">RTLD_LAZY</span><span class="p">);</span>
-		<span class="n">old_strcmp</span> <span class="o">=</span> <span class="p">(</span><span class="n">STRCMP</span><span class="p">)</span><span class="n">dlsym</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="s">&#34;strcmp&#34;</span><span class="p">);</span>
+		<span class="n">handle</span> <span class="o">=</span> <span class="n">dlopen</span><span class="p">(</span><span class="sa"></span><span class="s">&#34;</span><span class="s">libc.so.6</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">RTLD_LAZY</span><span class="p">)</span><span class="p">;</span>
+		<span class="n">old_strcmp</span> <span class="o">=</span> <span class="p">(</span><span class="n">STRCMP</span><span class="p">)</span><span class="n">dlsym</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="sa"></span><span class="s">&#34;</span><span class="s">strcmp</span><span class="s">&#34;</span><span class="p">)</span><span class="p">;</span>
 	<span class="p">}</span>
-	<span class="n">printf</span><span class="p">(</span><span class="s">&#34;hack function invoked. s1=&lt;%s&gt; s2=&lt;%s&gt;</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">);</span>
-	<span class="k">return</span> <span class="n">old_strcmp</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">);</span>
-<span class="p">}</span></code></pre></td></tr></table>
+	<span class="n">printf</span><span class="p">(</span><span class="sa"></span><span class="s">&#34;</span><span class="s">hack function invoked. s1=&lt;%s&gt; s2=&lt;%s&gt;</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">)</span><span class="p">;</span>
+	<span class="k">return</span> <span class="n">old_strcmp</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">)</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>因为hook的目标是strcmp，所以typedef了一个STRCMP函数指针。由于hook的目的是要控制函数行为，所以需要从原库libc.so.6中拿到“正版”strcmp指针，保存成old_strcmp以备调用。</p>
-
+</div><p>因为hook的目标是strcmp，所以typedef了一个STRCMP函数指针。由于hook的目的是要控制函数行为，所以需要从原库libc.so.6中拿到“正版”strcmp指针，保存成old_strcmp以备调用。</p>
 <p>Makefile：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
+</span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-bash" data-lang="bash">test: main.c hook.so
 	gcc -o <span class="nb">test</span> main.c
 
 hook.so: hook.c
-	gcc -fPIC -shared -o hook.so hook.c -ldl</code></pre></td></tr></table>
+	gcc -fPIC -shared -o hook.so hook.c -ldl
+
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>执行：</p>
+</div><p>执行：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -258,21 +253,18 @@ hook.so: hook.c
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-bash" data-lang="bash">$ <span class="nv">LD_PRELOAD</span><span class="o">=</span>./hook.so ./test <span class="m">123</span>
-hack <span class="k">function</span> invoked. <span class="nv">s1</span><span class="o">=</span>&lt;<span class="m">123</span>&gt; <span class="nv">s2</span><span class="o">=</span>&lt;test&gt;
+hack <span class="k">function</span> invoked. <span class="nv">s1</span><span class="o">=</span>&lt;123&gt; <span class="nv">s2</span><span class="o">=</span>&lt;test&gt;
 Incorrect password
 
 $ <span class="nv">LD_PRELOAD</span><span class="o">=</span>./hook.so ./test <span class="nb">test</span>
 hack <span class="k">function</span> invoked. <span class="nv">s1</span><span class="o">=</span>&lt;test&gt; <span class="nv">s2</span><span class="o">=</span>&lt;test&gt;
-Correct password</code></pre></td></tr></table>
+Correct password
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>其中有一点不理解的是，<code>dlopen</code>打开libc.so.6能拿到“正版”strcmp地址，打开libc.so就是hook后的地址。照理说libc.so不是libc.so.6的一个软链吗？为什么结果会不一样嘞？</p>
-
-<hr />
-
+</div><p>其中有一点不理解的是，<code>dlopen</code>打开libc.so.6能拿到“正版”strcmp地址，打开libc.so就是hook后的地址。照理说libc.so不是libc.so.6的一个软链吗？为什么结果会不一样嘞？</p>
+<hr>
 <p>参考资料：</p>
-
-<p><a href="http://www.exploit-db.com/papers/13233/">Reverse Engineering with LD_PRELOAD</a></p>
+<p><a href="http://www.exploit-db.com/papers/13233/" title="">Reverse Engineering with LD_PRELOAD</a></p>
 
     </div>
 

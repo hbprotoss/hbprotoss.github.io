@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.58.3 with theme even" />
+<meta name="generator" content="Hugo 0.62.0 with theme even" />
 
 
 <link rel="canonical" href="http://hbprotoss.github.io/post/innodbyin-qing-suo-yin-xue-xi-bi-ji/" />
@@ -46,16 +46,13 @@
 <meta property="article:modified_time" content="2013-11-16T00:00:00+00:00" />
 <meta itemprop="name" content="InnoDB引擎索引学习笔记">
 <meta itemprop="description" content="最近在研究学习MySQL，本文记录下索引相关（主要B-Tree索引）的特性。 索引是什么 数据库索引，是数据库管理系统中一个排序的数据结构，以协">
-
-
 <meta itemprop="datePublished" content="2013-11-16T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2013-11-16T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="1664">
+<meta itemprop="wordCount" content="1665">
 
 
 
-<meta itemprop="keywords" content="Database," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="Database," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="InnoDB引擎索引学习笔记"/>
 <meta name="twitter:description" content="最近在研究学习MySQL，本文记录下索引相关（主要B-Tree索引）的特性。 索引是什么 数据库索引，是数据库管理系统中一个排序的数据结构，以协"/>
 
@@ -125,7 +122,7 @@
       <div class="post-meta">
         <span class="post-time"> 2013-11-16 </span>
         
-          <span class="more-meta"> 1664 words </span>
+          <span class="more-meta"> 1665 words </span>
           <span class="more-meta"> 4 mins read </span>
         
       </div>
@@ -135,58 +132,39 @@
   <h2 class="post-toc-title">Contents</h2>
   <div class="post-toc-content always-active">
     <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#索引是什么">索引是什么</a></li>
-<li><a href="#innodb索引结构">InnoDB索引结构</a></li>
-<li><a href="#性能实测">性能实测</a>
-<ul>
-<li><a href="#索引对查询效率的影响">索引对查询效率的影响</a></li>
-<li><a href="#索引对排序效率的影响">索引对排序效率的影响</a></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#heading">索引是什么</a></li>
+    <li><a href="#innodb">InnoDB索引结构</a></li>
+    <li><a href="#heading-1">性能实测</a>
+      <ul>
+        <li><a href="#heading-2">索引对查询效率的影响</a></li>
+        <li><a href="#heading-3">索引对排序效率的影响</a></li>
+      </ul>
+    </li>
+  </ul>
 </nav>
   </div>
 </div>
     <div class="post-content">
-      
-
-<p>最近在研究学习MySQL，本文记录下索引相关（主要B-Tree索引）的特性。</p>
-
-<hr />
-
-<h2 id="索引是什么">索引是什么</h2>
-
+      <p>最近在研究学习MySQL，本文记录下索引相关（主要B-Tree索引）的特性。</p>
+<hr>
+<h2 id="heading">索引是什么</h2>
 <p>数据库索引，是数据库管理系统中一个排序的数据结构，以协助快速查询、更新数据库表中数据。</p>
-
 <p>按所用的数据结构分，有B-Tree索引（B+ Tree）、哈希索引、R-Tree索引等。按数据块的顺序和索引节点的逻辑顺序是否一致可以分为聚集索引和非聚集索引。聚集索引由于物理块连续，在范围扫描的时候可以减少磁头寻道时间，因而比非聚集索引高效。</p>
-
-<h2 id="innodb索引结构">InnoDB索引结构</h2>
-
-<p>InnoDB引擎的索引主体结构是B+Tree（这种数据结构的描述可以参考CSDN博主v_JULY_v的<a href="http://blog.csdn.net/v_JULY_v/article/details/6530142">从B树、B+树、B*树谈到R 树</a>）。</p>
-
+<h2 id="innodb">InnoDB索引结构</h2>
+<p>InnoDB引擎的索引主体结构是B+Tree（这种数据结构的描述可以参考CSDN博主v_JULY_v的<a href="http://blog.csdn.net/v_JULY_v/article/details/6530142" title="">从B树、B+树、B*树谈到R 树</a>）。</p>
 <p>其中，主键索引(Primary Index)是聚集索引，中间节点是用于查询的边界值，叶子节点就是数据节点，叶子节点之间通过指针形成双向链表。如图：</p>
-
-<p><img src="https://i.imgur.com/8SbtTMC.jpg" alt="primary_index.jpg" /></p>
-
+<p><img src="https://i.imgur.com/8SbtTMC.jpg" alt="primary_index.jpg" title=""></p>
 <p>辅助索引(Secondary Index)同样为B-Tree索引，只是叶子节点不是数据节点，而是对主键的引用。</p>
-
-<p><img src="https://i.imgur.com/FRhbKZo.jpg" alt="secondary_index.jpg" /></p>
-
+<p><img src="https://i.imgur.com/FRhbKZo.jpg" alt="secondary_index.jpg" title=""></p>
 <p>由于此特性，InnoDB引擎要求数据表必须有一个主键，如果没有主键，在数据表创建的时候会自动生成一个唯一非空索引替代。这个特性也决定了InnoDB表的主键最好是一个自增的ID序列，这样在后续插入的过程中不会造成数据块的唯一，提升性能。</p>
-
 <p>当所建立的索引为多列索引的时候，例如KEY(a,b,c)，中间节点依旧以最左边的一列a进行索引，只是在叶子节点上保存的不仅仅是a，而是(a,b,c)多字段排序后的序列。</p>
-
-<h2 id="性能实测">性能实测</h2>
-
+<h2 id="heading-1">性能实测</h2>
 <p>下面结合实际例子阐述现象和内部结构的关系</p>
-
 <p>首先建立一个测试表：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -201,30 +179,29 @@
      <span class="n">a</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
      <span class="n">b</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
      <span class="k">c</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-     <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">id</span><span class="p">),</span>
+     <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="p">,</span>
      <span class="k">KEY</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="k">c</span><span class="p">)</span>
-<span class="p">)</span><span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span><span class="p">;</span></code></pre></td></tr></table>
+<span class="p">)</span><span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span><span class="p">;</span>
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>数据项为(a,b,c)在0~200之间的所有组合项，共计8000000行记录。为了消除几次实验中以query cache为代表的各种server cache对实验数据的影响，每次实验后均重启mysql服务。</p>
-
-<h3 id="索引对查询效率的影响">索引对查询效率的影响</h3>
-
+</div><p>数据项为(a,b,c)在0~200之间的所有组合项，共计8000000行记录。为了消除几次实验中以query cache为代表的各种server cache对实验数据的影响，每次实验后均重启mysql服务。</p>
+<h3 id="heading-2">索引对查询效率的影响</h3>
 <p>首先是建立KEY(a,b,c)索引前后的性能对比，能很明显地看到索引大幅提升查询速度。没有索引的时候需要做全表扫描，建立索引之后通过B-Tree搜索。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span><span class="lnt">9
-</span></pre></td>
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">没有索引（除主键，下同）
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">没有索引（除主键，下同）
 [SQL]select * from test where a = 0 and b = 1;
 Affected rows: 0
 Time: 0.324s
@@ -232,111 +209,108 @@ Time: 0.324s
 建立KEY(a,b,c)
 [SQL]select * from test where a = 0 and b = 1;
 Affected rows: 0
-Time: 0.004s</pre></td></tr></table>
-</div>
-</div>
-<p>由于MySQL优化器的优化，where条件中的各个子条件顺序对索引的使用没有影响。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></pre></td>
-<td class="lntd">
-<pre class="chroma">[SQL]select * from test where b = 1 and a = 0;
-Affected rows: 0
-Time: 0.002s</pre></td></tr></table>
-</div>
-</div>
-<p>当使用的列非严格的索引最左前缀时，可以想象，只有a加速了索引搜索，找到所有符合a条件的记录的之后只能顺序扫描检查c是否符合条件。所以相比没有索引时要快，但是慢于使用严格索引最左前缀时的速度。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></pre></td>
-<td class="lntd">
-<pre class="chroma">[SQL]select * from test where a = 0 and c = 1;
-Affected rows: 0
-Time: 0.043s</pre></td></tr></table>
-</div>
-</div>
-<p>当没有使用到a列作为条件时完全没法使用索引，甚至比没有索引时还要慢。因为建表的时候a在前，b、c在后，并且数据节点有序。在没有索引的测试中，InnoDB引擎到a不为0时自动停止搜索。而在这个例子中需要扫描全表找出满足符合条件的b、c，达到完全没法忍受的16秒。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></pre></td>
-<td class="lntd">
-<pre class="chroma">[SQL]select * from test where b = 0 and c = 1;
-Affected rows: 0
-Time: 16.023s</pre></td></tr></table>
-</div>
-</div>
-<h3 id="索引对排序效率的影响">索引对排序效率的影响</h3>
+Time: 0.004s
 
+</code></pre></td></tr></table>
+</div>
+</div><p>由于MySQL优化器的优化，where条件中的各个子条件顺序对索引的使用没有影响。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">[SQL]select * from test where b = 1 and a = 0;
+Affected rows: 0
+Time: 0.002s
+</code></pre></td></tr></table>
+</div>
+</div><p>当使用的列非严格的索引最左前缀时，可以想象，只有a加速了索引搜索，找到所有符合a条件的记录的之后只能顺序扫描检查c是否符合条件。所以相比没有索引时要快，但是慢于使用严格索引最左前缀时的速度。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">[SQL]select * from test where a = 0 and c = 1;
+Affected rows: 0
+Time: 0.043s
+</code></pre></td></tr></table>
+</div>
+</div><p>当没有使用到a列作为条件时完全没法使用索引，甚至比没有索引时还要慢。因为建表的时候a在前，b、c在后，并且数据节点有序。在没有索引的测试中，InnoDB引擎到a不为0时自动停止搜索。而在这个例子中需要扫描全表找出满足符合条件的b、c，达到完全没法忍受的16秒。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">[SQL]select * from test where b = 0 and c = 1;
+Affected rows: 0
+Time: 16.023s
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="heading-3">索引对排序效率的影响</h3>
 <p>只要能用到索引，并且ORDER BY后面的列在索引中，则顺序还是倒序排序对性能无影响。因为叶子节点是个双向链表，倒序可以从后向前遍历，与顺序的代价相同。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span><span class="lnt">6
 </span><span class="lnt">7
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">[SQL]select * from test where a = 0 ORDER BY b;
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">[SQL]select * from test where a = 0 ORDER BY b;
 Affected rows: 0
 Time: 0.085s
 
 [SQL]select * from test where a = 0 ORDER BY b DESC;
 Affected rows: 0
-Time: 0.089s</pre></td></tr></table>
+Time: 0.089s
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>但是，当有两个字段排序的顺序不同时，叶子节点的有序性就无法用在排序中，必须读出所有叶子节点之后再按指定的字段进行一趟排序，所以速度就慢了下来。</p>
+</div><p>但是，当有两个字段排序的顺序不同时，叶子节点的有序性就无法用在排序中，必须读出所有叶子节点之后再按指定的字段进行一趟排序，所以速度就慢了下来。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span><span class="lnt">6
 </span><span class="lnt">7
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">[SQL]select * from test where a = 0 ORDER BY b DESC, c DESC;
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">[SQL]select * from test where a = 0 ORDER BY b DESC, c DESC;
 Affected rows: 0
 Time: 0.089s
 
 [SQL]select * from test where a = 0 ORDER BY b ASC, c DESC;
 Affected rows: 0
-Time: 0.184s</pre></td></tr></table>
+Time: 0.184s
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>同样，下面的例子中对索引左边的字段a进行范围选择的时候也没法运用索引，因为多个取值的a无法保证b和c字段有序，必须重新排序</p>
+</div><p>同样，下面的例子中对索引左边的字段a进行范围选择的时候也没法运用索引，因为多个取值的a无法保证b和c字段有序，必须重新排序</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
-</span></pre></td>
+</span></code></pre></td>
 <td class="lntd">
-<pre class="chroma">[SQL]select * from test where a &lt;= 0 ORDER BY b;
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">[SQL]select * from test where a &lt;= 0 ORDER BY b;
 Affected rows: 0
-Time: 0.103s</pre></td></tr></table>
+Time: 0.103s
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>所以，尽可能做到覆盖索引（即where，order by中用到的字段被索引覆盖），能利用索引加速搜索和排序。</p>
-
-<hr />
-
+</div><p>所以，尽可能做到覆盖索引（即where，order by中用到的字段被索引覆盖），能利用索引加速搜索和排序。</p>
+<hr>
 <p>参考资料：</p>
-
 <p>《高性能MySQL》，电子工业出版社，2010年1月</p>
 
     </div>
